@@ -734,3 +734,36 @@ btnSaveSettings.addEventListener("click", async () => {
 loadLocalState();
 updateAllDisplays();
 pullRemoteState();
+
+// --- SISTEMA D'ACTUALITZACIONS AUTOMÀTIQUES ---
+async function checkForUpdates() {
+  try {
+    // Afegim ?t=Date.now() per evitar que GitHub Pages guardi en caché la versió antiga
+    const res = await fetch(`./version.json?t=${Date.now()}`);
+    if (res.ok) {
+      const data = await res.json();
+      const serverVersion = data.version;
+      const localVersion = localStorage.getItem("aibuddy_app_version");
+
+      if (!localVersion) {
+        // Primera vegada que s'executa
+        localStorage.setItem("aibuddy_app_version", serverVersion);
+      } else if (localVersion !== serverVersion) {
+        // Si la versió del servidor és diferent, mostrem el baner
+        const banner = document.getElementById("update-banner");
+        if (banner) banner.classList.remove("hidden");
+      }
+    }
+  } catch (e) {
+    console.log("No s'ha pogut comprovar l'actualització:", e);
+  }
+}
+
+window.applyUpdate = function() {
+  // Netegem la versió guardada i recarreguem la pàgina forçant la descàrrega nova
+  localStorage.removeItem("aibuddy_app_version");
+  window.location.reload(true);
+};
+
+// Comprovar actualitzacions en obrir l'app
+checkForUpdates();
