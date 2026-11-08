@@ -63,6 +63,11 @@
         <span>Hobbies de Descans</span>
         <span class="text-stone-500">&#8250;</span>
       </button>
+
+      <button onclick="switchView('view-quick-todo')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+        <span>To-Do List Ràpida</span>
+        <span class="text-stone-500">&#8250;</span>
+      </button>
     </section>
 
     <!-- VISTA 2: TASQUES I MICRO-PASSOS -->
@@ -117,6 +122,37 @@
         </button>
         <button id="btn-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8250;
+        </button>
+      </div>
+
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
+
+    <!-- VISTA NOVA: TO-DO LIST RÀPIDA -->
+    <section id="view-quick-todo" class="w-full flex flex-col items-center hidden">
+      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-4">⚡ To-Do List Ràpida</span>
+
+      <div class="flex gap-2 w-full mb-4">
+        <input 
+          type="text" 
+          id="quick-todo-input" 
+          placeholder="Apunta una tasca ràpida..." 
+          class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-emerald-600 placeholder-stone-500"
+        />
+        <button id="btn-add-quick-todo" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold px-4 py-2.5 rounded-xl text-xs transition">
+          Afegir
+        </button>
+      </div>
+
+      <div id="quick-todo-list" class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 min-h-[200px] max-h-[300px] overflow-y-auto space-y-2 text-left mb-4">
+        <p class="text-xs text-stone-500 text-center py-8">No hi ha tasques ràpides pendents.</p>
+      </div>
+
+      <div class="flex justify-between w-full mb-6">
+        <button id="btn-clear-quick-todos" class="text-[11px] text-stone-500 hover:text-stone-300 transition">
+          Esborrar completades o tot
         </button>
       </div>
 
