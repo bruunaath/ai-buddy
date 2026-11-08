@@ -6,6 +6,9 @@ const IMAGES = {
   avis: "avis.jpg"             // 4. Quan falten 5 minuts o menys de Pomodoro
 };
 
+// ID especial a Supabase on es guarden totes les sessions creades
+const ACCESS_LOG_ID = "__registre_accessos__";
+
 // --- DICCIONARI DE CATEGORIES HABITUALS AuDHD ---
 const catalegTasquesTDAH = {
   netejar_cuina: {
@@ -206,6 +209,21 @@ const btnTogglePass = document.getElementById("btn-toggle-pass");
 const btnSaveSettings = document.getElementById("btn-save-settings");
 const btnLogoutGuest = document.getElementById("btn-logout-guest");
 
+// --- MOSTRAR / OCULTAR CONTRASENYA (GLOBAL I DIRECTE) ---
+window.togglePassVisibility = function() {
+  const passInput = document.getElementById("cfg-sync-pass");
+  const toggleBtn = document.getElementById("btn-toggle-pass");
+  if (!passInput) return;
+
+  if (passInput.type === "password") {
+    passInput.type = "text";
+    if (toggleBtn) toggleBtn.textContent = "🙈";
+  } else {
+    passInput.type = "password";
+    if (toggleBtn) toggleBtn.textContent = "👁️";
+  }
+};
+
 // --- GESTIÓ MULTI-USUARI (CONVIDAT vs COMPTE PROPI) ---
 function isGuestMode() {
   const user = (config.syncUser || "").trim().toLowerCase();
@@ -213,14 +231,12 @@ function isGuestMode() {
   return !user || user === "convidat" || pass === "";
 }
 
-// Clau única al núvol (combina usuari + contrasenya perquè ningú pugui entrar sense la contrasenya)
 function getCloudSyncKey() {
   const user = (config.syncUser || "").trim().toLowerCase();
   const pass = (config.syncPass || "").trim();
   return `${user}::${pass}`;
 }
 
-// Clau d'emmagatzematge local separada per a cada usuari
 function getLocalStorageKey() {
   if (isGuestMode()) return "aibuddy_state_convidat";
   return `aibuddy_state_${getCloudSyncKey()}`;
@@ -232,6 +248,78 @@ function cleanSupaUrl(rawUrl) {
     .trim()
     .replace(/\/rest\/v1\/?$/i, "")
     .replace(/\/+$/, "");
+}
+
+// --- REGISTRE D'ACCESSOS AL NÚVOL (PER AL FITXER ADMIN.HTML) ---
+function getDeviceName() {
+  const ua = navigator.userAgent || "";
+  if (/iPhone|iPad|iPod/i.test(ua)) return "iPhone / iPad";
+  if (/Android/i.test(ua)) return "Mòbil Android";
+  if (/Mac/i.test(ua)) return "Ordinador Mac";
+  if (/Win/i.test(ua)) return "Ordinador Windows";
+  return "Navegador Web";
+}
+
+async function registrarSessioAlNuvol(usuari, esNouCompte = false) {
+  const baseUrl = cleanSupaUrl(config.supaUrl);
+  if (!baseUrl || !config.supaKey) return;
+
+  try {
+    // 1. Llegim la llista actual d'accessos a Supabase
+    const getUrl = `${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(ACCESS_LOG_ID)}&select=data`;
+    const getRes = await fetch(getUrl, {
+      headers: {
+        "apikey": config.supaKey,
+        "Authorization": `Bearer ${config.supaKey}`
+      }
+    });
+
+    let sessions = [];
+    if (getRes.ok) {
+      const rows = await getRes.json();
+      if (rows.length > 0 && rows[0].data && Array.isArray(rows[0].data.sessions)) {
+        sessions = rows[0].data.sessions;
+      }
+    }
+
+    const ara = new Date().toISOString();
+    const dispositiu = getDeviceName();
+    const cleanUser = usuari.trim().toLowerCase();
+
+    const indexExistent = sessions.findIndex(s => s.usuari.toLowerCase() === cleanUser);
+    if (indexExistent >= 0) {
+      sessions[indexExistent].ultimAcces = ara;
+      sessions[indexExistent].dispositiu = dispositiu;
+      sessions[indexExistent].totalAccessos = (sessions[indexExistent].totalAccessos || 1) + 1;
+    } else {
+      sessions.unshift({
+        usuari: usuari.trim(),
+        creatEl: ara,
+        ultimAcces: ara,
+        dispositiu: dispositiu,
+        tipus: esNouCompte ? "Nou registre" : "Sessió activa",
+        totalAccessos: 1
+      });
+    }
+
+    // 2. Desem la llista actualitzada al núvol
+    await fetch(`${baseUrl}/rest/v1/user_state`, {
+      method: "POST",
+      headers: {
+        "apikey": config.supaKey,
+        "Authorization": `Bearer ${config.supaKey}`,
+        "Content-Type": "application/json",
+        "Prefer": "resolution=merge-duplicates"
+      },
+      body: JSON.stringify({
+        id: ACCESS_LOG_ID,
+        data: { sessions, updatedAt: Date.now() },
+        updated_at: ara
+      })
+    });
+  } catch (e) {
+    console.log("No s'ha pogut actualitzar el registre d'accessos:", e);
+  }
 }
 
 function loadLocalState() {
@@ -252,7 +340,6 @@ async function saveState() {
   localStorage.setItem(getLocalStorageKey(), JSON.stringify(state));
   updateAllDisplays();
 
-  // Si és convidat, es guarda només en local (no es barreja al núvol)
   if (isGuestMode()) {
     if (statusBadge) statusBadge.textContent = "⚪ Convidat";
     return;
@@ -292,14 +379,14 @@ async function saveState() {
 async function pullRemoteState() {
   if (isGuestMode()) {
     if (statusBadge) statusBadge.textContent = "⚪ Convidat";
-    return;
+    return false;
   }
 
   const baseUrl = cleanSupaUrl(config.supaUrl);
   const cloudId = getCloudSyncKey();
   if (!baseUrl || !config.supaKey || !cloudId) {
     if (statusBadge) statusBadge.textContent = "⚪ Local";
-    return;
+    return false;
   }
 
   try {
@@ -320,15 +407,18 @@ async function pullRemoteState() {
           updateAllDisplays();
         }
         if (statusBadge) statusBadge.textContent = `🟢 ${config.syncUser}`;
+        return false; // Ja existia al núvol
       } else {
-        // Si l'usuari + contrasenya és nou al núvol, el creem pujant l'estat actual
         await saveState();
+        return true; // És un compte nou creat ara mateix
       }
     } else {
       if (statusBadge) statusBadge.textContent = "🟠 Error Núvol";
+      return false;
     }
   } catch (e) {
     if (statusBadge) statusBadge.textContent = "⚪ Offline";
+    return false;
   }
 }
 
@@ -354,7 +444,11 @@ function switchView(viewId) {
     if (cfgSupaUrl) cfgSupaUrl.value = config.supaUrl;
     if (cfgSupaKey) cfgSupaKey.value = config.supaKey;
     if (cfgSyncId) cfgSyncId.value = config.syncUser || "convidat";
-    if (cfgSyncPass) cfgSyncPass.value = config.syncPass || "";
+    if (cfgSyncPass) {
+      cfgSyncPass.value = config.syncPass || "";
+      cfgSyncPass.type = "password";
+    }
+    if (btnTogglePass) btnTogglePass.textContent = "👁️";
   }
   updateAllDisplays();
 }
@@ -883,22 +977,12 @@ if (btnPomoNext) {
   });
 }
 
-// --- MOSTRAR / OCULTAR CONTRASENYA ---
-if (btnTogglePass && cfgSyncPass) {
-  btnTogglePass.addEventListener("click", () => {
-    const isPassword = cfgSyncPass.type === "password";
-    cfgSyncPass.type = isPassword ? "text" : "password";
-    btnTogglePass.textContent = isPassword ? "🙈" : "👁️";
-  });
-}
-
 // --- DESAR CONFIGURACIÓ D'USUARI I SUPABASE ---
 if (btnSaveSettings) {
   btnSaveSettings.addEventListener("click", async () => {
     const enteredUser = (cfgSyncId ? cfgSyncId.value.trim() : "") || "convidat";
     const enteredPass = cfgSyncPass ? cfgSyncPass.value.trim() : "";
 
-    // Si posen un nom d'usuari diferent de "convidat" però deixen la contrasenya buida, avisem
     if (enteredUser.toLowerCase() !== "convidat" && !enteredPass) {
       showToast("⚠️ Afegeix una contrasenya per al teu usuari");
       if (cfgSyncPass) cfgSyncPass.focus();
@@ -915,7 +999,6 @@ if (btnSaveSettings) {
     localStorage.setItem("aibuddy_sync_user", config.syncUser);
     localStorage.setItem("aibuddy_sync_pass", config.syncPass);
 
-    // Carreguem l'estat local d'aquest usuari concret abans de sincronitzar amb el núvol
     loadLocalState();
     updateAllDisplays();
 
@@ -927,8 +1010,10 @@ if (btnSaveSettings) {
     }
 
     btnSaveSettings.textContent = "Sincronitzant...";
-    await pullRemoteState();
+    const esNouCompte = await pullRemoteState();
     await saveState();
+    // Registrem automàticament l'accés o la nova sessió per al panell admin.html
+    await registrarSessioAlNuvol(config.syncUser, esNouCompte);
     btnSaveSettings.textContent = "Desar i Sincronitzar";
     showToast(`✓ Sessió iniciada: ${config.syncUser}`);
     switchView("view-menu");
@@ -944,7 +1029,11 @@ if (btnLogoutGuest) {
     localStorage.setItem("aibuddy_sync_pass", "");
 
     if (cfgSyncId) cfgSyncId.value = "convidat";
-    if (cfgSyncPass) cfgSyncPass.value = "";
+    if (cfgSyncPass) {
+      cfgSyncPass.value = "";
+      cfgSyncPass.type = "password";
+    }
+    if (btnTogglePass) btnTogglePass.textContent = "👁️";
 
     loadLocalState();
     updateAllDisplays();
@@ -985,7 +1074,6 @@ function toggleTheme() {
 }
 window.toggleTheme = toggleTheme;
 
-// Executar al carregar l'app
 initTheme();
 
 // --- INICIALITZACIÓ ---
