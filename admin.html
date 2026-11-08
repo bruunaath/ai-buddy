@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Buddy - Control d'Accessos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-neutral-950 text-stone-100 min-h-screen p-6 font-sans">
+
+  <div class="max-w-3xl mx-auto space-y-6">
+    <!-- Capçalera -->
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-stone-800">
+      <div>
+        <h1 class="text-xl font-bold text-sky-400">🛡️ Control d'Accessos — AI Buddy</h1>
+        <p class="text-xs text-stone-400 mt-1">Llista en temps real d'usuaris i sessions sincronitzades al núvol</p>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="carregarAccessos()" class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3.5 py-2 rounded-xl text-xs font-semibold border border-stone-700 transition">
+          🔄 Actualitzar ara
+        </button>
+        <button onclick="exportarCSV()" class="bg-sky-500 hover:bg-sky-400 text-stone-950 px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-md">
+          📥 Descarregar Arxiu (.CSV)
+        </button>
+      </div>
+    </header>
+
+    <!-- Resum numèric -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4">
+        <span class="text-[11px] text-stone-400 uppercase tracking-wider">Usuaris Registrats</span>
+        <p id="stat-total-users" class="text-2xl font-bold text-sky-400 mt-1">0</p>
+      </div>
+      <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4">
+        <span class="text-[11px] text-stone-400 uppercase tracking-wider">Última Activitat</span>
+        <p id="stat-last-active" class="text-sm font-semibold text-stone-200 mt-2 truncate">—</p>
+      </div>
+      <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4 col-span-2 sm:col-span-1">
+        <span class="text-[11px] text-stone-400 uppercase tracking-wider">Estat del Servidor</span>
+        <p id="stat-status" class="text-sm font-semibold text-sky-400 mt-2">Connectant...</p>
+      </div>
+    </div>
+
+    <!-- Taula d'usuaris i sessions -->
+    <div class="bg-stone-900 border border-stone-800 rounded-2xl overflow-hidden shadow-xl">
+      <div class="p-4 border-b border-stone-800 flex justify-between items-center">
+        <span class="text-xs font-semibold uppercase tracking-wider text-sky-400">Sessions i Comptes Actius</span>
+        <button onclick="toggleAllPasswords()" id="btn-show-passwords" class="text-[11px] text-stone-400 hover:text-stone-200 underline">
+          👁️ Mostrar contrasenyes
+        </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-stone-800 text-stone-400 bg-stone-950/60">
+              <th class="py-3 px-4">Usuari</th>
+              <th class="py-3 px-4">Contrasenya</th>
+              <th class="py-3 px-4">Dispositiu</th>
+              <th class="py-3 px-4">Última connexió</th>
+              <th class="py-3 px-4 text-right">Acció</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body" class="divide-y divide-stone-800/70">
+            <tr>
+              <td colspan="5" class="py-8 text-center text-stone-500">Carregant dades de Supabase...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPA_URL = "https://qstjwfqrkemyfzudtoxb.supabase.co";
+    const SUPA_KEY = "sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq";
+    const ACCESS_LOG_ID = "__registre_accessos__";
+
+    let llistaUsuaris = [];
+    let mostrarContrasenyes = false;
+
+    function formatData(isoStr) {
+      if (!isoStr) return "—";
+      const d = new Date(isoStr);
+      return d.toLocaleString("ca-ES", {
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit"
+      });
+    }
+
+    async function carregarAccessos() {
+      const statusEl = document.getElementById("stat-status");
+      statusEl.textContent = "🔄 Sincronitzant...";
+
+      try {
+        // Llegim totes les files de user_state per veure tant el registre com cada compte creat
+        const res = await fetch(`${SUPA_URL}/rest/v1/user_state?select=id,data,updated_at&order=updated_at.desc`, {
+          headers: {
+            "apikey": SUPA_KEY,
+            "Authorization": `Bearer ${SUPA_KEY}`
+          }
+        });
+
+        if (!res.ok) throw new Error("Error consultant Supabase");
+        const rows = await res.json();
+
+        // Busquem el registre detallat de dispositius
+        const logRow = rows.find(r => r.id === ACCESS_LOG_ID);
+        const sessionsLog = (logRow && logRow.data && Array.isArray(logRow.data.sessions)) ? logRow.data.sessions : [];
+
+        // Construïm la llista d'usuaris reals (excloent la fila del registre)
+        llistaUsuaris = rows
+          .filter(r => r.id !== ACCESS_LOG_ID)
+          .map(r => {
+            const parts = r.id.split("::");
+            const user = parts[0] || r.id;
+            const pass = parts.slice(1).join("::") || "(sense contrasenya)";
+            const infoLog = sessionsLog.find(s => s.usuari && s.usuari.toLowerCase() === user.toLowerCase());
+
+            return {
+              rawId: r.id,
+              usuari: user,
+              contrasenya: pass,
+              dispositiu: infoLog ? infoLog.dispositiu : "Sincronitzat",
+              ultimAcces: r.updated_at || (infoLog ? infoLog.ultimAcces : null),
+              totalAccessos: infoLog ? (infoLog.totalAccessos || 1) : 1
+            };
+          });
+
+        renderTaula();
+        statusEl.textContent = "🟢 En línia";
+      } catch (e) {
+        statusEl.textContent = "🟠 Error de connexió";
+        console.error(e);
+      }
+    }
+
+    function renderTaula() {
+      const tbody = document.getElementById("users-table-body");
+      const totalEl = document.getElementById("stat-total-users");
+      const lastActiveEl = document.getElementById("stat-last-active");
+
+      totalEl.textContent = llistaUsuaris.length;
+      lastActiveEl.textContent = llistaUsuaris.length > 0
+        ? `${llistaUsuaris[0].usuari} (${formatData(llistaUsuaris[0].ultimAcces)})`
+        : "Cap sessió encara";
+
+      if (llistaUsuaris.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-stone-500">Encara no s\'ha creat cap sessió al núvol.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = "";
+      llistaUsuaris.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-stone-800/40 transition";
+
+        const passText = mostrarContrasenyes ? item.contrasenya : "••••••••";
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-semibold text-stone-100">${item.usuari}</td>
+          <td class="py-3 px-4 font-mono text-stone-400">${passText}</td>
+          <td class="py-3 px-4 text-stone-300">${item.dispositiu}</td>
+          <td class="py-3 px-4 text-stone-400">${formatData(item.ultimAcces)}</td>
+          <td class="py-3 px-4 text-right">
+            <button onclick="revocarAcces('${encodeURIComponent(item.rawId)}', '${item.usuari}')" class="text-rose-400 hover:text-rose-300 font-semibold px-2 py-1 rounded bg-rose-950/30 border border-rose-800/40">
+              Eliminar
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function toggleAllPasswords() {
+      mostrarContrasenyes = !mostrarContrasenyes;
+      const btn = document.getElementById("btn-show-passwords");
+      btn.textContent = mostrarContrasenyes ? "🙈 Ocultar contrasenyes" : "👁️ Mostrar contrasenyes";
+      renderTaula();
+    }
+
+    async function revocarAcces(encodedId, nomUsuari) {
+      const rawId = decodeURIComponent(encodedId);
+      if (!confirm(`Vols eliminar la sessió i les dades al núvol de "${nomUsuari}"?`)) return;
+
+      try {
+        await fetch(`${SUPA_URL}/rest/v1/user_state?id=eq.${encodeURIComponent(rawId)}`, {
+          method: "DELETE",
+          headers: {
+            "apikey": SUPA_KEY,
+            "Authorization": `Bearer ${SUPA_KEY}`
+          }
+        });
+        carregarAccessos();
+      } catch (e) {
+        alert("No s'ha pogut eliminar l'usuari.");
+      }
+    }
+
+    function exportarCSV() {
+      if (llistaUsuaris.length === 0) {
+        alert("No hi ha dades per exportar.");
+        return;
+      }
+      const capcalera = ["Usuari", "Contrasenya", "Dispositiu", "Ultima_Connexio"];
+      const files = llistaUsuaris.map(u => [
+        `"${u.usuari.replace(/"/g, '""')}"`,
+        `"${u.contrasenya.replace(/"/g, '""')}"`,
+        `"${u.dispositiu}"`,
+        `"${formatData(u.ultimAcces)}"`
+      ]);
+      const contingutCSV = "data:text/csv;charset=utf-8,\uFEFF" + [capcalera.join(";"), ...files.map(f => f.join(";"))].join("\n");
+      const link = document.createElement("a");
+      link.setAttribute("href", encodeURI(contingutCSV));
+      link.setAttribute("download", `accessos_aibuddy_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Carrega automàticament en obrir i actualitza cada 15 segons
+    carregarAccessos();
+    setInterval(carregarAccessos, 15000);
+  </script>
+</body>
+</html>
