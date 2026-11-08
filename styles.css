@@ -14,10 +14,11 @@ body {
   user-select: none;
 }
 
-/* Evitar zoom automàtic en focus d'input a iOS Safari */
-input[type="text"],
-input[type="password"] {
+/* Evitar zoom automàtic en focus d'input a iOS Safari i permetre selecció dins d'inputs */
+input {
   font-size: 16px !important;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 /* Feedbacks tàctils suaus */
@@ -56,11 +57,10 @@ button:active {
    CONFIGURACIÓ DE TEMA CLAR (LIGHT MODE COMPLET I VERSÀTIL)
    ========================================================= */
 body.light-mode {
-  background-color: #f4f4f0 !important; /* Blanc trencat suau */
-  color: #1c1917 !important;            /* Text fosc */
+  background-color: #f4f4f0 !important;
+  color: #1c1917 !important;
 }
 
-/* Contenidors, targetes i requadres (inclosos els que tenen opacitat) */
 body.light-mode .bg-stone-950,
 body.light-mode .bg-stone-950\/50,
 body.light-mode .bg-stone-900,
@@ -71,7 +71,6 @@ body.light-mode .bg-stone-900\/50 {
   color: #1c1917 !important;
 }
 
-/* Botons secundaris (Aparcar, Afegir rutina, Afegir hobby, Fletxes) */
 body.light-mode .bg-stone-800 {
   background-color: #e7e5e4 !important;
   border-color: #d6d3d1 !important;
@@ -84,14 +83,12 @@ body.light-mode .hover\:bg-stone-700:hover {
   background-color: #d6d3d1 !important;
 }
 
-/* Vores generals */
 body.light-mode .border-stone-800,
 body.light-mode .border-stone-800\/60,
 body.light-mode .border-stone-700 {
   border-color: #d6d3d1 !important;
 }
 
-/* Textos interiors de targetes, títols i llistes */
 body.light-mode .text-stone-100,
 body.light-mode .text-stone-200,
 body.light-mode .text-stone-300 {
@@ -103,20 +100,16 @@ body.light-mode .text-stone-500 {
   color: #57534e !important;
 }
 
-/* Títols i accents blaus en mode clar perquè tinguin bon contrast */
 body.light-mode .text-sky-400 {
-  color: #0284c7 !important; /* sky-600 en fons clar */
+  color: #0284c7 !important;
 }
 
-/* Quadre informatiu IA Local en mode clar */
 body.light-mode #ai-info-box {
-  background-color: #e0f2fe !important; /* sky-100 */
-  border-color: #7dd3fc !important;     /* sky-300 */
+  background-color: #e0f2fe !important;
+  border-color: #7dd3fc !important;
 }
 
-/* Caselles d'escriure (Inputs) en mode clar */
-body.light-mode input[type="text"],
-body.light-mode input[type="password"] {
+body.light-mode input {
   background-color: #ffffff !important;
   color: #1c1917 !important;
   border-color: #d6d3d1 !important;
