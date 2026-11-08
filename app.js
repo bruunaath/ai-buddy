@@ -808,6 +808,40 @@ btnSaveSettings.addEventListener("click", async () => {
   switchView("view-menu");
 });
 
+// --- GESTIÓ DE TEMES (CLAR / FOSC) ---
+function initTheme() {
+  const savedTheme = localStorage.getItem("aibuddy_theme") || "dark";
+  const body = document.body;
+  const themeBtn = document.getElementById("btn-theme-toggle");
+
+  if (savedTheme === "light") {
+    body.classList.add("light-mode");
+    if (themeBtn) themeBtn.textContent = "🌙";
+  } else {
+    body.classList.remove("light-mode");
+    if (themeBtn) themeBtn.textContent = "☀️";
+  }
+}
+
+function toggleTheme() {
+  const body = document.body;
+  const themeBtn = document.getElementById("btn-theme-toggle");
+  
+  if (body.classList.contains("light-mode")) {
+    body.classList.remove("light-mode");
+    localStorage.setItem("aibuddy_theme", "dark");
+    if (themeBtn) themeBtn.textContent = "☀️";
+  } else {
+    body.classList.add("light-mode");
+    localStorage.setItem("aibuddy_theme", "light");
+    if (themeBtn) themeBtn.textContent = "🌙";
+  }
+}
+window.toggleTheme = toggleTheme;
+
+// Executar al carregar l'app
+initTheme();
+
 // --- INICIALITZACIÓ ---
 loadLocalState();
 updateAllDisplays();
