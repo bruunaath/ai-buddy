@@ -1,24 +1,30 @@
+// --- RUTES DE LES IMATGES D'ESTAT ---
+const IMAGES = {
+  focus: "focus_normal.jpg",   // 1. Quan el Pomodoro està en marxa
+  pausa: "focus_pausa.jpg",    // 2. Quan el Pomodoro es pausa
+  completat: "completat.jpg",  // 3. Quan s'acaba el Pomodoro o qualsevol tasca
+  avis: "avis.jpg"             // 4. Quan falten 5 minuts o menys de Pomodoro
+};
+
 // --- DICCIONARI DE 10 CATEGORIES HABITUALS AuDHD ---
 const catalegTasquesTDAH = {
   netejar_cuina: {
     titol: "Netejar la cuina",
     paraules_clau: ["cuina", "plats", "fregadera", "marbre", "escurar", "aiguera", "rentaplats"],
     passos: [
-      "Posar música animada o el teu pòdcast preferit",
+      "Posar música animada",
       "Llençar només els envasos i brossa visible",
-      "Agrupar tots els plats bruts dins l'aigüera",
+      "Agrupar tots els plats bruts dins l'aixeta",
       "Rentar només cinc peces o omplir el rentaplats",
-      "Passar una baieta humida per un tros de marbre"
+      "Passar una drap humit pel marbre"
     ]
   },
   posar_rentadora: {
     titol: "Posar una rentadora",
     paraules_clau: ["rentadora", "bugada", "rentar roba", "cistell"],
     passos: [
-      "Portar el cistell de roba bruta davant la rentadora",
-      "Ficar a dins només una tanda del mateix tipus",
-      "Tancar la porta sense preocupar-se per la resta",
-      "Posar un rajolí de detergent i suavitzant al calaix",
+      "Destriar una tanda del mateix tipus de roba",
+      "Tancar la porta i comprovar que no hi ha objectes dins",
       "Seleccionar el programa habitual i prémer el botó d'inici"
     ]
   },
@@ -29,19 +35,19 @@ const catalegTasquesTDAH = {
       "Deixar el mòbil lluny i portar un got d'aigua",
       "Obrir només el document o llibre pel primer tema",
       "Llegir únicament els títols i el primer paràgraf",
-      "Subratllar tres paraules clau sense aturar-se a memoritzar",
-      "Escriure dues frases de resum amb les teves paraules"
+      "Subratllar paraules clau sense aturar-se a memoritzar",
+      "Escriure un resum amb les teves paraules"
     ]
   },
   respondre_correus: {
     titol: "Respondre correus pendents",
-    paraules_clau: ["correu", "correus", "mail", "email", "safata", "respondre", "professor", " redactar", "contestar"],
+    paraules_clau: ["correu", "correus", "mail", "email", "safata", "respondre", "professor", "redactar", "contestar"],
     passos: [
-      "Obrir la bústia i escollir només un correu pendent",
+      "Obrir la bústia i escollir un correu pendent",
       "Prémer el botó de respondre per obrir el quadre",
       "Escriure una salutació curta i el motiu en brut",
       "Llegir el text un sol cop sense perfeccionisme",
-      "Prémer enviar immediatament i descansar un minut"
+      "Prémer enviar immediatament"
     ]
   },
   ordenar_escriptori: {
@@ -51,41 +57,31 @@ const catalegTasquesTDAH = {
       "Retirar tots els gots, tasses i plats cap a la cuina",
       "Llençar els papers inservibles i embolcalls a la paperera",
       "Apilar tots els llibres i llibretes en un cantó",
-      "Deixar només l'ordinador i un bolígraf al centre",
+      "Deixar només l'ordinador i els estris bàsics a la vista",
       "Passar un drap ràpid per l'espai que ha quedat lliure"
-    ]
-  },
-  apat_rapid: {
-    titol: "Fer un àpat ràpid",
-    paraules_clau: ["cuinar", "dinar", "sopar", "esmorzar", "menjar", "àpat", "apat", "fam", "recepta", "tupper", "bullir", "fregir"],
-    passos: [
-      "Beure un glop d'aigua per calmar la gana",
-      "Obrir la nevera i triar l'opció més fàcil",
-      "Treure només els ingredients i un sol plat o paella",
-      "Escalfar o barrejar el menjar durant cinc minuts",
-      "Seure a menjar tranquil·lament sense recollir encara"
     ]
   },
   planificar_dia: {
     titol: "Planificar el dia",
     paraules_clau: ["planificar", "organitzar", "agenda", "llista", "dia", "horari", "calendari", "setmana"],
     passos: [
-      "Agafar un paper en blanc i un bolígraf qualsevol",
+      "Agafar l'agenda, el bolígraf blau i un post-it",
       "Apuntar totes les coses que et ronden pel cap",
       "Encerclar només la tasca més urgent d'avui",
       "Triar una segona tasca molt petita i fàcil",
-      "Guardar la resta de la llista per a demà"
+      "Guardar la resta de la llista per més tard"
     ]
   },
-  dutxa_i_motxilla: {
-    titol: "Dutxar-se i preparar la motxilla",
-    paraules_clau: ["dutxa", "dutxar", "motxilla", "maleta", "preparar", "sortir", "bany", "higiene"],
+ motxilla_uni: {
+    titol: "Preparar la motxilla de la uni",
+    paraules_clau: ["motxilla", "uni", "universitat", "clase", "apunts", "ordinador", "carregador", "claus", "cartera"],
     passos: [
       "Deixar la motxilla oberta damunt del llit",
-      "Ficar-hi a dins el carregador, claus, cartera i llibreta",
-      "Agafar una tovallola neta i roba còmoda i entrar al bany",
-      "Obrir l'aigua calenta i entrar sota l'aigua dos minuts",
-      "Ensabonar-se ràpidament, sortir i vestir-se sense pressa"
+      "Ficar a dins l'ordinador portàtil i la tablet",
+      "Afegir els carregadors i els auriculars",
+      "Afegir la llibreta i el estoig amb bolígrafs",
+      "Comprovar que portes la cartera i el necesser d'imprescindibles",
+      "Tancar la motxilla i deixar-la a l'entrada de l'habitació"
     ]
   },
   tramits_administratius: {
@@ -99,34 +95,27 @@ const catalegTasquesTDAH = {
       "Enviar el formulari i fer captura del comprovant"
     ]
   },
-  recollir_roba: {
-    titol: "Recollir la roba estesa",
-    paraules_clau: ["estendre", "estesa", "plegar", "roba seca", "armari", "roba", "planxar", "sabates"],
-    passos: [
-      "Despenjar tota la roba seca i deixar-la sobre el llit",
-      "Separar en un munt petit només la roba interior i mitjons",
-      "Desar aquest munt petit directament dins del calaix",
-      "Plegar o penjar només cinc samarretes o pantalons",
-      "Guardar aquestes cinc peces a l'armari i descansar"
-    ]
-  }
 };
 
 // --- VALORS PREDETERMINATS ---
 const defaultRoutineSteps = [
-  "Beure un got d'aigua",
-  "Prendre la medicació",
-  "Obrir la persiana i ventilar",
-  "Dutxa ràpida o rentar-se la cara",
-  "Esmorzar sense pantalles"
+  "Posar música animada",
+  "Obrir els llençols per ventilar el llit",
+  "Rentar-me les dents",
+  "Skincare bàsic",
+  "Fer el llit",
+  "Cafè i medicació",
+  "Preparar l'esmorzar",
 ];
 
 const defaultHobbies = [
-  "Llegir un llibre o còmic",
+  "Llegir un llibre",
   "Escoltar música relaxant",
-  "Dibuixar o pintar lliurement",
-  "Jugar a un videojoc tranquil",
-  "Passejar sense rumb fix"
+  "Pintar lliurement",
+  "Fer Diamond Painting",
+  "Jugar a la Switch sense mirar el mòbil",
+  "Veure Gilmore Girls",
+  "Mirar Pinterest per motivar-me",
 ];
 
 // --- ESTAT CENTRALITZAT (Local + Núvol) ---
@@ -144,7 +133,7 @@ let state = {
   updatedAt: 0
 };
 
-// Configuració de Supabase (es guarda al navegador de cada dispositiu)
+// Configuració de Supabase
 let config = {
   supaUrl: localStorage.getItem("aibuddy_supa_url") || "",
   supaKey: localStorage.getItem("aibuddy_supa_key") || "",
@@ -162,6 +151,7 @@ const statusBadge = document.getElementById("status-badge");
 const stepDisplay = document.getElementById("step-display");
 const stepCounter = document.getElementById("step-counter");
 const completionBadge = document.getElementById("completion-badge");
+const taskCompleteImg = document.getElementById("task-complete-img");
 const taskInput = document.getElementById("task-input");
 const btnSend = document.getElementById("btn-send");
 const btnOk = document.getElementById("btn-ok");
@@ -169,6 +159,7 @@ const btnNext = document.getElementById("btn-next");
 const btnPrev = document.getElementById("btn-prev");
 
 const routineStepDisplay = document.getElementById("routine-step-display");
+const routineCompletionBadge = document.getElementById("routine-completion-badge");
 const routineInputNew = document.getElementById("routine-input-new");
 const btnRoutineAdd = document.getElementById("btn-routine-add");
 const btnRoutineReset = document.getElementById("btn-routine-reset");
@@ -190,7 +181,7 @@ const thoughtsListContainer = document.getElementById("thoughts-list");
 const btnClearThoughts = document.getElementById("btn-clear-thoughts");
 
 const pomoBar = document.getElementById("pomo-bar");
-const pomoEmoji = document.getElementById("pomo-emoji");
+const pomoImg = document.getElementById("pomo-img");
 const pomoStatusLabel = document.getElementById("pomo-status-label");
 const btnPomoOk = document.getElementById("btn-pomo-ok");
 const btnPomoNext = document.getElementById("btn-pomo-next");
@@ -336,7 +327,9 @@ function updateTaskDisplay() {
     stepDisplay.textContent = state.currentSteps[state.currentIndex];
     stepCounter.textContent = `Pas ${state.currentIndex + 1} de ${state.currentSteps.length}`;
   } else {
+    // 3. Quan s'acaba una tasca (qualsevol), mostrem la imatge de completat
     stepDisplay.classList.add("hidden");
+    if (taskCompleteImg) taskCompleteImg.src = IMAGES.completat;
     completionBadge.classList.remove("hidden");
     completionBadge.classList.add("flex");
     stepCounter.textContent = "Completat";
@@ -345,9 +338,18 @@ function updateTaskDisplay() {
 
 function updateRoutineDisplay() {
   if (Array.isArray(state.routineSteps) && state.routineSteps.length > 0 && state.routineIndex < state.routineSteps.length) {
+    if (routineCompletionBadge) {
+      routineCompletionBadge.classList.add("hidden");
+      routineCompletionBadge.classList.remove("flex");
+    }
+    routineStepDisplay.classList.remove("hidden");
     routineStepDisplay.textContent = `${state.routineIndex + 1}/${state.routineSteps.length} · ${state.routineSteps[state.routineIndex]}`;
   } else {
-    routineStepDisplay.textContent = "✨ Has finalitzat tots els passos de matí!";
+    routineStepDisplay.classList.add("hidden");
+    if (routineCompletionBadge) {
+      routineCompletionBadge.classList.remove("hidden");
+      routineCompletionBadge.classList.add("flex");
+    }
   }
 }
 
@@ -383,7 +385,6 @@ btnPrev.addEventListener("click", () => {
 });
 
 function loadTemplate(categoriaId) {
-  // Compatibilitat amb crides antigues i amb les 10 categories noves
   const aliasMap = {
     estudi: "estudiar_temari",
     neteja: "ordenar_escriptori"
@@ -430,16 +431,15 @@ function generarMicroPassos(rawTask) {
     return paraules.slice(0, 3).join(" ").toLowerCase();
   }
 
-  // 1. Regles dinàmiques contextuals (extreuen destinatari, lloc o tema si n'hi ha)
   if (/\b(trucar|parlar per telefon|telefonar)\b/i.test(normalitzat)) {
     const dest = extreureContext(/\b(trucar|parlar|telefonar|al|a la|amb)\b/gi, "contacte");
     return [
-      "Apuntar en un paper què vols dir",
+      "Pensar què vols dir",
       "Buscar el contacte a l'agenda del mòbil",
       "Fer una respiració fonda abans de marcar",
       `Prémer el botó de trucar (${dest})`,
-      "Dir hola i llegir el teu guió",
-      "Anotar la resposta just en penjar"
+      "Dir hola i llegir el teu guió mental",
+      "Anotar mentalment la resposta just en penjar"
     ];
   }
 
@@ -451,24 +451,12 @@ function generarMicroPassos(rawTask) {
         "Obrir l'aplicació de correu o missatgeria",
         `Crear un missatge nou per a ${dest}`,
         "Escriure un assumpte o salutació ben curta",
-        "Redactar l'esborrany sense mirar les faltes",
+        "Redactar l'esborrany",
         "Llegir el text en veu alta un cop",
-        "Prémer el botó d'enviar i descansar"
+        "Prémer el botó d'enviar"
       ];
     }
     return [...catalegTasquesTDAH.respondre_correus.passos];
-  }
-
-  if (/\b(comprar|supermercat|super|botiga|mercat|encarrecs|farmacia)\b/i.test(normalitzat)) {
-    const item = extreureContext(/\b(anar a|comprar|fer la|al|a la)\b/gi, "la compra");
-    return [
-      "Mirar ràpidament què falta a la cuina",
-      `Apuntar tres coses bàsiques per a ${item}`,
-      "Agafar les claus, cartera i una bossa",
-      "Sortir de casa i anar cap al lloc",
-      "Agafar primer el que tens a la llista",
-      "Pagar, tornar a casa i desar el fresc"
-    ];
   }
 
   if (/\b(treball|projecte|informe|presentacio|programar|codi|dissenyar|entrega|feina)\b/i.test(normalitzat)) {
@@ -482,7 +470,6 @@ function generarMicroPassos(rawTask) {
     ];
   }
 
-  // 2. Comprovació directa contra el Diccionari de les 10 Categories TDAH
   for (const key in catalegTasquesTDAH) {
     const categoria = catalegTasquesTDAH[key];
     const coincideix = categoria.paraules_clau.some(paraula =>
@@ -493,7 +480,6 @@ function generarMicroPassos(rawTask) {
     }
   }
 
-  // 3. Estructura genèrica empàtica per a qualsevol altra tasca
   const resumTasca = original.split(/\s+/).slice(0, 3).join(" ").toLowerCase();
   return [
     "Fer una respiració fonda i deixar el mòbil",
@@ -666,7 +652,7 @@ btnClearThoughts.addEventListener("click", () => {
   saveState();
 });
 
-// --- LÒGICA DEL POMODORO SENSORIAL ---
+// --- LÒGICA DEL POMODORO SENSORIAL AMB IMATGES ---
 function startPomodoro() {
   switchView("view-pomodoro");
   pomoCurrentSeconds = pomoTotalSeconds;
@@ -695,16 +681,20 @@ window.startPomodoro = startPomodoro;
 
 function updatePomodoroVisuals() {
   if (pomoCurrentSeconds <= 0) {
-    pomoEmoji.textContent = "🎉";
+    // 3. Quan s'acabi el Pomodoro
+    pomoImg.src = IMAGES.completat;
     pomoStatusLabel.textContent = "Temps completat!";
   } else if (isPomoPaused) {
-    pomoEmoji.textContent = "☕";
+    // 2. Quan es pausi el Pomodoro
+    pomoImg.src = IMAGES.pausa;
     pomoStatusLabel.textContent = "En Pausa";
-  } else if (pomoCurrentSeconds <= pomoTotalSeconds * 0.2) {
-    pomoEmoji.textContent = "🌅";
-    pomoStatusLabel.textContent = "Últim tram";
+  } else if (pomoCurrentSeconds <= 300) {
+    // 4. Quan faltin 5 minuts (300 segons) o menys
+    pomoImg.src = IMAGES.avis;
+    pomoStatusLabel.textContent = "Últims 5 minuts";
   } else {
-    pomoEmoji.textContent = "🌱";
+    // 1. Quan el Pomodoro estigui en marxa
+    pomoImg.src = IMAGES.focus;
     pomoStatusLabel.textContent = "En Focus";
   }
 }
