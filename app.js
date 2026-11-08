@@ -991,13 +991,19 @@ if (btnPomoNext) {
   });
 }
 
-// --- DESAR CONFIGURACIÓ D'USUARI I SUPABASE ---
 if (btnSaveSettings) {
   btnSaveSettings.addEventListener("click", async () => {
     const enteredUser = (cfgSyncId ? cfgSyncId.value.trim() : "") || "convidat";
     const enteredPass = cfgSyncPass ? cfgSyncPass.value.trim() : "";
 
-    if (enteredUser.toLowerCase() !== "convidat" && !enteredPass) {
+    // RESTRICCIÓ ESTRICTA D'ADMINISTRADORA
+    if (enteredUser.toLowerCase() === "carla-brunat") {
+      if (enteredPass !== "elpolloelpollitoelpollo") {
+        showToast("⚠️ Contrasenya d'administradora incorrecta");
+        if (cfgSyncPass) cfgSyncPass.focus();
+        return;
+      }
+    } else if (enteredUser.toLowerCase() !== "convidat" && !enteredPass) {
       showToast("⚠️ Afegeix una contrasenya per al teu usuari");
       if (cfgSyncPass) cfgSyncPass.focus();
       return;
