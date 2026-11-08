@@ -735,23 +735,25 @@ loadLocalState();
 updateAllDisplays();
 pullRemoteState();
 
-// --- SISTEMA D'ACTUALITZACIONS AUTOMÀTIQUES ---
+// --- SISTEMA D'ACTUALITZACIONS AUTOMÀTIQUES (SENSE MODIFICAR RES A MANO) ---
 async function checkForUpdates() {
   try {
-    // Afegim ?t=Date.now() per evitar que GitHub Pages guardi en caché la versió antiga
-    const res = await fetch(`./version.json?t=${Date.now()}`);
+    // Demanem les capçaleres del teu index.html a GitHub Pages
+    const res = await fetch("./index.html", { method: "HEAD" });
     if (res.ok) {
-      const data = await res.json();
-      const serverVersion = data.version;
-      const localVersion = localStorage.getItem("aibuddy_app_version");
+      // Obtenim la data de l'última modificació que has pujat a GitHub
+      const lastModified = res.headers.get("last-modified");
+      if (lastModified) {
+        const localVersion = localStorage.getItem("aibuddy_app_version");
 
-      if (!localVersion) {
-        // Primera vegada que s'executa
-        localStorage.setItem("aibuddy_app_version", serverVersion);
-      } else if (localVersion !== serverVersion) {
-        // Si la versió del servidor és diferent, mostrem el baner
-        const banner = document.getElementById("update-banner");
-        if (banner) banner.classList.remove("hidden");
+        if (!localVersion) {
+          // Primera vegada que s'executa al dispositiu
+          localStorage.setItem("aibuddy_app_version", lastModified);
+        } else if (localVersion !== lastModified) {
+          // Si la data de GitHub és més nova que la guardada, mostrem el baner
+          const banner = document.getElementById("update-banner");
+          if (banner) banner.classList.remove("hidden");
+        }
       }
     }
   } catch (e) {
