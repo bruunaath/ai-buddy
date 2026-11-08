@@ -279,61 +279,228 @@ function loadTemplate(templateType) {
 }
 window.loadTemplate = loadTemplate;
 
-btnSend.addEventListener("click", async () => {
+// --- MOTOR INTEL·LIGENT LOCAL DE MICRO-PASSOS (AuDHD) ---
+function generarMicroPassos(rawTask) {
+  if (!rawTask || typeof rawTask !== "string" || !rawTask.trim()) {
+    return [
+      "Respira fons i deixa anar les espatlles",
+      "Escriu una tasca concreta al quadre",
+      "Prem el botó per dividir-la en passos",
+      "Comença pel primer pas sense pressa"
+    ];
+  }
+
+  const original = rawTask.trim();
+  const normalitzat = original
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  function extreureContext(regexVerbs, fallback) {
+    const net = original
+      .replace(regexVerbs, "")
+      .replace(/^(el|la|els|les|un|una|uns|unes|al|del|per a|per|de|a)\s+/i, "")
+      .trim();
+    if (!net || net.length < 2) return fallback;
+    const paraules = net.split(/\s+/);
+    return paraules.slice(0, 3).join(" ").toLowerCase();
+  }
+
+  const categories = [
+    {
+      id: "comunicacio",
+      regex: /\b(escriure|redactar|correu|mail|email|missatge|whatsapp|respondre|contestar|trucar|parlar|enviar)\b/i,
+      generar: () => {
+        const dest = extreureContext(/\b(escriure|redactar|enviar|respondre|contestar|trucar|parlar|un|el|correu|mail|missatge|whatsapp)\b/gi, "destinatari");
+        if (normalitzat.includes("trucar") || normalitzat.includes("parlar")) {
+          return [
+            "Apuntar en un paper què vols dir",
+            "Buscar el contacte a l'agenda del mòbil",
+            "Fer una respiració fonda abans de marcar",
+            `Prem el botó de trucar (${dest})`,
+            "Dir hola i llegir el teu guió",
+            "Anotar la resposta just en penjar"
+          ];
+        }
+        return [
+          "Obrir l'aplicació de correu o missatgeria",
+          `Crear un missatge nou per a ${dest}`,
+          "Escriure un assumpte o salutació ben curta",
+          "Redactar l'esborrany sense mirar les faltes",
+          "Llegir el text en veu alta un cop",
+          "Prémer el botó d'enviar i tancar"
+        ];
+      }
+    },
+    {
+      id: "neteja_ordre",
+      regex: /\b(netejar|ordenar|endrecar|recollir|escombrar|fregar|pols|habitacio|cuina|bany|taula|escriptori|llit|plat|plats)\b/i,
+      generar: () => {
+        const zona = extreureContext(/\b(netejar|ordenar|endreçar|endrecar|recollir|escombrar|fregar)\b/gi, "l'espai");
+        return [
+          "Posar música animada o un pòdcast curt",
+          "Agafar una bossa petita per a brossa",
+          `Retirar només els residus visibles de ${zona}`,
+          "Agrupar els objectes que estan fora de lloc",
+          "Despejar i netejar una sola superfície plana",
+          "Guardar cinc coses al seu lloc exacte"
+        ];
+      }
+    },
+    {
+      id: "estudi_lectura",
+      regex: /\b(estudiar|llegir|repassar|examen|apunts|tema|deures|resum|esquema|memoritzar|practica|universitat|uni)\b/i,
+      generar: () => {
+        const tema = extreureContext(/\b(estudiar|llegir|repassar|fer|preparar|els|el|la)\b/gi, "el temari");
+        return [
+          "Deixar el mòbil lluny o en mode avió",
+          "Portar un got d'aigua a la taula",
+          `Obrir només el document sobre ${tema}`,
+          "Llegir únicament els títols i el primer paràgraf",
+          "Subratllar tres paraules o idees molt clau",
+          "Escriure dues frases de resum amb les teves paraules"
+        ];
+      }
+    },
+    {
+      id: "feina_projectes",
+      regex: /\b(treball|projecte|informe|presentacio|programar|codi|dissenyar|redactar|entrega|feina|document)\b/i,
+      generar: () => {
+        const proj = extreureContext(/\b(fer|acabar|començar|comencar|preparar|el|la|un|una)\b/gi, "el document");
+        return [
+          "Tancar totes les pestanyes que no necessitis",
+          `Obrir el fitxer de ${proj} en pantalla`,
+          "Escriure tres punts clau sense donar-los forma",
+          "Completar només el primer apartat durant cinc minuts",
+          "Desar els canvis fets fins ara mateix",
+          "Anotar quin serà el següent pas petit"
+        ];
+      }
+    },
+    {
+      id: "compres_encarrecs",
+      regex: /\b(comprar|supermercat|super|botiga|llista|mercat|encarrecs|farmacia|pa|menjar)\b/i,
+      generar: () => {
+        const item = extreureContext(/\b(anar a|comprar|fer la|al|a la)\b/gi, "la compra");
+        return [
+          "Mirar ràpidament què falta a la cuina",
+          `Apuntar tres coses bàsiques per a ${item}`,
+          "Agafar les claus, cartera i una bossa",
+          "Sortir de casa i anar cap al lloc",
+          "Agafar primer el que tens a la llista",
+          "Pagar, tornar a casa i desar el fresc"
+        ];
+      }
+    },
+    {
+      id: "cuina_apats",
+      regex: /\b(cuinar|preparar|dinar|sopar|esmorzar|menjar|recepta|bullir|fregir|forn|tupper)\b/i,
+      generar: () => {
+        const plat = extreureContext(/\b(cuinar|preparar|fer|el|la|un|una)\b/gi, "l'àpat");
+        return [
+          "Buidar un tros del marbre de la cuina",
+          `Treure els ingredients necessaris per a ${plat}`,
+          "Agafar una sola paella, olla o bol",
+          "Tallar o preparar el primer ingredient bàsic",
+          "Encendre el foc o escalfar-ho amb calma",
+          "Servir al plat i recollir un estri"
+        ];
+      }
+    },
+    {
+      id: "roba_bugada",
+      regex: /\b(rentadora|roba|estendre|plegar|planxar|armari|sabates|maleta|motxilla)\b/i,
+      generar: () => {
+        if (normalitzat.includes("motxilla") || normalitzat.includes("maleta")) {
+          return [
+            "Obrir la bossa buida damunt del llit",
+            "Posar a sobre el que necessites demà",
+            "Guardar primer el carregador, claus i cartera",
+            "Afegir la resta d'objectes sense estrès",
+            "Tancar la cremallera i deixar-la a l'entrada"
+          ];
+        }
+        return [
+          "Recollir la roba i portar-la al cistell",
+          "Separar només una càrrega del mateix tipus",
+          "Posar-la dins la rentadora o sobre el llit",
+          "Afegir sabó i engegar o començar a plegar",
+          "Guardar només cinc peces dins de l'armari"
+        ];
+      }
+    },
+    {
+      id: "autocura_salut",
+      regex: /\b(dutxa|dutxar|rentar|dents|medicacio|pastilla|dormir|descansar|esport|caminar|gimnas|ioga|estirar)\b/i,
+      generar: () => {
+        if (normalitzat.includes("dutx") || normalitzat.includes("bany")) {
+          return [
+            "Buscar la tovallola i deixar roba preparada",
+            "Entrar al bany i obrir l'aigua calenta",
+            "Entrar sota l'aigua només dos minuts",
+            "Ensabonar el cos i esbandir amb calma",
+            "Eixugar-se bé i posar-se roba ben còmoda"
+          ];
+        }
+        return [
+          "Deixar el que estàs fent ara mateix",
+          "Beure un glop llarg d'aigua fresca",
+          "Preparar el que necessites a mà",
+          "Dedicar només dos minuts a començar l'acció",
+          "Felicitar-te per haver cuidat el teu cos"
+        ];
+      }
+    },
+    {
+      id: "tramits_admin",
+      regex: /\b(factura|pagar|banc|cita|metge|tramit|paper|formulari|impost|matricula|renovacio|dni)\b/i,
+      generar: () => {
+        const tramit = extreureContext(/\b(fer|pagar|demanar|omplir|el|la|un|una)\b/gi, "el tràmit");
+        return [
+          "Tenir el DNI o targeta a prop teu",
+          `Obrir la pàgina web per a ${tramit}`,
+          "Llegir només el primer pas que demanen",
+          "Omplir les teves dades bàsiques al formulari",
+          "Revisar que tot estigui bé i confirmar",
+          "Desar el comprovant o fer captura de pantalla"
+        ];
+      }
+    }
+  ];
+
+  for (const cat of categories) {
+    if (cat.regex.test(normalitzat)) {
+      return cat.generar();
+    }
+  }
+
+  const resumTasca = original.split(/\s+/).slice(0, 3).join(" ").toLowerCase();
+
+  return [
+    "Fer una respiració fonda i deixar el mòbil",
+    `Preparar l'espai per a "${resumTasca}"`,
+    "Fer l'acció més petita i fàcil primer",
+    "Continuar avançant només durant tres minuts seguits",
+    "Revisar el que ja has aconseguit fer",
+    "Decidir si continues una mica o descanses"
+  ];
+}
+
+// --- ESDEVENIMENTS DEL BOTÓ ENVIAR I TECLA ENTER ---
+btnSend.addEventListener("click", () => {
   const taskText = taskInput.value.trim();
   if (!taskText) return;
 
   switchView("view-tasks");
   taskInput.value = "";
 
-  if (!config.geminiKey) {
-    stepDisplay.textContent = "Configura la teva clau gratuïta de Gemini a la icona ⚙️ de dalt a la dreta.";
-    return;
-  }
-
-  stepDisplay.classList.remove("hidden");
+  stepDisplay.classList.remove("hidden", "animate-subtle-pulse");
   completionBadge.classList.add("hidden");
-  stepDisplay.textContent = "Generant micro-passos en català...";
-  stepDisplay.classList.add("animate-subtle-pulse");
 
-  try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(config.geminiKey)}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `Ets un assistent especialitzat en neurodivergència (TDAH/Autisme). Divideix la tasca següent en una llista d'entre 4 i 7 micro-passos molt concrets, fàcils d'iniciar i d'entre 4 i 8 paraules cadascun, en un català natural i genuí. Retorna ÚNICAMENT els passos, un per línia, sense números, sense guions ni cap text introductori. Tasca: "${taskText}"`
-            }]
-          }]
-        })
-      }
-    );
-
-    const data = await response.json();
-    stepDisplay.classList.remove("animate-subtle-pulse");
-
-    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (rawText) {
-      const steps = rawText
-        .split("\n")
-        .map(s => s.replace(/^[-*•\d.)\s]+/, "").trim())
-        .filter(Boolean);
-
-      if (steps.length > 0) {
-        state.currentSteps = steps;
-        state.currentIndex = 0;
-        saveState();
-        return;
-      }
-    }
-    stepDisplay.textContent = "No s'han pogut generar els passos. Revisa la teva clau API a ⚙️.";
-  } catch (err) {
-    stepDisplay.classList.remove("animate-subtle-pulse");
-    stepDisplay.textContent = "Error de connexió amb Gemini. Comprova la xarxa.";
-  }
+  // Generem els micro-passos a l'instant amb la IA local i sincronitzem amb Supabase
+  state.currentSteps = generarMicroPassos(taskText);
+  state.currentIndex = 0;
+  saveState();
 });
 
 // Permetre enviar amb la tecla Enter
