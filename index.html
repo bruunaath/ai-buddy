@@ -6,6 +6,7 @@
   <title>AI Buddy - Gestor de Tasques</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0a0a0a">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -66,18 +67,43 @@
 
     <!-- VISTA 2: TASQUES I MICRO-PASSOS -->
     <section id="view-tasks" class="w-full flex flex-col items-center hidden">
-      <div class="w-full flex gap-2 mb-4">
-        <button onclick="loadTemplate('estudi')" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition flex items-center justify-center">
-          Estudi Uni
+      <span class="text-[10px] tracking-widest text-stone-400 uppercase mb-2">Plantilles ràpides anti-bloqueig</span>
+      <div class="w-full grid grid-cols-2 gap-1.5 mb-4 max-h-[135px] overflow-y-auto pr-1">
+        <button onclick="loadTemplate('netejar_cuina')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          🍽️ Netejar cuina
         </button>
-        <button onclick="loadTemplate('neteja')" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition flex items-center justify-center">
-          Netejar Habitació
+        <button onclick="loadTemplate('posar_rentadora')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          🧺 Posar rentadora
+        </button>
+        <button onclick="loadTemplate('estudiar_temari')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          📚 Estudiar temari
+        </button>
+        <button onclick="loadTemplate('respondre_correus')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          ✉️ Respondre correus
+        </button>
+        <button onclick="loadTemplate('ordenar_escriptori')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          💻 Ordenar escriptori
+        </button>
+        <button onclick="loadTemplate('apat_rapid')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          🍳 Fer àpat ràpid
+        </button>
+        <button onclick="loadTemplate('planificar_dia')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          📝 Planificar el dia
+        </button>
+        <button onclick="loadTemplate('dutxa_i_motxilla')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          🚿 Dutxa i motxilla
+        </button>
+        <button onclick="loadTemplate('tramits_administratius')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          📄 Tràmits i papers
+        </button>
+        <button onclick="loadTemplate('recollir_roba')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          👕 Recollir roba
         </button>
       </div>
 
       <span id="step-counter" class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Pas Actual</span>
       
-      <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex flex-col items-center justify-center mb-6">
+      <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[170px] flex flex-col items-center justify-center mb-6">
         <p id="step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
           Escriu una tasca per començar...
         </p>
@@ -243,27 +269,24 @@
       </button>
     </section>
 
-    <!-- VISTA 7: CONFIGURACIÓ (GEMINI + SUPABASE SYNC) -->
+    <!-- VISTA 7: CONFIGURACIÓ (SUPABASE SYNC) -->
     <section id="view-settings" class="w-full flex flex-col items-center hidden text-left">
-      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-4 text-center">Configuració i Sincronització</span>
+      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-4 text-center">Sincronització al Núvol</span>
 
       <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 space-y-4 mb-6">
-        <div>
-          <label class="text-xs text-stone-300 font-semibold block mb-1">1. Clau API de Google Gemini (IA en català)</label>
-          <input type="password" id="cfg-gemini-key" placeholder="AIzaSy..." class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600" />
-          <p class="text-[10px] text-stone-500 mt-1">Converteix qualsevol tasca en micro-passos en un català impecable.</p>
+        <div class="bg-emerald-950/30 border border-emerald-800/40 rounded-xl p-3">
+          <p class="text-[11px] text-emerald-300 font-medium">✨ Motor IA Local AuDHD Actiu</p>
+          <p class="text-[10px] text-stone-400 mt-0.5">El desglossament de micro-passos en català funciona automàticament sense claus externes ni límits.</p>
         </div>
 
-        <hr class="border-stone-800">
-
         <div>
-          <label class="text-xs text-stone-300 font-semibold block mb-1">2. URL del Projecte Supabase (Opcional)</label>
-          <input type="text" id="cfg-supa-url" placeholder="https://xyz.supabase.co" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 mb-2" />
+          <label class="text-xs text-stone-300 font-semibold block mb-1">1. URL del Projecte Supabase (Opcional)</label>
+          <input type="text" id="cfg-supa-url" placeholder="https://xyz.supabase.co" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 mb-3" />
           
-          <label class="text-xs text-stone-300 font-semibold block mb-1">Clau Pública (Anon Key) de Supabase</label>
-          <input type="password" id="cfg-supa-key" placeholder="eyJhbGciOi..." class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 mb-2" />
+          <label class="text-xs text-stone-300 font-semibold block mb-1">2. Clau Pública (Anon / Publishable Key)</label>
+          <input type="password" id="cfg-supa-key" placeholder="eyJhbGciOi... o sb_publishable_..." class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 mb-3" />
 
-          <label class="text-xs text-stone-300 font-semibold block mb-1">Codi d'Usuari (el mateix al mòbil i al PC)</label>
+          <label class="text-xs text-stone-300 font-semibold block mb-1">3. Codi d'Usuari (el mateix al mòbil i al PC)</label>
           <input type="text" id="cfg-sync-id" placeholder="ex: el-meu-espai-123" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600" />
         </div>
 
