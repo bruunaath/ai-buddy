@@ -303,7 +303,7 @@
       </button>
     </section>
 
-    <!-- VISTA 7: CONFIGURACIÓ (SUPABASE SYNC) -->
+<!-- VISTA 7: CONFIGURACIÓ (SUPABASE SYNC) -->
     <section id="view-settings" class="w-full flex flex-col items-center hidden text-left">
       <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-4 text-center">Sincronització al Núvol</span>
 
@@ -314,12 +314,15 @@
         </div>
 
         <div>
-          <label class="text-xs text-stone-300 font-semibold block mb-1">1. URL del Projecte Supabase (Opcional)</label>
-          <input type="text" id="cfg-supa-url" placeholder="https://xyz.supabase.co" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 mb-3" />
+          <!-- URL de Supabase predeterminada i en mode només lectura -->
+          <label class="text-xs text-stone-300 font-semibold block mb-1">1. URL del Projecte Supabase</label>
+          <input type="text" id="cfg-supa-url" value="https://qstjwfqrkemyfzudtoxb.supabase.co" readonly class="w-full bg-stone-950/50 border border-stone-800/60 text-stone-400 rounded-lg px-3 py-2 text-xs focus:outline-none mb-3 cursor-not-allowed" />
           
+          <!-- Clau Pública predeterminada i en mode només lectura -->
           <label class="text-xs text-stone-300 font-semibold block mb-1">2. Clau Pública (Anon / Publishable Key)</label>
-          <input type="password" id="cfg-supa-key" placeholder="eyJhbGciOi... o sb_publishable_..." class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 mb-3" />
+          <input type="password" id="cfg-supa-key" value="sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq" readonly class="w-full bg-stone-950/50 border border-stone-800/60 text-stone-400 rounded-lg px-3 py-2 text-xs focus:outline-none mb-3 cursor-not-allowed" />
 
+          <!-- Únic camp lliure: L'usuari -->
           <label class="text-xs text-stone-300 font-semibold block mb-1">3. Codi d'Usuari (el mateix al mòbil i al PC)</label>
           <input type="text" id="cfg-sync-id" placeholder="ex: el-meu-espai-123" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600" />
         </div>
