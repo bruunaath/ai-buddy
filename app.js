@@ -6,8 +6,9 @@ const IMAGES = {
   avis: "avis.jpg"             // 4. Quan falten 5 minuts o menys de Pomodoro
 };
 
-// ID especial a Supabase on es guarden totes les sessions creades
+// ID especial a Supabase on es guarden totes les sessions creades i nom de l'administradora
 const ACCESS_LOG_ID = "__registre_accessos__";
+const ADMIN_USER = "carla-brunat";
 
 // --- DICCIONARI DE CATEGORIES HABITUALS AuDHD ---
 const catalegTasquesTDAH = {
@@ -208,8 +209,9 @@ const cfgSyncPass = document.getElementById("cfg-sync-pass");
 const btnTogglePass = document.getElementById("btn-toggle-pass");
 const btnSaveSettings = document.getElementById("btn-save-settings");
 const btnLogoutGuest = document.getElementById("btn-logout-guest");
+const btnAdminPanel = document.getElementById("btn-admin-panel");
 
-// --- MOSTRAR / OCULTAR CONTRASENYA (GLOBAL I DIRECTE) ---
+// --- MOSTRAR / OCULTAR CONTRASENYA ---
 window.togglePassVisibility = function() {
   const passInput = document.getElementById("cfg-sync-pass");
   const toggleBtn = document.getElementById("btn-toggle-pass");
@@ -223,6 +225,18 @@ window.togglePassVisibility = function() {
     if (toggleBtn) toggleBtn.textContent = "👁️";
   }
 };
+
+// --- COMPROVACIÓ D'ADMIN (NOMÉS CARLA-BRUNAT VEU EL BOTÓ D'ADMIN) ---
+function updateAdminButtonVisibility() {
+  if (!btnAdminPanel) return;
+  const user = (config.syncUser || "").trim().toLowerCase();
+  const pass = (config.syncPass || "").trim();
+  if (user === ADMIN_USER && pass !== "") {
+    btnAdminPanel.classList.remove("hidden");
+  } else {
+    btnAdminPanel.classList.add("hidden");
+  }
+}
 
 // --- GESTIÓ MULTI-USUARI (CONVIDAT vs COMPTE PROPI) ---
 function isGuestMode() {
@@ -265,7 +279,6 @@ async function registrarSessioAlNuvol(usuari, esNouCompte = false) {
   if (!baseUrl || !config.supaKey) return;
 
   try {
-    // 1. Llegim la llista actual d'accessos a Supabase
     const getUrl = `${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(ACCESS_LOG_ID)}&select=data`;
     const getRes = await fetch(getUrl, {
       headers: {
@@ -302,7 +315,6 @@ async function registrarSessioAlNuvol(usuari, esNouCompte = false) {
       });
     }
 
-    // 2. Desem la llista actualitzada al núvol
     await fetch(`${baseUrl}/rest/v1/user_state`, {
       method: "POST",
       headers: {
@@ -407,10 +419,10 @@ async function pullRemoteState() {
           updateAllDisplays();
         }
         if (statusBadge) statusBadge.textContent = `🟢 ${config.syncUser}`;
-        return false; // Ja existia al núvol
+        return false;
       } else {
         await saveState();
-        return true; // És un compte nou creat ara mateix
+        return true;
       }
     } else {
       if (statusBadge) statusBadge.textContent = "🟠 Error Núvol";
@@ -449,6 +461,7 @@ function switchView(viewId) {
       cfgSyncPass.type = "password";
     }
     if (btnTogglePass) btnTogglePass.textContent = "👁️";
+    updateAdminButtonVisibility();
   }
   updateAllDisplays();
 }
@@ -461,6 +474,7 @@ function updateAllDisplays() {
   updateHobbyDisplay();
   renderParkedThoughts();
   renderQuickTodoList();
+  updateAdminButtonVisibility();
 }
 
 function updateTaskDisplay() {
@@ -1012,9 +1026,9 @@ if (btnSaveSettings) {
     btnSaveSettings.textContent = "Sincronitzant...";
     const esNouCompte = await pullRemoteState();
     await saveState();
-    // Registrem automàticament l'accés o la nova sessió per al panell admin.html
     await registrarSessioAlNuvol(config.syncUser, esNouCompte);
     btnSaveSettings.textContent = "Desar i Sincronitzar";
+    updateAdminButtonVisibility();
     showToast(`✓ Sessió iniciada: ${config.syncUser}`);
     switchView("view-menu");
   });
