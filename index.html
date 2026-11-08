@@ -1,552 +1,311 @@
-// --- VALORS PREDETERMINATS ---
-const defaultRoutineSteps = [
-  "Beure un got d'aigua",
-  "Prendre la medicació",
-  "Obrir la persiana i ventilar",
-  "Dutxa ràpida o rentar-se la cara",
-  "Esmorzar sense pantalles"
-];
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AI Buddy - Gestor de Tasques</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-neutral-950 text-stone-100 min-h-screen flex flex-col items-center justify-between p-6 font-sans relative">
 
-const defaultHobbies = [
-  "Llegir un llibre o còmic",
-  "Escoltar música relaxant",
-  "Dibuixar o pintar lliurement",
-  "Jugar a un videojoc tranquil",
-  "Passejar sense rumb fix"
-];
+  <!-- Header: Estat de Connexió i Configuració -->
+  <header class="w-full max-w-md flex justify-between items-center py-2 border-b border-stone-800">
+    <h1 class="text-lg font-bold tracking-wide text-emerald-400 cursor-pointer" onclick="switchView('view-menu')">AI Buddy</h1>
+    <div class="flex items-center gap-2">
+      <span id="status-badge" title="Estat de sincronització" class="text-xs bg-stone-900 text-stone-400 px-3 py-1 rounded-full border border-stone-800 flex items-center gap-1.5">
+        ⚪ Local
+      </span>
+      <button onclick="switchView('view-settings')" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Configuració">
+        ⚙️
+      </button>
+    </div>
+  </header>
 
-// --- ESTAT CENTRALITZAT (Local + Núvol) ---
-let state = {
-  currentSteps: [
-    "Escriu una tasca o tria una opció",
-    "Avança pas a pas sense distraccions"
-  ],
-  currentIndex: 0,
-  parkedThoughts: [],
-  routineSteps: [...defaultRoutineSteps],
-  routineIndex: 0,
-  hobbySteps: [...defaultHobbies],
-  hobbyIndex: 0,
-  updatedAt: 0
-};
+  <!-- Toast Notificació -->
+  <div id="toast-notification" class="fixed top-20 bg-stone-900 border border-emerald-700/50 text-stone-200 text-xs px-4 py-2.5 rounded-xl shadow-2xl transition-all duration-300 transform opacity-0 translate-y-[-10px] pointer-events-none z-50">
+    + Pensament guardat
+  </div>
 
-// Configuració d'APIs (es guarda al navegador de cada dispositiu)
-let config = {
-  geminiKey: localStorage.getItem("aibuddy_gemini_key") || "",
-  supaUrl: localStorage.getItem("aibuddy_supa_url") || "",
-  supaKey: localStorage.getItem("aibuddy_supa_key") || "",
-  syncId: localStorage.getItem("aibuddy_sync_id") || "usuari_principal"
-};
+  <!-- Contenidor Principal de Vistes -->
+  <main class="w-full max-w-md my-auto flex flex-col items-center text-center py-4">
 
-// Variables del Pomodoro Sensorial
-let pomoTimer = null;
-let pomoTotalSeconds = 1500; // 25 minuts
-let pomoCurrentSeconds = 1500;
-let isPomoPaused = false;
+    <!-- VISTA 1: MENU PRINCIPAL -->
+    <section id="view-menu" class="w-full flex flex-col gap-3">
+      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Menú Principal</span>
+      
+      <button onclick="switchView('view-tasks')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+        <span>1. Tasques i Micro-passos</span>
+        <span class="text-stone-500">&#8250;</span>
+      </button>
 
-// --- ELEMENTS DOM ---
-const statusBadge = document.getElementById("status-badge");
-const stepDisplay = document.getElementById("step-display");
-const stepCounter = document.getElementById("step-counter");
-const completionBadge = document.getElementById("completion-badge");
-const taskInput = document.getElementById("task-input");
-const btnSend = document.getElementById("btn-send");
-const btnOk = document.getElementById("btn-ok");
-const btnNext = document.getElementById("btn-next");
-const btnPrev = document.getElementById("btn-prev");
+      <button onclick="switchView('view-thoughts')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+        <span>2. Pensaments Aparcats</span>
+        <span class="text-stone-500">&#8250;</span>
+      </button>
 
-const routineStepDisplay = document.getElementById("routine-step-display");
-const routineInputNew = document.getElementById("routine-input-new");
-const btnRoutineAdd = document.getElementById("btn-routine-add");
-const btnRoutineReset = document.getElementById("btn-routine-reset");
-const btnRoutineOk = document.getElementById("btn-routine-ok");
-const btnRoutineNext = document.getElementById("btn-routine-next");
-const btnRoutinePrev = document.getElementById("btn-routine-prev");
+      <button onclick="startPomodoro()" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+        <span>3. Pomodoro Sensorial</span>
+        <span class="text-stone-500">&#8250;</span>
+      </button>
 
-const hobbyStepDisplay = document.getElementById("hobby-step-display");
-const hobbyInputNew = document.getElementById("hobby-input-new");
-const btnHobbyAdd = document.getElementById("btn-hobby-add");
-const btnHobbyReset = document.getElementById("btn-hobby-reset");
-const btnHobbyNext = document.getElementById("btn-hobby-next");
-const btnHobbyPrev = document.getElementById("btn-hobby-prev");
+      <button onclick="switchView('view-routine')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+        <span>4. Rutina de Matí Guiada</span>
+        <span class="text-stone-500">&#8250;</span>
+      </button>
 
-const thoughtInput = document.getElementById("thought-input");
-const btnPark = document.getElementById("btn-park");
-const toastNotification = document.getElementById("toast-notification");
-const thoughtsListContainer = document.getElementById("thoughts-list");
-const btnClearThoughts = document.getElementById("btn-clear-thoughts");
+      <button onclick="switchView('view-hobbies')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+        <span>5. Llista de Recàrrega (Hobbies)</span>
+        <span class="text-stone-500">&#8250;</span>
+      </button>
+    </section>
 
-const pomoBar = document.getElementById("pomo-bar");
-const pomoEmoji = document.getElementById("pomo-emoji");
-const pomoStatusLabel = document.getElementById("pomo-status-label");
-const btnPomoOk = document.getElementById("btn-pomo-ok");
-const btnPomoNext = document.getElementById("btn-pomo-next");
-const btnPomoReset = document.getElementById("btn-pomo-reset");
-
-const cfgGeminiKey = document.getElementById("cfg-gemini-key");
-const cfgSupaUrl = document.getElementById("cfg-supa-url");
-const cfgSupaKey = document.getElementById("cfg-supa-key");
-const cfgSyncId = document.getElementById("cfg-sync-id");
-const btnSaveSettings = document.getElementById("btn-save-settings");
-
-// --- PERSISTÈNCIA I SINCRONITZACIÓ (LocalStorage + Supabase REST) ---
-function loadLocalState() {
-  const saved = localStorage.getItem("aibuddy_state");
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      state = { ...state, ...parsed };
-    } catch (e) {
-      console.error("Error carregant estat local:", e);
-    }
-  }
-}
-
-async function saveState() {
-  state.updatedAt = Date.now();
-  localStorage.setItem("aibuddy_state", JSON.stringify(state));
-  updateAllDisplays();
-
-  if (config.supaUrl && config.supaKey && config.syncId) {
-    try {
-      statusBadge.textContent = "🔄 Sincr...";
-      const url = `${config.supaUrl.replace(/\/$/, "")}/rest/v1/user_state?id=eq.${encodeURIComponent(config.syncId)}`;
-      const res = await fetch(`${config.supaUrl.replace(/\/$/, "")}/rest/v1/user_state`, {
-        method: "POST",
-        headers: {
-          "apikey": config.supaKey,
-          "Authorization": `Bearer ${config.supaKey}`,
-          "Content-Type": "application/json",
-          "Prefer": "resolution=merge-duplicates"
-        },
-        body: JSON.stringify({
-          id: config.syncId,
-          data: state,
-          updated_at: new Date().toISOString()
-        })
-      });
-      if (res.ok) {
-        statusBadge.textContent = "🟢 Sincronitzat";
-      } else {
-        statusBadge.textContent = "🟠 Error Núvol";
-      }
-    } catch (err) {
-      statusBadge.textContent = "⚪ Offline";
-    }
-  } else {
-    statusBadge.textContent = "⚪ Local";
-  }
-}
-
-async function pullRemoteState() {
-  if (!config.supaUrl || !config.supaKey || !config.syncId) {
-    statusBadge.textContent = "⚪ Local";
-    return;
-  }
-  try {
-    const url = `${config.supaUrl.replace(/\/$/, "")}/rest/v1/user_state?id=eq.${encodeURIComponent(config.syncId)}&select=data`;
-    const res = await fetch(url, {
-      headers: {
-        "apikey": config.supaKey,
-        "Authorization": `Bearer ${config.supaKey}`
-      }
-    });
-    if (res.ok) {
-      const rows = await res.json();
-      if (rows.length > 0 && rows[0].data) {
-        const remoteState = rows[0].data;
-        if ((remoteState.updatedAt || 0) > (state.updatedAt || 0)) {
-          state = { ...state, ...remoteState };
-          localStorage.setItem("aibuddy_state", JSON.stringify(state));
-          updateAllDisplays();
-        }
-        statusBadge.textContent = "🟢 Sincronitzat";
-      } else {
-        // Si encara no existeix al núvol, pugem l'estat actual
-        await saveState();
-      }
-    }
-  } catch (e) {
-    statusBadge.textContent = "⚪ Offline";
-  }
-}
-
-// Sincronitza automàticament quan tornes a obrir la pestanya al mòbil o PC
-window.addEventListener("focus", pullRemoteState);
-setInterval(pullRemoteState, 20000);
-
-// --- GESTIÓ DE VISTES ---
-function switchView(viewId) {
-  const views = ["view-menu", "view-tasks", "view-thoughts", "view-pomodoro", "view-routine", "view-hobbies", "view-settings"];
-  views.forEach(id => document.getElementById(id).classList.add("hidden"));
-
-  if (viewId !== "view-pomodoro" && pomoTimer) {
-    clearInterval(pomoTimer);
-  }
-
-  document.getElementById(viewId).classList.remove("hidden");
-
-  if (viewId === "view-Settings" || viewId === "view-settings") {
-    cfgGeminiKey.value = config.geminiKey;
-    cfgSupaUrl.value = config.supaUrl;
-    cfgSupaKey.value = config.supaKey;
-    cfgSyncId.value = config.syncId;
-  }
-  updateAllDisplays();
-}
-window.switchView = switchView;
-
-// --- ACTUALITZACIÓ D'INTERFÍCIE ---
-function updateAllDisplays() {
-  updateTaskDisplay();
-  updateRoutineDisplay();
-  updateHobbyDisplay();
-  renderParkedThoughts();
-}
-
-function updateTaskDisplay() {
-  if (state.currentSteps.length > 0 && state.currentIndex < state.currentSteps.length) {
-    completionBadge.classList.add("hidden");
-    completionBadge.classList.remove("flex");
-    stepDisplay.classList.remove("hidden");
-    stepDisplay.textContent = state.currentSteps[state.currentIndex];
-    stepCounter.textContent = `Pas ${state.currentIndex + 1} de ${state.currentSteps.length}`;
-  } else {
-    stepDisplay.classList.add("hidden");
-    completionBadge.classList.remove("hidden");
-    completionBadge.classList.add("flex");
-    stepCounter.textContent = "Completat";
-  }
-}
-
-function updateRoutineDisplay() {
-  if (state.routineSteps.length > 0 && state.routineIndex < state.routineSteps.length) {
-    routineStepDisplay.textContent = `${state.routineIndex + 1}/${state.routineSteps.length} · ${state.routineSteps[state.routineIndex]}`;
-  } else {
-    routineStepDisplay.textContent = "✨ Has finalitzat tots els passos de matí!";
-  }
-}
-
-function updateHobbyDisplay() {
-  if (state.hobbySteps.length > 0) {
-    if (state.hobbyIndex >= state.hobbySteps.length) state.hobbyIndex = 0;
-    hobbyStepDisplay.textContent = state.hobbySteps[state.hobbyIndex];
-  } else {
-    hobbyStepDisplay.textContent = "Afegeix algun hobby a la llista.";
-  }
-}
-
-// --- LÒGICA DE TASQUES I IA (GOOGLE GEMINI EN CATALÀ) ---
-btnOk.addEventListener("click", () => {
-  if (state.currentIndex < state.currentSteps.length) {
-    state.currentIndex++;
-    saveState();
-  }
-});
-
-btnNext.addEventListener("click", () => {
-  if (state.currentIndex < state.currentSteps.length - 1) {
-    state.currentIndex++;
-    saveState();
-  }
-});
-
-btnPrev.addEventListener("click", () => {
-  if (state.currentIndex > 0) {
-    state.currentIndex--;
-    saveState();
-  }
-});
-
-function loadTemplate(templateType) {
-  if (templateType === "estudi") {
-    state.currentSteps = [
-      "Obrir el material d'estudi",
-      "Llegir el resum del tema 1",
-      "Fer un esquema de punts clau",
-      "Repassar i tancar pestanyes"
-    ];
-  } else if (templateType === "neteja") {
-    state.currentSteps = [
-      "Agafar una bossa d'escombraries",
-      "Recollir objectes del terra",
-      "Netejar la superfície de la taula",
-      "Ventilar l'habitació 2 minuts"
-    ];
-  }
-  state.currentIndex = 0;
-  saveState();
-}
-window.loadTemplate = loadTemplate;
-
-btnSend.addEventListener("click", async () => {
-  const taskText = taskInput.value.trim();
-  if (!taskText) return;
-
-  switchView("view-tasks");
-  taskInput.value = "";
-
-  if (!config.geminiKey) {
-    stepDisplay.textContent = "Configura la teva clau gratuïta de Gemini a la icona ⚙️ de dalt a la dreta.";
-    return;
-  }
-
-  stepDisplay.classList.remove("hidden");
-  completionBadge.classList.add("hidden");
-  stepDisplay.textContent = "Generant micro-passos en català...";
-  stepDisplay.classList.add("animate-subtle-pulse");
-
-  try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(config.geminiKey)}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `Ets un assistent especialitzat en neurodivergència (TDAH/Autisme). Divideix la tasca següent en una llista d'entre 4 i 7 micro-passos molt concrets, fàcils d'iniciar i d'entre 4 i 8 paraules cadascun, en un català natural i genuí. Retorna ÚNICAMENT els passos, un per línia, sense números, sense guions ni cap text introductori. Tasca: "${taskText}"`
-            }]
-          }]
-        })
-      }
-    );
-
-    const data = await response.json();
-    stepDisplay.classList.remove("animate-subtle-pulse");
-
-    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (rawText) {
-      const steps = rawText
-        .split("\n")
-        .map(s => s.replace(/^[-*•\d.)\s]+/, "").trim())
-        .filter(Boolean);
-
-      if (steps.length > 0) {
-        state.currentSteps = steps;
-        state.currentIndex = 0;
-        saveState();
-        return;
-      }
-    }
-    stepDisplay.textContent = "No s'han pogut generar els passos. Revisa la teva clau API a ⚙️.";
-  } catch (err) {
-    stepDisplay.classList.remove("animate-subtle-pulse");
-    stepDisplay.textContent = "Error de connexió amb Gemini. Comprova la xarxa.";
-  }
-});
-
-// Permetre enviar amb la tecla Enter
-taskInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") btnSend.click();
-});
-
-// --- LÒGICA DE RUTINA DE MATÍ ---
-btnRoutineOk.addEventListener("click", () => {
-  if (state.routineIndex < state.routineSteps.length) {
-    state.routineIndex++;
-    saveState();
-  } else {
-    state.routineIndex = 0;
-    saveState();
-  }
-});
-
-btnRoutineNext.addEventListener("click", () => {
-  if (state.routineIndex < state.routineSteps.length - 1) {
-    state.routineIndex++;
-    saveState();
-  }
-});
-
-btnRoutinePrev.addEventListener("click", () => {
-  if (state.routineIndex > 0) {
-    state.routineIndex--;
-    saveState();
-  }
-});
-
-btnRoutineAdd.addEventListener("click", () => {
-  const newStep = routineInputNew.value.trim();
-  if (newStep) {
-    state.routineSteps.push(newStep);
-    routineInputNew.value = "";
-    saveState();
-  }
-});
-
-btnRoutineReset.addEventListener("click", () => {
-  state.routineSteps = [...defaultRoutineSteps];
-  state.routineIndex = 0;
-  saveState();
-});
-
-// --- LÒGICA DE HOBBIES ---
-btnHobbyNext.addEventListener("click", () => {
-  if (state.hobbySteps.length > 0) {
-    state.hobbyIndex = (state.hobbyIndex + 1) % state.hobbySteps.length;
-    saveState();
-  }
-});
-
-btnHobbyPrev.addEventListener("click", () => {
-  if (state.hobbySteps.length > 0) {
-    state.hobbyIndex = (state.hobbyIndex - 1 + state.hobbySteps.length) % state.hobbySteps.length;
-    saveState();
-  }
-});
-
-btnHobbyAdd.addEventListener("click", () => {
-  const newHobby = hobbyInputNew.value.trim();
-  if (newHobby) {
-    state.hobbySteps.push(newHobby);
-    hobbyInputNew.value = "";
-    saveState();
-  }
-});
-
-btnHobbyReset.addEventListener("click", () => {
-  state.hobbySteps = [...defaultHobbies];
-  state.hobbyIndex = 0;
-  saveState();
-});
-
-// --- LÒGICA DE PENSAMENTS APARCATS ---
-function showToast(msg = "+ Pensament guardat") {
-  toastNotification.textContent = msg;
-  toastNotification.classList.remove("opacity-0", "translate-y-[-10px]");
-  toastNotification.classList.add("opacity-100", "translate-y-0");
-
-  setTimeout(() => {
-    toastNotification.classList.remove("opacity-100", "translate-y-0");
-    toastNotification.classList.add("opacity-0", "translate-y-[-10px]");
-  }, 2500);
-}
-
-btnPark.addEventListener("click", () => {
-  const thoughtText = thoughtInput.value.trim();
-  if (thoughtText) {
-    state.parkedThoughts.push({
-      text: thoughtText,
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    });
-    thoughtInput.value = "";
-    saveState();
-    showToast("+ Pensament guardat");
-  }
-});
-
-thoughtInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") btnPark.click();
-});
-
-function renderParkedThoughts() {
-  thoughtsListContainer.innerHTML = "";
-  if (!state.parkedThoughts || state.parkedThoughts.length === 0) {
-    thoughtsListContainer.innerHTML = '<p class="text-xs text-stone-500 text-center py-8">No hi ha pensaments aparcats encara.</p>';
-    return;
-  }
-
-  state.parkedThoughts.forEach((item, idx) => {
-    const thoughtItem = document.createElement("div");
-    thoughtItem.className = "bg-stone-950 border border-stone-800 p-3 rounded-xl flex justify-between items-center text-xs gap-2";
-    thoughtItem.innerHTML = `
-      <span class="text-stone-200 break-words">${item.text}</span>
-      <div class="flex items-center gap-2 shrink-0">
-        <span class="text-[10px] text-stone-500">${item.time}</span>
-        <button data-idx="${idx}" class="text-stone-600 hover:text-stone-300 text-xs px-1">✕</button>
+    <!-- VISTA 2: TASQUES I MICRO-PASSOS -->
+    <section id="view-tasks" class="w-full flex flex-col items-center hidden">
+      <div class="w-full flex gap-2 mb-4">
+        <button onclick="loadTemplate('estudi')" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition flex items-center justify-center">
+          Estudi Uni
+        </button>
+        <button onclick="loadTemplate('neteja')" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition flex items-center justify-center">
+          Netejar Habitació
+        </button>
       </div>
-    `;
-    thoughtItem.querySelector("button").addEventListener("click", () => {
-      state.parkedThoughts.splice(idx, 1);
-      saveState();
-    });
-    thoughtsListContainer.appendChild(thoughtItem);
-  });
-}
 
-btnClearThoughts.addEventListener("click", () => {
-  state.parkedThoughts = [];
-  saveState();
-});
+      <span id="step-counter" class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Pas Actual</span>
+      
+      <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex flex-col items-center justify-center mb-6">
+        <p id="step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
+          Escriu una tasca per començar...
+        </p>
+        <div id="completion-badge" class="hidden flex-col items-center gap-2 mt-2">
+          <div class="w-16 h-16 rounded-2xl bg-emerald-950 border border-emerald-700 flex items-center justify-center text-3xl">
+            ✨
+          </div>
+          <span class="text-sm text-emerald-400 font-medium">Tasca completada!</span>
+        </div>
+      </div>
 
-// --- LÒGICA DEL POMODORO SENSORIAL ---
-function startPomodoro() {
-  switchView("view-pomodoro");
-  pomoCurrentSeconds = pomoTotalSeconds;
-  isPomoPaused = false;
-  btnPomoOk.textContent = "Pausar";
-  pomoBar.style.width = "100%";
-  updatePomodoroVisuals();
+      <div class="flex gap-4 w-full mb-6">
+        <button id="btn-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+          &#8249;
+        </button>
+        <button id="btn-ok" class="flex-2 grow bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
+          OK
+        </button>
+        <button id="btn-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+          &#8250;
+        </button>
+      </div>
 
-  if (pomoTimer) clearInterval(pomoTimer);
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
 
-  pomoTimer = setInterval(() => {
-    if (!isPomoPaused) {
-      pomoCurrentSeconds--;
-      const percentage = Math.max(0, (pomoCurrentSeconds / pomoTotalSeconds) * 100);
-      pomoBar.style.width = `${percentage}%`;
-      updatePomodoroVisuals();
+    <!-- VISTA 3: PENSAMENTS APARCATS -->
+    <section id="view-thoughts" class="w-full flex flex-col items-center hidden">
+      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-4">Pensaments Aparcats</span>
 
-      if (pomoCurrentSeconds <= 0) {
-        clearInterval(pomoTimer);
-        pomoBar.style.width = "0%";
-      }
-    }
-  }, 1000);
-}
-window.startPomodoro = startPomodoro;
+      <div id="thoughts-list" class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 min-h-[220px] max-h-[300px] overflow-y-auto space-y-2 text-left mb-4">
+        <p class="text-xs text-stone-500 text-center py-8">No hi ha pensaments aparcats encara.</p>
+      </div>
 
-function updatePomodoroVisuals() {
-  if (pomoCurrentSeconds <= 0) {
-    pomoEmoji.textContent = "🎉";
-    pomoStatusLabel.textContent = "Temps completat!";
-  } else if (isPomoPaused) {
-    pomoEmoji.textContent = "☕";
-    pomoStatusLabel.textContent = "En Pausa";
-  } else if (pomoCurrentSeconds <= pomoTotalSeconds * 0.2) {
-    pomoEmoji.textContent = "🌅";
-    pomoStatusLabel.textContent = "Últim tram";
-  } else {
-    pomoEmoji.textContent = "🌱";
-    pomoStatusLabel.textContent = "En Focus";
-  }
-}
+      <div class="flex gap-2 w-full mb-6">
+        <button id="btn-clear-thoughts" class="w-full bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-400 text-xs py-2.5 rounded-xl transition">
+          Esborrar tots
+        </button>
+      </div>
 
-btnPomoOk.addEventListener("click", () => {
-  isPomoPaused = !isPomoPaused;
-  btnPomoOk.textContent = isPomoPaused ? "Reprendre" : "Pausar";
-  updatePomodoroVisuals();
-});
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
 
-btnPomoReset.addEventListener("click", () => {
-  startPomodoro();
-});
+    <!-- VISTA 4: POMODORO SENSORIAL -->
+    <section id="view-pomodoro" class="w-full flex flex-col items-center hidden">
+      <div class="mb-4">
+        <div id="pomo-face-box" class="w-36 h-36 mx-auto rounded-2xl bg-stone-900 border border-stone-800 flex flex-col items-center justify-center gap-2 shadow-inner">
+          <span id="pomo-emoji" class="text-5xl">🌱</span>
+          <span id="pomo-status-label" class="text-[11px] text-stone-400 uppercase tracking-widest">En Focus</span>
+        </div>
+      </div>
 
-btnPomoNext.addEventListener("click", () => {
-  if (pomoTimer) clearInterval(pomoTimer);
-  switchView("view-menu");
-});
+      <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-6 shadow-xl flex flex-col items-center mb-6">
+        <span class="text-xs text-stone-400 mb-4 uppercase tracking-widest">Temps de Focus Intern</span>
+        <div class="w-full bg-stone-950 h-6 rounded-xl overflow-hidden border border-stone-800 p-1">
+          <div id="pomo-bar" class="bg-emerald-700 h-full rounded-lg transition-all duration-1000 w-full"></div>
+        </div>
+      </div>
 
-// --- DESAR CONFIGURACIÓ ---
-btnSaveSettings.addEventListener("click", async () => {
-  config.geminiKey = cfgGeminiKey.value.trim();
-  config.supaUrl = cfgSupaUrl.value.trim();
-  config.supaKey = cfgSupaKey.value.trim();
-  config.syncId = cfgSyncId.value.trim() || "usuari_principal";
+      <div class="flex gap-4 w-full mb-6">
+        <button id="btn-pomo-reset" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-xs flex justify-center items-center">
+          Reiniciar
+        </button>
+        <button id="btn-pomo-ok" class="flex-2 grow bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-bold py-4 rounded-xl shadow-lg transition text-sm">
+          Pausar
+        </button>
+        <button id="btn-pomo-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center" title="Tornar al menú">
+          &#8250;
+        </button>
+      </div>
 
-  localStorage.setItem("aibuddy_gemini_key", config.geminiKey);
-  localStorage.setItem("aibuddy_supa_url", config.supaUrl);
-  localStorage.setItem("aibuddy_supa_key", config.supaKey);
-  localStorage.setItem("aibuddy_sync_id", config.syncId);
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
 
-  await pullRemoteState();
-  await saveState();
-  showToast("Configuració desada!");
-  switchView("view-menu");
-});
+    <!-- VISTA 5: RUTINA DE MATÍ GUIADA -->
+    <section id="view-routine" class="w-full flex flex-col items-center hidden">
+      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Rutina de Matí</span>
+      
+      <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex items-center justify-center mb-6">
+        <p id="routine-step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
+          Carregant rutina...
+        </p>
+      </div>
 
-// --- INICIALITZACIÓ ---
-loadLocalState();
-updateAllDisplays();
-pullRemoteState();
+      <div class="flex gap-4 w-full mb-4">
+        <button id="btn-routine-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+          &#8249;
+        </button>
+        <button id="btn-routine-ok" class="flex-2 grow bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
+          OK
+        </button>
+        <button id="btn-routine-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+          &#8250;
+        </button>
+      </div>
+
+      <div class="w-full flex gap-2 mb-2">
+        <input 
+          type="text" 
+          id="routine-input-new" 
+          placeholder="Nou pas per a la rutina..." 
+          class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-emerald-600 placeholder-stone-500"
+        />
+        <button id="btn-routine-add" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold px-4 py-2.5 rounded-xl text-xs transition">
+          Afegir
+        </button>
+      </div>
+
+      <button id="btn-routine-reset" class="w-full bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-400 text-xs py-2.5 rounded-xl transition mb-6">
+        Restaurar rutina inicial
+      </button>
+
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
+
+    <!-- VISTA 6: LLISTA DE RECÀRREGA (HOBBIES) -->
+    <section id="view-hobbies" class="w-full flex flex-col items-center hidden">
+      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Recàrrega i Descans</span>
+      
+      <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex items-center justify-center mb-6">
+        <p id="hobby-step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
+          Carregant opcions de descans...
+        </p>
+      </div>
+
+      <div class="flex gap-4 w-full mb-6">
+        <button id="btn-hobby-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+          &#8249;
+        </button>
+        <button id="btn-hobby-next" class="flex-2 grow bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-bold py-4 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
+          Següent opció &#8250;
+        </button>
+      </div>
+
+      <div class="w-full bg-stone-900/50 border border-stone-800 rounded-xl p-4 mb-6 text-left">
+        <span class="text-xs text-stone-400 block mb-2 uppercase tracking-widest">Personalitzar Hobbies</span>
+        <div class="flex gap-2 mb-2">
+          <input 
+            type="text" 
+            id="hobby-input-new" 
+            placeholder="Nou hobby o activitat..." 
+            class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 placeholder-stone-500"
+          />
+          <button id="btn-hobby-add" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold px-3 py-2 rounded-lg text-xs transition">
+            Afegir
+          </button>
+        </div>
+        <button id="btn-hobby-reset" class="text-[10px] text-stone-500 hover:text-stone-300 underline transition">
+          Restaurar llista predeterminada
+        </button>
+      </div>
+
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
+
+    <!-- VISTA 7: CONFIGURACIÓ (GEMINI + SUPABASE SYNC) -->
+    <section id="view-settings" class="w-full flex flex-col items-center hidden text-left">
+      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-4 text-center">Configuració i Sincronització</span>
+
+      <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 space-y-4 mb-6">
+        <div>
+          <label class="text-xs text-stone-300 font-semibold block mb-1">1. Clau API de Google Gemini (IA en català)</label>
+          <input type="password" id="cfg-gemini-key" placeholder="AIzaSy..." class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600" />
+          <p class="text-[10px] text-stone-500 mt-1">Converteix qualsevol tasca en micro-passos en un català impecable.</p>
+        </div>
+
+        <hr class="border-stone-800">
+
+        <div>
+          <label class="text-xs text-stone-300 font-semibold block mb-1">2. URL del Projecte Supabase (Opcional)</label>
+          <input type="text" id="cfg-supa-url" placeholder="https://xyz.supabase.co" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 mb-2" />
+          
+          <label class="text-xs text-stone-300 font-semibold block mb-1">Clau Pública (Anon Key) de Supabase</label>
+          <input type="password" id="cfg-supa-key" placeholder="eyJhbGciOi..." class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 mb-2" />
+
+          <label class="text-xs text-stone-300 font-semibold block mb-1">Codi d'Usuari (el mateix al mòbil i al PC)</label>
+          <input type="text" id="cfg-sync-id" placeholder="ex: el-meu-espai-123" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600" />
+        </div>
+
+        <button id="btn-save-settings" class="w-full bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-semibold py-2.5 rounded-xl text-xs transition">
+          Desar i Sincronitzar
+        </button>
+      </div>
+
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
+
+  </main>
+
+  <!-- Input Area Inferior -->
+  <footer class="w-full max-w-md flex flex-col gap-2">
+    <div class="flex gap-2">
+      <input 
+        type="text" 
+        id="thought-input" 
+        placeholder="Aparcar pensament..." 
+        class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-emerald-600 placeholder-stone-500"
+      />
+      <button id="btn-park" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold px-4 py-2 rounded-xl text-xs transition">
+        Aparcar
+      </button>
+    </div>
+
+    <div class="flex gap-2">
+      <input 
+        type="text" 
+        id="task-input" 
+        placeholder="Escriu una tasca..." 
+        class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-600 placeholder-stone-500"
+      />
+      <button id="btn-send" class="bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-semibold px-5 py-3 rounded-xl text-sm transition">
+        Processar
+      </button>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
