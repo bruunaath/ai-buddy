@@ -16,16 +16,16 @@
 
   <!-- Header: Estat de Connexió i Configuració -->
   <header class="w-full max-w-md grid grid-cols-3 items-center py-2 border-b border-stone-800">
-    <div></div> <!-- Espaiador esquerre per centrar el títol -->
+    <div></div>
     <h1 class="text-lg font-bold tracking-wide text-sky-400 text-center cursor-pointer" onclick="switchView('view-menu')">AI Buddy</h1>
     <div class="flex justify-end items-center gap-2">
       <span id="status-badge" onclick="switchView('view-settings')" title="Estat de sincronització i usuari" class="cursor-pointer text-xs bg-stone-900 text-stone-400 px-3 py-1 rounded-full border border-stone-800 flex items-center gap-1.5 truncate max-w-[130px]">
         ⚪ Convidat
       </span>
-      <button onclick="toggleTheme()" id="btn-theme-toggle" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Canviar tema clar/fosc">
+      <button type="button" onclick="toggleTheme()" id="btn-theme-toggle" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Canviar tema clar/fosc">
         ☀️
       </button>
-      <button onclick="switchView('view-settings')" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Configuració i Compte">
+      <button type="button" onclick="switchView('view-settings')" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Configuració i Compte">
         ⚙️
       </button>
     </div>
@@ -43,32 +43,32 @@
     <section id="view-menu" class="w-full flex flex-col gap-3">
       <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-2 text-center block w-full">MENÚ PRINCIPAL</span>
       
-      <button onclick="switchView('view-tasks')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+      <button type="button" onclick="switchView('view-tasks')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>Tasques i Micro-passos</span>
         <span class="text-stone-500">&#8250;</span>
       </button>
 
-      <button onclick="switchView('view-thoughts')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+      <button type="button" onclick="switchView('view-thoughts')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>Pensaments Aparcats</span>
         <span class="text-stone-500">&#8250;</span>
       </button>
 
-      <button onclick="startPomodoro()" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+      <button type="button" onclick="startPomodoro()" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>Pomodoro</span>
         <span class="text-stone-500">&#8250;</span>
       </button>
 
-      <button onclick="switchView('view-routine')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+      <button type="button" onclick="switchView('view-routine')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>Rutina de Matí Guiada</span>
         <span class="text-stone-500">&#8250;</span>
       </button>
 
-      <button onclick="switchView('view-hobbies')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+      <button type="button" onclick="switchView('view-hobbies')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>Hobbies de Descans</span>
         <span class="text-stone-500">&#8250;</span>
       </button>
 
-      <button onclick="switchView('view-quick-todo')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+      <button type="button" onclick="switchView('view-quick-todo')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>To-Do List Ràpida</span>
         <span class="text-stone-500">&#8250;</span>
       </button>
@@ -78,28 +78,28 @@
     <section id="view-tasks" class="w-full flex flex-col items-center hidden">
       <span class="text-[10px] tracking-widest text-stone-400 uppercase mb-2">Plantilles ràpides anti-bloqueig</span>
       <div class="w-full grid grid-cols-2 gap-1.5 mb-4 max-h-[135px] overflow-y-auto pr-1">
-        <button onclick="loadTemplate('planificar_dia')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+        <button type="button" onclick="loadTemplate('planificar_dia')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
           Planificar el dia
         </button>
-        <button onclick="loadTemplate('estudiar_temari')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+        <button type="button" onclick="loadTemplate('estudiar_temari')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
           Començar temari
         </button>
-        <button onclick="loadTemplate('respondre_correus')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+        <button type="button" onclick="loadTemplate('respondre_correus')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
           Respondre correus
         </button>
-        <button onclick="loadTemplate('motxilla_uni')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+        <button type="button" onclick="loadTemplate('motxilla_uni')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
           Motxilla Universitat
         </button>
-        <button onclick="loadTemplate('ordenar_escriptori')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+        <button type="button" onclick="loadTemplate('ordenar_escriptori')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
           Ordenar escriptori
         </button>
-        <button onclick="loadTemplate('netejar_cuina')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+        <button type="button" onclick="loadTemplate('netejar_cuina')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
           Netejar cuina
         </button>
-        <button onclick="loadTemplate('posar_rentadora')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+        <button type="button" onclick="loadTemplate('posar_rentadora')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
           Posar rentadora
         </button>
-        <button onclick="loadTemplate('tramits_administratius')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+        <button type="button" onclick="loadTemplate('tramits_administratius')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
           Tràmits i papers
         </button>
       </div>
@@ -110,7 +110,6 @@
         <p id="step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200 text-center">
           Escriu una tasca per començar...
         </p>
-        <!-- Imatge en acabar qualsevol tasca -->
         <div id="completion-badge" class="hidden flex-col items-center gap-3 mt-1">
           <img id="task-complete-img" src="completat.jpg" alt="Tasca completada" class="w-24 h-24 rounded-2xl object-cover border border-sky-500 shadow-md" />
           <span class="text-sm text-sky-400 font-medium">Tasca completada!</span>
@@ -118,18 +117,18 @@
       </div>
 
       <div class="flex gap-4 w-full mb-6">
-        <button id="btn-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+        <button type="button" id="btn-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8249;
         </button>
-        <button id="btn-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
+        <button type="button" id="btn-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
           OK
         </button>
-        <button id="btn-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+        <button type="button" id="btn-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8250;
         </button>
       </div>
 
-      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
@@ -145,7 +144,7 @@
           placeholder="Apunta una tasca ràpida..." 
           class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500"
         />
-        <button id="btn-add-quick-todo" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-sm">
+        <button type="button" id="btn-add-quick-todo" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-sm">
           Afegir
         </button>
       </div>
@@ -155,12 +154,12 @@
       </div>
 
       <div class="flex justify-between w-full mb-6">
-        <button id="btn-clear-quick-todos" class="text-[11px] text-stone-500 hover:text-stone-300 transition">
+        <button type="button" id="btn-clear-quick-todos" class="text-[11px] text-stone-500 hover:text-stone-300 transition">
           Esborrar completades o tot
         </button>
       </div>
 
-      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
@@ -174,12 +173,12 @@
       </div>
 
       <div class="flex gap-2 w-full mb-6">
-        <button id="btn-clear-thoughts" class="w-full bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-400 text-xs py-2.5 rounded-xl transition">
+        <button type="button" id="btn-clear-thoughts" class="w-full bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-400 text-xs py-2.5 rounded-xl transition">
           Esborrar tots
         </button>
       </div>
 
-      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
@@ -202,18 +201,18 @@
       </div>
 
       <div class="flex gap-4 w-full mb-6">
-        <button id="btn-pomo-reset" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-xs flex justify-center items-center">
+        <button type="button" id="btn-pomo-reset" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-xs flex justify-center items-center">
           Reiniciar
         </button>
-        <button id="btn-pomo-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
+        <button type="button" id="btn-pomo-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
           Pausar
         </button>
-        <button id="btn-pomo-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center" title="Tornar al menú">
+        <button type="button" id="btn-pomo-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center" title="Tornar al menú">
           &#8250;
         </button>
       </div>
 
-      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
@@ -226,7 +225,6 @@
         <p id="routine-step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
           Carregant rutina...
         </p>
-        <!-- Imatge en acabar la rutina de matí -->
         <div id="routine-completion-badge" class="hidden flex-col items-center gap-3 mt-1">
           <img src="completat.jpg" alt="Rutina completada" class="w-24 h-24 rounded-2xl object-cover border border-sky-500 shadow-md" />
           <span class="text-sm text-sky-400 font-medium">Has completat la rutina de matí!</span>
@@ -234,13 +232,13 @@
       </div>
 
       <div class="flex gap-4 w-full mb-4">
-        <button id="btn-routine-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+        <button type="button" id="btn-routine-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8249;
         </button>
-        <button id="btn-routine-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
+        <button type="button" id="btn-routine-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
           OK
         </button>
-        <button id="btn-routine-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+        <button type="button" id="btn-routine-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8250;
         </button>
       </div>
@@ -252,16 +250,16 @@
           placeholder="Nou pas per a la rutina..." 
           class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500"
         />
-        <button id="btn-routine-add" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-4 py-2.5 rounded-xl text-xs transition border border-stone-700">
+        <button type="button" id="btn-routine-add" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-4 py-2.5 rounded-xl text-xs transition border border-stone-700">
           Afegir
         </button>
       </div>
 
-      <button id="btn-routine-reset" class="w-full bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-400 text-xs py-2.5 rounded-xl transition mb-6">
+      <button type="button" id="btn-routine-reset" class="w-full bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-400 text-xs py-2.5 rounded-xl transition mb-6">
         Restaurar rutina inicial
       </button>
 
-      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
@@ -277,10 +275,10 @@
       </div>
 
       <div class="flex gap-4 w-full mb-6">
-        <button id="btn-hobby-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+        <button type="button" id="btn-hobby-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8249;
         </button>
-        <button id="btn-hobby-next" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
+        <button type="button" id="btn-hobby-next" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
           Següent opció &#8250;
         </button>
       </div>
@@ -294,16 +292,16 @@
             placeholder="Nou hobby o activitat..." 
             class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500"
           />
-          <button id="btn-hobby-add" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-3 py-2 rounded-lg text-xs transition border border-stone-700">
+          <button type="button" id="btn-hobby-add" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-3 py-2 rounded-lg text-xs transition border border-stone-700">
             Afegir
           </button>
         </div>
-        <button id="btn-hobby-reset" class="text-[10px] text-stone-500 hover:text-stone-300 underline transition">
+        <button type="button" id="btn-hobby-reset" class="text-[10px] text-stone-500 hover:text-stone-300 underline transition">
           Restaurar llista predeterminada
         </button>
       </div>
 
-      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
@@ -325,18 +323,18 @@
             <input type="text" id="cfg-sync-id" placeholder="convidat" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
           </div>
 
-          <!-- Contrasenya -->
+          <!-- Contrasenya amb botó d'ull directe -->
           <div>
             <label class="text-xs text-stone-300 font-semibold block mb-1">2. Contrasenya <span class="text-[10px] text-stone-400 font-normal">(deixa-ho buit si ets convidat)</span></label>
-            <div class="flex gap-2">
-              <input type="password" id="cfg-sync-pass" placeholder="Escriu una contrasenya teva..." class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
-              <button type="button" id="btn-toggle-pass" class="bg-stone-800 hover:bg-stone-700 text-stone-300 px-3 rounded-lg border border-stone-700 text-xs transition" title="Mostrar/Ocultar contrasenya">
+            <div class="flex gap-2 items-center">
+              <input type="password" id="cfg-sync-pass" placeholder="Escriu una contrasenya teva..." autocomplete="new-password" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
+              <button type="button" id="btn-toggle-pass" onclick="togglePassVisibility()" class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3.5 py-2 rounded-lg border border-stone-700 text-sm transition shrink-0 cursor-pointer select-none" title="Mostrar o ocultar la contrasenya">
                 👁️
               </button>
             </div>
           </div>
 
-          <!-- Detalls tècnics de Supabase plegats perquè no molestin -->
+          <!-- Detalls tècnics de Supabase plegats -->
           <details class="pt-1">
             <summary class="text-[10px] text-stone-400 cursor-pointer hover:text-stone-300 select-none">Paràmetres avançats del servidor</summary>
             <div class="mt-2 space-y-2 pt-2 border-t border-stone-800">
@@ -350,16 +348,16 @@
         </div>
 
         <div class="space-y-2 pt-1">
-          <button id="btn-save-settings" class="w-full bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-2.5 rounded-xl text-xs transition shadow-md">
+          <button type="button" id="btn-save-settings" class="w-full bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-2.5 rounded-xl text-xs transition shadow-md">
             Desar i Sincronitzar
           </button>
-          <button id="btn-logout-guest" class="w-full bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold py-2 rounded-xl text-[11px] transition border border-stone-700">
+          <button type="button" id="btn-logout-guest" class="w-full bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold py-2 rounded-xl text-[11px] transition border border-stone-700">
             Tornar a mode Convidat
           </button>
         </div>
       </div>
 
-      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
@@ -375,7 +373,7 @@
         placeholder="Aparcar pensament..." 
         class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500 shadow-sm transition"
       />
-      <button id="btn-park" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-4 py-2 rounded-xl text-xs transition border border-stone-700 shadow-sm">
+      <button type="button" id="btn-park" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-4 py-2 rounded-xl text-xs transition border border-stone-700 shadow-sm">
         Aparcar
       </button>
     </div>
@@ -387,7 +385,7 @@
         placeholder="Escriu una tasca..." 
         class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500 placeholder-stone-500 shadow-sm transition"
       />
-      <button id="btn-send" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-5 py-3 rounded-xl text-sm transition shadow-md">
+      <button type="button" id="btn-send" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-5 py-3 rounded-xl text-sm transition shadow-md">
         Processar
       </button>
     </div>
@@ -399,14 +397,10 @@
       <p class="font-bold text-sky-400">Hi ha actualitzacions noves! ✨</p>
       <p class="text-stone-400 mt-0.5">S'ha publicat una nova versió de l'app.</p>
     </div>
-    <button onclick="applyUpdate()" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shrink-0">
+    <button type="button" onclick="applyUpdate()" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shrink-0">
       Actualitzar
     </button>
   </div>
-
-  <script src="app.js"></script>
-</body>
-</html>
 
   <script src="app.js"></script>
 </body>
