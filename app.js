@@ -118,27 +118,32 @@ const defaultHobbies = [
   "Mirar Pinterest per motivar-me"
 ];
 
-// --- ESTAT CENTRALITZAT (Local + Núvol) ---
-let state = {
-  currentSteps: [
-    "Escriu una tasca o tria una plantilla ràpida",
-    "Avança pas a pas sense distraccions"
-  ],
-  currentIndex: 0,
-  quickTodoList: [],
-  parkedThoughts: [],
-  routineSteps: [...defaultRoutineSteps],
-  routineIndex: 0,
-  hobbySteps: [...defaultHobbies],
-  hobbyIndex: 0,
-  updatedAt: 0
-};
+function getInitialState() {
+  return {
+    currentSteps: [
+      "Escriu una tasca o tria una plantilla ràpida",
+      "Avança pas a pas sense distraccions"
+    ],
+    currentIndex: 0,
+    quickTodoList: [],
+    parkedThoughts: [],
+    routineSteps: [...defaultRoutineSteps],
+    routineIndex: 0,
+    hobbySteps: [...defaultHobbies],
+    hobbyIndex: 0,
+    updatedAt: 0
+  };
+}
 
-// Configuració de Supabase (URL i Key fixades o guardades, usuari dinàmic)
+// --- ESTAT CENTRALITZAT ---
+let state = getInitialState();
+
+// Configuració d'Usuari i Supabase (Per defecte: "convidat" i contrasenya buida)
 let config = {
   supaUrl: localStorage.getItem("aibuddy_supa_url") || "https://qstjwfqrkemyfzudtoxb.supabase.co",
   supaKey: localStorage.getItem("aibuddy_supa_key") || "sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq",
-  syncId: localStorage.getItem("aibuddy_sync_id") || "usuari_principal"
+  syncUser: localStorage.getItem("aibuddy_sync_user") || "convidat",
+  syncPass: localStorage.getItem("aibuddy_sync_pass") || ""
 };
 
 // Variables del Pomodoro Sensorial
@@ -196,9 +201,31 @@ const btnClearQuickTodos = document.getElementById("btn-clear-quick-todos");
 const cfgSupaUrl = document.getElementById("cfg-supa-url");
 const cfgSupaKey = document.getElementById("cfg-supa-key");
 const cfgSyncId = document.getElementById("cfg-sync-id");
+const cfgSyncPass = document.getElementById("cfg-sync-pass");
+const btnTogglePass = document.getElementById("btn-toggle-pass");
 const btnSaveSettings = document.getElementById("btn-save-settings");
+const btnLogoutGuest = document.getElementById("btn-logout-guest");
 
-// --- PERSISTÈNCIA I SINCRONITZACIÓ (LocalStorage + Supabase REST) ---
+// --- GESTIÓ MULTI-USUARI (CONVIDAT vs COMPTE PROPI) ---
+function isGuestMode() {
+  const user = (config.syncUser || "").trim().toLowerCase();
+  const pass = (config.syncPass || "").trim();
+  return !user || user === "convidat" || pass === "";
+}
+
+// Clau única al núvol (combina usuari + contrasenya perquè ningú pugui entrar sense la contrasenya)
+function getCloudSyncKey() {
+  const user = (config.syncUser || "").trim().toLowerCase();
+  const pass = (config.syncPass || "").trim();
+  return `${user}::${pass}`;
+}
+
+// Clau d'emmagatzematge local separada per a cada usuari
+function getLocalStorageKey() {
+  if (isGuestMode()) return "aibuddy_state_convidat";
+  return `aibuddy_state_${getCloudSyncKey()}`;
+}
+
 function cleanSupaUrl(rawUrl) {
   if (!rawUrl) return "";
   return rawUrl
@@ -208,7 +235,8 @@ function cleanSupaUrl(rawUrl) {
 }
 
 function loadLocalState() {
-  const saved = localStorage.getItem("aibuddy_state");
+  state = getInitialState();
+  const saved = localStorage.getItem(getLocalStorageKey());
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
@@ -221,11 +249,19 @@ function loadLocalState() {
 
 async function saveState() {
   state.updatedAt = Date.now();
-  localStorage.setItem("aibuddy_state", JSON.stringify(state));
+  localStorage.setItem(getLocalStorageKey(), JSON.stringify(state));
   updateAllDisplays();
 
+  // Si és convidat, es guarda només en local (no es barreja al núvol)
+  if (isGuestMode()) {
+    if (statusBadge) statusBadge.textContent = "⚪ Convidat";
+    return;
+  }
+
   const baseUrl = cleanSupaUrl(config.supaUrl);
-  if (baseUrl && config.supaKey && config.syncId) {
+  const cloudId = getCloudSyncKey();
+
+  if (baseUrl && config.supaKey && cloudId) {
     try {
       if (statusBadge) statusBadge.textContent = "🔄 Sincr...";
       const res = await fetch(`${baseUrl}/rest/v1/user_state`, {
@@ -237,32 +273,37 @@ async function saveState() {
           "Prefer": "resolution=merge-duplicates"
         },
         body: JSON.stringify({
-          id: config.syncId,
+          id: cloudId,
           data: state,
           updated_at: new Date().toISOString()
         })
       });
       if (res.ok) {
-        if (statusBadge) statusBadge.textContent = "🟢 Sincronitzat";
+        if (statusBadge) statusBadge.textContent = `🟢 ${config.syncUser}`;
       } else {
         if (statusBadge) statusBadge.textContent = "🟠 Error Núvol";
       }
     } catch (err) {
       if (statusBadge) statusBadge.textContent = "⚪ Offline";
     }
-  } else {
-    if (statusBadge) statusBadge.textContent = "⚪ Local";
   }
 }
 
 async function pullRemoteState() {
+  if (isGuestMode()) {
+    if (statusBadge) statusBadge.textContent = "⚪ Convidat";
+    return;
+  }
+
   const baseUrl = cleanSupaUrl(config.supaUrl);
-  if (!baseUrl || !config.supaKey || !config.syncId) {
+  const cloudId = getCloudSyncKey();
+  if (!baseUrl || !config.supaKey || !cloudId) {
     if (statusBadge) statusBadge.textContent = "⚪ Local";
     return;
   }
+
   try {
-    const url = `${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(config.syncId)}&select=data`;
+    const url = `${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(cloudId)}&select=data`;
     const res = await fetch(url, {
       headers: {
         "apikey": config.supaKey,
@@ -275,11 +316,12 @@ async function pullRemoteState() {
         const remoteState = rows[0].data;
         if ((remoteState.updatedAt || 0) > (state.updatedAt || 0)) {
           state = { ...state, ...remoteState };
-          localStorage.setItem("aibuddy_state", JSON.stringify(state));
+          localStorage.setItem(getLocalStorageKey(), JSON.stringify(state));
           updateAllDisplays();
         }
-        if (statusBadge) statusBadge.textContent = "🟢 Sincronitzat";
+        if (statusBadge) statusBadge.textContent = `🟢 ${config.syncUser}`;
       } else {
+        // Si l'usuari + contrasenya és nou al núvol, el creem pujant l'estat actual
         await saveState();
       }
     } else {
@@ -311,7 +353,8 @@ function switchView(viewId) {
   if (viewId === "view-settings") {
     if (cfgSupaUrl) cfgSupaUrl.value = config.supaUrl;
     if (cfgSupaKey) cfgSupaKey.value = config.supaKey;
-    if (cfgSyncId) cfgSyncId.value = config.syncId;
+    if (cfgSyncId) cfgSyncId.value = config.syncUser || "convidat";
+    if (cfgSyncPass) cfgSyncPass.value = config.syncPass || "";
   }
   updateAllDisplays();
 }
@@ -840,22 +883,73 @@ if (btnPomoNext) {
   });
 }
 
-// --- DESAR CONFIGURACIÓ SUPABASE ---
+// --- MOSTRAR / OCULTAR CONTRASENYA ---
+if (btnTogglePass && cfgSyncPass) {
+  btnTogglePass.addEventListener("click", () => {
+    const isPassword = cfgSyncPass.type === "password";
+    cfgSyncPass.type = isPassword ? "text" : "password";
+    btnTogglePass.textContent = isPassword ? "🙈" : "👁️";
+  });
+}
+
+// --- DESAR CONFIGURACIÓ D'USUARI I SUPABASE ---
 if (btnSaveSettings) {
   btnSaveSettings.addEventListener("click", async () => {
+    const enteredUser = (cfgSyncId ? cfgSyncId.value.trim() : "") || "convidat";
+    const enteredPass = cfgSyncPass ? cfgSyncPass.value.trim() : "";
+
+    // Si posen un nom d'usuari diferent de "convidat" però deixen la contrasenya buida, avisem
+    if (enteredUser.toLowerCase() !== "convidat" && !enteredPass) {
+      showToast("⚠️ Afegeix una contrasenya per al teu usuari");
+      if (cfgSyncPass) cfgSyncPass.focus();
+      return;
+    }
+
     if (cfgSupaUrl) config.supaUrl = cleanSupaUrl(cfgSupaUrl.value);
     if (cfgSupaKey) config.supaKey = cfgSupaKey.value.trim();
-    if (cfgSyncId) config.syncId = cfgSyncId.value.trim() || "usuari_principal";
+    config.syncUser = enteredUser;
+    config.syncPass = enteredUser.toLowerCase() === "convidat" ? "" : enteredPass;
 
     localStorage.setItem("aibuddy_supa_url", config.supaUrl);
     localStorage.setItem("aibuddy_supa_key", config.supaKey);
-    localStorage.setItem("aibuddy_sync_id", config.syncId);
+    localStorage.setItem("aibuddy_sync_user", config.syncUser);
+    localStorage.setItem("aibuddy_sync_pass", config.syncPass);
+
+    // Carreguem l'estat local d'aquest usuari concret abans de sincronitzar amb el núvol
+    loadLocalState();
+    updateAllDisplays();
+
+    if (isGuestMode()) {
+      if (statusBadge) statusBadge.textContent = "⚪ Convidat";
+      showToast("Mode Convidat actiu (Local)");
+      switchView("view-menu");
+      return;
+    }
 
     btnSaveSettings.textContent = "Sincronitzant...";
     await pullRemoteState();
     await saveState();
     btnSaveSettings.textContent = "Desar i Sincronitzar";
-    showToast("✓ Sincronització desada!");
+    showToast(`✓ Sessió iniciada: ${config.syncUser}`);
+    switchView("view-menu");
+  });
+}
+
+// --- TORNAR A MODE CONVIDAT ---
+if (btnLogoutGuest) {
+  btnLogoutGuest.addEventListener("click", () => {
+    config.syncUser = "convidat";
+    config.syncPass = "";
+    localStorage.setItem("aibuddy_sync_user", "convidat");
+    localStorage.setItem("aibuddy_sync_pass", "");
+
+    if (cfgSyncId) cfgSyncId.value = "convidat";
+    if (cfgSyncPass) cfgSyncPass.value = "";
+
+    loadLocalState();
+    updateAllDisplays();
+    if (statusBadge) statusBadge.textContent = "⚪ Convidat";
+    showToast("Has tornat a mode Convidat");
     switchView("view-menu");
   });
 }
