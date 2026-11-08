@@ -69,35 +69,29 @@
     <section id="view-tasks" class="w-full flex flex-col items-center hidden">
       <span class="text-[10px] tracking-widest text-stone-400 uppercase mb-2">Plantilles ràpides anti-bloqueig</span>
       <div class="w-full grid grid-cols-2 gap-1.5 mb-4 max-h-[135px] overflow-y-auto pr-1">
-        <button onclick="loadTemplate('netejar_cuina')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
-          🍽️ Netejar cuina
-        </button>
-        <button onclick="loadTemplate('posar_rentadora')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
-          🧺 Posar rentadora
+        <button onclick="loadTemplate('planificar_dia')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          Planificar el dia
         </button>
         <button onclick="loadTemplate('estudiar_temari')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
-          📚 Estudiar temari
+          Començar temari
         </button>
         <button onclick="loadTemplate('respondre_correus')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
-          ✉️ Respondre correus
+          Respondre correus
+        </button>
+        <button onclick="loadTemplate('motxilla_uni')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          Motxilla Universitat
         </button>
         <button onclick="loadTemplate('ordenar_escriptori')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
-          💻 Ordenar escriptori
+          Ordenar escriptori
         </button>
-        <button onclick="loadTemplate('apat_rapid')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
-          🍳 Fer àpat ràpid
+        <button onclick="loadTemplate('netejar_cuina')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          Netejar cuina
         </button>
-        <button onclick="loadTemplate('planificar_dia')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
-          📝 Planificar el dia
-        </button>
-        <button onclick="loadTemplate('dutxa_i_motxilla')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
-          🚿 Dutxa i motxilla
+        <button onclick="loadTemplate('posar_rentadora')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
+          Posar rentadora
         </button>
         <button onclick="loadTemplate('tramits_administratius')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
-          📄 Tràmits i papers
-        </button>
-        <button onclick="loadTemplate('recollir_roba')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-[11px] py-2 px-2.5 rounded-xl border border-stone-800 transition truncate">
-          👕 Recollir roba
+          Tràmits i papers
         </button>
       </div>
 
@@ -107,10 +101,9 @@
         <p id="step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
           Escriu una tasca per començar...
         </p>
-        <div id="completion-badge" class="hidden flex-col items-center gap-2 mt-2">
-          <div class="w-16 h-16 rounded-2xl bg-emerald-950 border border-emerald-700 flex items-center justify-center text-3xl">
-            ✨
-          </div>
+        <!-- Imatge en acabar qualsevol tasca -->
+        <div id="completion-badge" class="hidden flex-col items-center gap-3 mt-1">
+          <img id="task-complete-img" src="completat.jpg" alt="Tasca completada" class="w-24 h-24 rounded-2xl object-cover border border-emerald-700 shadow-md" />
           <span class="text-sm text-emerald-400 font-medium">Tasca completada!</span>
         </div>
       </div>
@@ -151,11 +144,11 @@
       </button>
     </section>
 
-    <!-- VISTA 4: POMODORO SENSORIAL -->
+    <!-- VISTA 4: POMODORO SENSORIAL (AMB IMATGES) -->
     <section id="view-pomodoro" class="w-full flex flex-col items-center hidden">
       <div class="mb-4">
-        <div id="pomo-face-box" class="w-36 h-36 mx-auto rounded-2xl bg-stone-900 border border-stone-800 flex flex-col items-center justify-center gap-2 shadow-inner">
-          <span id="pomo-emoji" class="text-5xl">🌱</span>
+        <div id="pomo-face-box" class="w-40 h-44 mx-auto rounded-2xl bg-stone-900 border border-stone-800 p-3 flex flex-col items-center justify-center gap-2 shadow-inner">
+          <img id="pomo-img" src="focus_normal.jpg" alt="Estat del Pomodoro" class="w-28 h-28 rounded-xl object-cover border border-stone-800" />
           <span id="pomo-status-label" class="text-[11px] text-stone-400 uppercase tracking-widest">En Focus</span>
         </div>
       </div>
@@ -188,10 +181,15 @@
     <section id="view-routine" class="w-full flex flex-col items-center hidden">
       <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Rutina de Matí</span>
       
-      <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex items-center justify-center mb-6">
+      <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex flex-col items-center justify-center mb-6">
         <p id="routine-step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
           Carregant rutina...
         </p>
+        <!-- Imatge en acabar la rutina de matí -->
+        <div id="routine-completion-badge" class="hidden flex-col items-center gap-3 mt-1">
+          <img src="completat.jpg" alt="Rutina completada" class="w-24 h-24 rounded-2xl object-cover border border-emerald-700 shadow-md" />
+          <span class="text-sm text-emerald-400 font-medium">Has completat la rutina de matí!</span>
+        </div>
       </div>
 
       <div class="flex gap-4 w-full mb-4">
