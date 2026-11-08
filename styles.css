@@ -30,7 +30,19 @@ button:active {
   transform: scale(0.97);
 }
 
-/* Indicador de càrrega suau per a la IA */
+/* Scrollbar subtil i fosc per a llistes internes */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #292524;
+  border-radius: 9999px;
+}
+
+/* Indicador de càrrega suau */
 @keyframes subtle-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.45; }
