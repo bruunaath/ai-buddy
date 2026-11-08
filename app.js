@@ -1057,6 +1057,38 @@ if (btnLogoutGuest) {
   });
 }
 
+// --- VERIFICACIÓ TEXTUAL ESTRICTA D'ADMINISTRACIÓ ---
+async function esAdministradorAutoritzat(usuari, contrasenya) {
+  const usuariNetejat = (usuari || "").trim().toLowerCase();
+  const contrasenyaNetejada = (contrasenya || "").trim();
+
+  // Verificació textual bàsica: ha de ser necessàriament carla-brunat i tenir contrasenya
+  if (usuariNetejat !== "carla-brunat" || !contrasenyaNetejada) {
+    return false;
+  }
+
+  // Verificació de seguretat contra el servidor de Supabase
+  const clauServidor = `${usuariNetejat}::${contrasenyaNetejada}`;
+  const baseUrl = cleanSupaUrl(config.supaUrl);
+  
+  if (!baseUrl || !config.supaKey) return false;
+
+  try {
+    const res = await fetch(`${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(clauServidor)}&select=id`, {
+      headers: {
+        "apikey": config.supaKey,
+        "Authorization": `Bearer ${config.supaKey}`
+      }
+    });
+    
+    if (!res.ok) return false;
+    const files = await res.json();
+    return files.length > 0; // Només retorna true si existeix textualment al servidor
+  } catch (err) {
+    return false;
+  }
+}
+
 // --- GESTIÓ DE TEMES (CLAR / FOSC) ---
 function initTheme() {
   const savedTheme = localStorage.getItem("aibuddy_theme") || "dark";
