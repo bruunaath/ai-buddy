@@ -134,10 +134,10 @@ let state = {
   updatedAt: 0
 };
 
-// Configuració de Supabase
+// Configuració de Supabase (URL i Key fixades, usuari dinàmic)
 let config = {
-  supaUrl: localStorage.getItem("aibuddy_supa_url") || "",
-  supaKey: localStorage.getItem("aibuddy_supa_key") || "",
+  supaUrl: "https://qstjwfqrkemyfzudtoxb.supabase.co", // Posa aquí la teva URL real
+  supaKey: "sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq",           // Posa aquí la teva Clau Pública real
   syncId: localStorage.getItem("aibuddy_sync_id") || "usuari_principal"
 };
 
