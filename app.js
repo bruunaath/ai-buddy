@@ -295,7 +295,7 @@ setInterval(pullRemoteState, 20000);
 
 // --- GESTIÓ DE VISTES ---
 function switchView(viewId) {
-  const views = ["view-menu", "view-tasks", "view-thoughts", "view-pomodoro", "view-routine", "view-hobbies", "view-settings"];
+  const views = ["view-menu", "view-tasks", "view-thoughts", "view-pomodoro", "view-routine", "view-hobbies", "view-settings","view-quick-todo"];
   views.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.add("hidden");
