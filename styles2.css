@@ -1,0 +1,41 @@
+/* --- RESET I PROTECCIÓ SENSORIAL --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #f5f5f4;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+  user-select: none;
+}
+
+/* Evitar zoom automàtic en focus d'input a iOS Safari */
+input[type="text"],
+input[type="password"] {
+  font-size: 16px !important;
+}
+
+/* Feedbacks tàctils suaus */
+button {
+  touch-action: manipulation;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* Indicador de càrrega suau per a la IA */
+@keyframes subtle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.animate-subtle-pulse {
+  animation: subtle-pulse 1.6s ease-in-out infinite;
+}

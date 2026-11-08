@@ -1,0 +1,315 @@
+const app2Html = `<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AI Buddy - Gestor de Tasques</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-neutral-950 text-stone-100 min-h-screen flex flex-col items-center justify-between p-6 font-sans relative">
+
+  <!-- Header: Estat de Connexió i Configuració -->
+  <header class="w-full max-w-md flex justify-between items-center py-2 border-b border-stone-800">
+    <h1 class="text-lg font-bold tracking-wide text-emerald-400 cursor-pointer" onclick="switchView('view-menu')">AI Buddy</h1>
+    <div class="flex items-center gap-2">
+      <span id="status-badge" title="Estat de sincronització" class="text-xs bg-stone-900 text-stone-400 px-3 py-1 rounded-full border border-stone-800 flex items-center gap-1.5">
+        ⚪ Local
+      </span>
+      <button onclick="switchView('view-settings')" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Configuració">
+        ⚙️
+      </button>
+    </div>
+  </header>
+
+  <!-- Toast Notificació -->
+  <div id="toast-notification" class="fixed top-20 bg-stone-900 border border-emerald-700/50 text-stone-200 text-xs px-4 py-2.5 rounded-xl shadow-2xl transition-all duration-300 transform opacity-0 translate-y-[-10px] pointer-events-none z-50">
+    + Pensament guardat
+  </div>
+
+  <!-- Contenidor Principal de Vistes -->
+  <main class="w-full max-w-md my-auto flex flex-col items-center text-center py-4">
+
+    <!-- VISTA 1: MENU PRINCIPAL -->
+    <section id="view-menu" class="w-full flex flex-col gap-3">
+      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Menú Principal</span>
+      
+      <button onclick="switchView('view-tasks')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+        <span>1. Tasques i Micro-passos</span>
+        <span class="text-stone-500">&#8250;</span>
+      </button>
+
+      <button onclick="switchView('view-thoughts')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+        <span>2. Pensaments Aparcats</span>
+        <span class="text-stone-500">&#8250;</span>
+      </button>
+
+      <button onclick="startPomodoro()" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+        <span>3. Pomodoro Sensorial</span>
+        <span class="text-stone-500">&#8250;</span>
+      </button>
+
+      <button onclick="switchView('view-routine')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+        <span>4. Rutina de Matí Guiada</span>
+        <span class="text-stone-500">&#8250;</span>
+      </button>
+
+      <button onclick="switchView('view-hobbies')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
+        <span>5. Llista de Recàrrega (Hobbies)</span>
+        <span class="text-stone-500">&#8250;</span>
+      </button>
+    </section>
+
+    <!-- VISTA 2: TASQUES I MICRO-PASSOS -->
+    <section id="view-tasks" class="w-full flex flex-col items-center hidden">
+      <div class="w-full flex gap-2 mb-4">
+        <button onclick="loadTemplate('estudi')" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition flex items-center justify-center">
+          Estudi Uni
+        </button>
+        <button onclick="loadTemplate('neteja')" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition flex items-center justify-center">
+          Netejar Habitació
+        </button>
+      </div>
+
+      <span id="step-counter" class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Pas Actual</span>
+      
+      <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex flex-col items-center justify-center mb-6">
+        <p id="step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
+          Escriu una tasca per començar...
+        </p>
+        <div id="completion-badge" class="hidden flex-col items-center gap-2 mt-2">
+          <div class="w-16 h-16 rounded-2xl bg-emerald-950 border border-emerald-700 flex items-center justify-center text-3xl">
+            ✨
+          </div>
+          <span class="text-sm text-emerald-400 font-medium">Tasca completada!</span>
+        </div>
+      </div>
+
+      <div class="flex gap-4 w-full mb-6">
+        <button id="btn-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+          &#8249;
+        </button>
+        <button id="btn-ok" class="flex-2 grow bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
+          OK
+        </button>
+        <button id="btn-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+          &#8250;
+        </button>
+      </div>
+
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
+
+    <!-- VISTA 3: PENSAMENTS APARCATS -->
+    <section id="view-thoughts" class="w-full flex flex-col items-center hidden">
+      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-4">Pensaments Aparcats</span>
+
+      <div id="thoughts-list" class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 min-h-[220px] max-h-[300px] overflow-y-auto space-y-2 text-left mb-4">
+        <p class="text-xs text-stone-500 text-center py-8">No hi ha pensaments aparcats encara.</p>
+      </div>
+
+      <div class="flex gap-2 w-full mb-6">
+        <button id="btn-clear-thoughts" class="w-full bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-400 text-xs py-2.5 rounded-xl transition">
+          Esborrar tots
+        </button>
+      </div>
+
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
+
+    <!-- VISTA 4: POMODORO SENSORIAL -->
+    <section id="view-pomodoro" class="w-full flex flex-col items-center hidden">
+      <div class="mb-4">
+        <div id="pomo-face-box" class="w-36 h-36 mx-auto rounded-2xl bg-stone-900 border border-stone-800 flex flex-col items-center justify-center gap-2 shadow-inner">
+          <span id="pomo-emoji" class="text-5xl">🌱</span>
+          <span id="pomo-status-label" class="text-[11px] text-stone-400 uppercase tracking-widest">En Focus</span>
+        </div>
+      </div>
+
+      <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-6 shadow-xl flex flex-col items-center mb-6">
+        <span class="text-xs text-stone-400 mb-4 uppercase tracking-widest">Temps de Focus Intern</span>
+        <div class="w-full bg-stone-950 h-6 rounded-xl overflow-hidden border border-stone-800 p-1">
+          <div id="pomo-bar" class="bg-emerald-700 h-full rounded-lg transition-all duration-1000 w-full"></div>
+        </div>
+      </div>
+
+      <div class="flex gap-4 w-full mb-6">
+        <button id="btn-pomo-reset" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-xs flex justify-center items-center">
+          Reiniciar
+        </button>
+        <button id="btn-pomo-ok" class="flex-2 grow bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-bold py-4 rounded-xl shadow-lg transition text-sm">
+          Pausar
+        </button>
+        <button id="btn-pomo-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center" title="Tornar al menú">
+          &#8250;
+        </button>
+      </div>
+
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
+
+    <!-- VISTA 5: RUTINA DE MATÍ GUIADA -->
+    <section id="view-routine" class="w-full flex flex-col items-center hidden">
+      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Rutina de Matí</span>
+      
+      <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex items-center justify-center mb-6">
+        <p id="routine-step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
+          Carregant rutina...
+        </p>
+      </div>
+
+      <div class="flex gap-4 w-full mb-4">
+        <button id="btn-routine-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+          &#8249;
+        </button>
+        <button id="btn-routine-ok" class="flex-2 grow bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
+          OK
+        </button>
+        <button id="btn-routine-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+          &#8250;
+        </button>
+      </div>
+
+      <div class="w-full flex gap-2 mb-2">
+        <input 
+          type="text" 
+          id="routine-input-new" 
+          placeholder="Nou pas per a la rutina..." 
+          class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-emerald-600 placeholder-stone-500"
+        />
+        <button id="btn-routine-add" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold px-4 py-2.5 rounded-xl text-xs transition">
+          Afegir
+        </button>
+      </div>
+
+      <button id="btn-routine-reset" class="w-full bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-400 text-xs py-2.5 rounded-xl transition mb-6">
+        Restaurar rutina inicial
+      </button>
+
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
+
+    <!-- VISTA 6: LLISTA DE RECÀRREGA (HOBBIES) -->
+    <section id="view-hobbies" class="w-full flex flex-col items-center hidden">
+      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Recàrrega i Descans</span>
+      
+      <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex items-center justify-center mb-6">
+        <p id="hobby-step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
+          Carregant opcions de descans...
+        </p>
+      </div>
+
+      <div class="flex gap-4 w-full mb-6">
+        <button id="btn-hobby-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+          &#8249;
+        </button>
+        <button id="btn-hobby-next" class="flex-2 grow bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-bold py-4 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
+          Següent opció &#8250;
+        </button>
+      </div>
+
+      <div class="w-full bg-stone-900/50 border border-stone-800 rounded-xl p-4 mb-6 text-left">
+        <span class="text-xs text-stone-400 block mb-2 uppercase tracking-widest">Personalitzar Hobbies</span>
+        <div class="flex gap-2 mb-2">
+          <input 
+            type="text" 
+            id="hobby-input-new" 
+            placeholder="Nou hobby o activitat..." 
+            class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 placeholder-stone-500"
+          />
+          <button id="btn-hobby-add" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold px-3 py-2 rounded-lg text-xs transition">
+            Afegir
+          </button>
+        </div>
+        <button id="btn-hobby-reset" class="text-[10px] text-stone-500 hover:text-stone-300 underline transition">
+          Restaurar llista predeterminada
+        </button>
+      </div>
+
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
+
+    <!-- VISTA 7: CONFIGURACIÓ (GEMINI + SUPABASE SYNC) -->
+    <section id="view-settings" class="w-full flex flex-col items-center hidden text-left">
+      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-4 text-center">Configuració i Sincronització</span>
+
+      <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 space-y-4 mb-6">
+        <div>
+          <label class="text-xs text-stone-300 font-semibold block mb-1">1. Clau API de Google Gemini (IA en català)</label>
+          <input type="password" id="cfg-gemini-key" placeholder="AIzaSy..." class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600" />
+          <p class="text-[10px] text-stone-500 mt-1">Converteix qualsevol tasca en micro-passos en un català impecable.</p>
+        </div>
+
+        <hr class="border-stone-800">
+
+        <div>
+          <label class="text-xs text-stone-300 font-semibold block mb-1">2. URL del Projecte Supabase (Opcional)</label>
+          <input type="text" id="cfg-supa-url" placeholder="https://xyz.supabase.co" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 mb-2" />
+          
+          <label class="text-xs text-stone-300 font-semibold block mb-1">Clau Pública (Anon Key) de Supabase</label>
+          <input type="password" id="cfg-supa-key" placeholder="eyJhbGciOi..." class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 mb-2" />
+
+          <label class="text-xs text-stone-300 font-semibold block mb-1">Codi d'Usuari (el mateix al mòbil i al PC)</label>
+          <input type="text" id="cfg-sync-id" placeholder="ex: el-meu-espai-123" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600" />
+        </div>
+
+        <button id="btn-save-settings" class="w-full bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-semibold py-2.5 rounded-xl text-xs transition">
+          Desar i Sincronitzar
+        </button>
+      </div>
+
+      <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+        &#8249; Tornar al menú principal
+      </button>
+    </section>
+
+  </main>
+
+  <!-- Input Area Inferior -->
+  <footer class="w-full max-w-md flex flex-col gap-2">
+    <div class="flex gap-2">
+      <input 
+        type="text" 
+        id="thought-input" 
+        placeholder="Aparcar pensament..." 
+        class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-emerald-600 placeholder-stone-500"
+      />
+      <button id="btn-park" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold px-4 py-2 rounded-xl text-xs transition">
+        Aparcar
+      </button>
+    </div>
+
+    <div class="flex gap-2">
+      <input 
+        type="text" 
+        id="task-input" 
+        placeholder="Escriu una tasca..." 
+        class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-600 placeholder-stone-500"
+      />
+      <button id="btn-send" class="bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-semibold px-5 py-3 rounded-xl text-sm transition">
+        Processar
+      </button>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>`;
+
+if (typeof window !== 'undefined') {
+  window.app2Html = app2Html;
+}
