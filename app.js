@@ -125,6 +125,7 @@ let state = {
     "Avança pas a pas sense distraccions"
   ],
   currentIndex: 0,
+  quickTodoList: [],
   parkedThoughts: [],
   routineSteps: [...defaultRoutineSteps],
   routineIndex: 0,
@@ -186,6 +187,11 @@ const pomoStatusLabel = document.getElementById("pomo-status-label");
 const btnPomoOk = document.getElementById("btn-pomo-ok");
 const btnPomoNext = document.getElementById("btn-pomo-next");
 const btnPomoReset = document.getElementById("btn-pomo-reset");
+
+const quickTodoInput = document.getElementById("quick-todo-input");
+const btnAddQuickTodo = document.getElementById("btn-add-quick-todo");
+const quickTodoListContainer = document.getElementById("quick-todo-list");
+const btnClearQuickTodos = document.getElementById("btn-clear-quick-todos");
 
 const cfgSupaUrl = document.getElementById("cfg-supa-url");
 const cfgSupaKey = document.getElementById("cfg-supa-key");
@@ -317,6 +323,7 @@ function updateAllDisplays() {
   updateRoutineDisplay();
   updateHobbyDisplay();
   renderParkedThoughts();
+  renderQuickTodoList();
 }
 
 function updateTaskDisplay() {
@@ -549,6 +556,77 @@ btnRoutineReset.addEventListener("click", () => {
   state.routineIndex = 0;
   saveState();
 });
+
+// --- LÒGICA DE LA TO-DO LIST RÀPIDA ---
+function renderQuickTodoList() {
+  if (!quickTodoListContainer) return;
+  quickTodoListContainer.innerHTML = "";
+  
+  if (!state.quickTodoList || state.quickTodoList.length === 0) {
+    quickTodoListContainer.innerHTML = '<p class="text-xs text-stone-500 text-center py-6">No hi ha tasques ràpides pendents.</p>';
+    return;
+  }
+
+  state.quickTodoList.forEach((item, idx) => {
+    const todoItem = document.createElement("div");
+    todoItem.className = "bg-stone-950 border border-stone-800 p-3 rounded-xl flex justify-between items-center text-xs gap-2 transition";
+
+    const leftDiv = document.createElement("div");
+    leftDiv.className = "flex items-center gap-3 overflow-hidden";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = item.completed || false;
+    checkbox.className = "w-4 h-4 accent-amber-500 rounded cursor-pointer";
+    checkbox.addEventListener("change", () => {
+      state.quickTodoList[idx].completed = checkbox.checked;
+      saveState();
+    });
+
+    const textSpan = document.createElement("span");
+    textSpan.className = `text-stone-200 break-words ${item.completed ? "line-through text-stone-500" : ""}`;
+    textSpan.textContent = item.text;
+
+    leftDiv.appendChild(checkbox);
+    leftDiv.appendChild(textSpan);
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "text-stone-600 hover:text-stone-300 text-xs px-2 py-1 shrink-0";
+    delBtn.textContent = "✕";
+    delBtn.addEventListener("click", () => {
+      state.quickTodoList.splice(idx, 1);
+      saveState();
+    });
+
+    todoItem.appendChild(leftDiv);
+    todoItem.appendChild(delBtn);
+    quickTodoListContainer.appendChild(todoItem);
+  });
+}
+
+// Esdeveniments per afegir elements a la To-Do Ràpida
+if (btnAddQuickTodo && quickTodoInput) {
+  btnAddQuickTodo.addEventListener("click", () => {
+    const text = quickTodoInput.value.trim();
+    if (text) {
+      state.quickTodoList.push({ text, completed: false });
+      quickTodoInput.value = "";
+      saveState();
+      showToast("✓ Tasca ràpida afegida");
+    }
+  });
+
+  quickTodoInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") btnAddQuickTodo.click();
+  });
+}
+
+if (btnClearQuickTodos) {
+  btnClearQuickTodos.addEventListener("click", () => {
+    state.quickTodoList = [];
+    saveState();
+  });
+}
 
 // --- LÒGICA DE HOBBIES ---
 btnHobbyNext.addEventListener("click", () => {
