@@ -30,15 +30,15 @@ button:active {
   transform: scale(0.97);
 }
 
-/* Scrollbar subtil i fosc per a llistes internes */
+/* Scrollbar subtil */
 ::-webkit-scrollbar {
   width: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #292524;
+  background: #44403c;
   border-radius: 9999px;
 }
 
@@ -48,32 +48,85 @@ button:active {
   50% { opacity: 0.45; }
 }
 
-/* --- CONFIGURACIÓ DE TEMES (CLAR / FOSC) --- */
+.animate-subtle-pulse {
+  animation: subtle-pulse 1.6s ease-in-out infinite;
+}
+
+/* =========================================================
+   CONFIGURACIÓ DE TEMA CLAR (LIGHT MODE COMPLET I VERSÀTIL)
+   ========================================================= */
 body.light-mode {
   background-color: #f4f4f0 !important; /* Blanc trencat suau */
   color: #1c1917 !important;            /* Text fosc */
 }
 
-/* Adaptació de contenidors i targetes en mode clar */
+/* Contenidors, targetes i requadres (inclosos els que tenen opacitat) */
 body.light-mode .bg-stone-950,
-body.light-mode .bg-stone-900 {
+body.light-mode .bg-stone-950\/50,
+body.light-mode .bg-stone-900,
+body.light-mode .bg-stone-900\/90,
+body.light-mode .bg-stone-900\/50 {
   background-color: #ffffff !important;
-  border-color: #e7e5e4 !important;
+  border-color: #d6d3d1 !important;
   color: #1c1917 !important;
 }
 
-body.light-mode .text-stone-200,
-body.light-mode .text-stone-300,
-body.light-mode .text-stone-400 {
-  color: #292524 !important;
+/* Botons secundaris (Aparcar, Afegir rutina, Afegir hobby, Fletxes) */
+body.light-mode .bg-stone-800 {
+  background-color: #e7e5e4 !important;
+  border-color: #d6d3d1 !important;
+  color: #1c1917 !important;
 }
 
-body.light-mode input {
-  background-color: #f5f5f4 !important;
+body.light-mode .bg-stone-800:hover,
+body.light-mode .hover\:bg-stone-800:hover,
+body.light-mode .hover\:bg-stone-700:hover {
+  background-color: #d6d3d1 !important;
+}
+
+/* Vores generals */
+body.light-mode .border-stone-800,
+body.light-mode .border-stone-800\/60,
+body.light-mode .border-stone-700 {
+  border-color: #d6d3d1 !important;
+}
+
+/* Textos interiors de targetes, títols i llistes */
+body.light-mode .text-stone-100,
+body.light-mode .text-stone-200,
+body.light-mode .text-stone-300 {
+  color: #1c1917 !important;
+}
+
+body.light-mode .text-stone-400,
+body.light-mode .text-stone-500 {
+  color: #57534e !important;
+}
+
+/* Títols i accents blaus en mode clar perquè tinguin bon contrast */
+body.light-mode .text-sky-400 {
+  color: #0284c7 !important; /* sky-600 en fons clar */
+}
+
+/* Quadre informatiu IA Local en mode clar */
+body.light-mode #ai-info-box {
+  background-color: #e0f2fe !important; /* sky-100 */
+  border-color: #7dd3fc !important;     /* sky-300 */
+}
+
+/* Caselles d'escriure (Inputs) en mode clar */
+body.light-mode input[type="text"],
+body.light-mode input[type="password"] {
+  background-color: #ffffff !important;
   color: #1c1917 !important;
   border-color: #d6d3d1 !important;
 }
 
-.animate-subtle-pulse {
-  animation: subtle-pulse 1.6s ease-in-out infinite;
+body.light-mode input::placeholder {
+  color: #78716c !important;
+}
+
+body.light-mode input[readonly] {
+  background-color: #f5f5f4 !important;
+  color: #78716c !important;
 }
