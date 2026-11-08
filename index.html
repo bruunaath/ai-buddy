@@ -15,9 +15,9 @@
 <body class="bg-neutral-950 text-stone-100 min-h-screen flex flex-col items-center justify-between p-6 font-sans relative">
 
   <!-- Header: Estat de Connexió i Configuració -->
-  <header class="w-full max-w-md flex justify-between items-center py-2 border-b border-stone-800">
-    <h1 class="text-lg font-bold tracking-wide text-emerald-400 cursor-pointer" onclick="switchView('view-menu')">AI Buddy</h1>
-    <div class="flex items-center gap-2">
+  <header class="w-full max-w-md grid grid-cols-3 items-center py-2 border-b border-stone-800">
+    <h1 class="text-lg font-bold tracking-wide text-sky-400 text-center cursor-pointer" onclick="switchView('view-menu')">AI Buddy</h1>
+    <div class="flex justify-end items-center gap-2">
       <span id="status-badge" title="Estat de sincronització" class="text-xs bg-stone-900 text-stone-400 px-3 py-1 rounded-full border border-stone-800 flex items-center gap-1.5">
         ⚪ Local
       </span>
@@ -40,7 +40,7 @@
 
     <!-- VISTA 1: MENU PRINCIPAL -->
     <section id="view-menu" class="w-full flex flex-col gap-3">
-      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Menú Principal</span>
+      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-2 text-center block w-full">MENÚ PRINCIPAL</span>
       
       <button onclick="switchView('view-tasks')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>Tasques i Micro-passos</span>
@@ -103,7 +103,7 @@
         </button>
       </div>
 
-      <span id="step-counter" class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Pas Actual</span>
+      <span id="step-counter" class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-2 text-center block w-full">Pas Actual</span>
       
       <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[170px] flex flex-col items-center justify-center mb-6">
         <p id="step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
@@ -135,7 +135,7 @@
 
     <!-- VISTA NOVA: TO-DO LIST RÀPIDA -->
     <section id="view-quick-todo" class="w-full flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-4">⚡ To-Do List Ràpida</span>
+      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-2 text-center block w-full">⚡ To-Do List Ràpida</span>
 
       <div class="flex gap-2 w-full mb-4">
         <input 
@@ -166,7 +166,7 @@
 
     <!-- VISTA 3: PENSAMENTS APARCATS -->
     <section id="view-thoughts" class="w-full flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-4">Pensaments Aparcats</span>
+      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-4 text-center block w-full">Pensaments Aparcats</span>
 
       <div id="thoughts-list" class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 min-h-[220px] max-h-[300px] overflow-y-auto space-y-2 text-left mb-4">
         <p class="text-xs text-stone-500 text-center py-8">No hi ha pensaments aparcats encara.</p>
@@ -195,7 +195,7 @@
       <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-6 shadow-xl flex flex-col items-center mb-6">
         <span class="text-xs text-stone-400 mb-4 uppercase tracking-widest">Temps de Focus Intern</span>
         <div class="w-full bg-stone-950 h-6 rounded-xl overflow-hidden border border-stone-800 p-1">
-          <div id="pomo-bar" class="bg-emerald-700 h-full rounded-lg transition-all duration-1000 w-full"></div>
+        <div id="pomo-bar" class="bg-emerald-700 h-full rounded-lg transition-all duration-1000 w-full"></div>
         </div>
       </div>
 
@@ -203,7 +203,7 @@
         <button id="btn-pomo-reset" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-xs flex justify-center items-center">
           Reiniciar
         </button>
-        <button id="btn-pomo-ok" class="flex-2 grow bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-bold py-4 rounded-xl shadow-lg transition text-sm">
+        <button id="btn-pomo-ok" class="flex-2 grow bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-bold py-4 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
           Pausar
         </button>
         <button id="btn-pomo-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center" title="Tornar al menú">
@@ -235,8 +235,7 @@
         <button id="btn-routine-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8249;
         </button>
-        <button id="btn-routine-ok" class="flex-2 grow bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
-          OK
+        <button id="btn-routine-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
         </button>
         <button id="btn-routine-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8250;
@@ -292,9 +291,9 @@
             placeholder="Nou hobby o activitat..." 
             class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 placeholder-stone-500"
           />
-          <button id="btn-hobby-add" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold px-3 py-2 rounded-lg text-xs transition">
-            Afegir
-          </button>
+        <button id="btn-hobby-add" class="bg-stone-200 hover:bg-stone-300 text-stone-900 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-300 font-semibold px-3 py-2 rounded-lg text-xs transition">
+          Afegir
+        </button>
         </div>
         <button id="btn-hobby-reset" class="text-[10px] text-stone-500 hover:text-stone-300 underline transition">
           Restaurar llista predeterminada
