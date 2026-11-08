@@ -12,10 +12,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-neutral-950 text-stone-100 min-h-screen flex flex-col items-center justify-between p-6 font-sans relative">
+<body class="bg-neutral-950 text-stone-100 min-h-screen flex flex-col items-center justify-between p-6 font-sans relative transition-colors duration-200">
 
   <!-- Header: Estat de Connexió i Configuració -->
   <header class="w-full max-w-md grid grid-cols-3 items-center py-2 border-b border-stone-800">
+    <div></div> <!-- Espaiador esquerre per centrar el títol -->
     <h1 class="text-lg font-bold tracking-wide text-sky-400 text-center cursor-pointer" onclick="switchView('view-menu')">AI Buddy</h1>
     <div class="flex justify-end items-center gap-2">
       <span id="status-badge" title="Estat de sincronització" class="text-xs bg-stone-900 text-stone-400 px-3 py-1 rounded-full border border-stone-800 flex items-center gap-1.5">
@@ -31,7 +32,7 @@
   </header>
 
   <!-- Toast Notificació Adaptat -->
-  <div id="toast-notification" class="fixed top-20 bg-white dark:bg-stone-900 border border-stone-300 dark:border-emerald-700/50 text-stone-900 dark:text-stone-200 text-xs px-4 py-2.5 rounded-xl shadow-2xl transition-all duration-300 transform opacity-0 translate-y-[-10px] pointer-events-none z-50">
+  <div id="toast-notification" class="fixed top-20 bg-stone-900 border border-sky-500/50 text-stone-200 text-xs px-4 py-2.5 rounded-xl shadow-2xl transition-all duration-300 transform opacity-0 translate-y-[-10px] pointer-events-none z-50">
     + Pensament guardat per més tard
   </div>
 
@@ -105,12 +106,14 @@
 
       <span id="step-counter" class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-2 text-center block w-full">Pas Actual</span>
       
-      <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 min-h-[220px] max-h-[300px] overflow-y-auto space-y-2 text-left mb-4">
-        <p class="text-xs text-stone-500 text-center py-8">Escriu una tasca per començar...</p>
-  <!-- Imatge en acabar qualsevol tasca -->
+      <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex flex-col items-center justify-center mb-6">
+        <p id="step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200 text-center">
+          Escriu una tasca per començar...
+        </p>
+        <!-- Imatge en acabar qualsevol tasca -->
         <div id="completion-badge" class="hidden flex-col items-center gap-3 mt-1">
           <img id="task-complete-img" src="completat.jpg" alt="Tasca completada" class="w-24 h-24 rounded-2xl object-cover border border-sky-500 shadow-md" />
-          <span class="text-sm text-sky-500 font-medium">Tasca completada!</span>
+          <span class="text-sm text-sky-400 font-medium">Tasca completada!</span>
         </div>
       </div>
 
@@ -133,16 +136,16 @@
 
     <!-- VISTA NOVA: TO-DO LIST RÀPIDA -->
     <section id="view-quick-todo" class="w-full flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-2 text-center block w-full">⚡ To-Do List Ràpida</span>
+      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-4 text-center block w-full">⚡ To-Do List Ràpida</span>
 
       <div class="flex gap-2 w-full mb-4">
         <input 
           type="text" 
           id="quick-todo-input" 
           placeholder="Apunta una tasca ràpida..." 
-          class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-emerald-600 placeholder-stone-500"
+          class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500"
         />
-        <button id="btn-add-quick-todo" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold px-4 py-2.5 rounded-xl text-xs transition">
+        <button id="btn-add-quick-todo" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-sm">
           Afegir
         </button>
       </div>
@@ -183,6 +186,7 @@
 
     <!-- VISTA 4: POMODORO SENSORIAL (AMB IMATGES) -->
     <section id="view-pomodoro" class="w-full flex flex-col items-center hidden">
+      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-3 text-center block w-full">Pomodoro Sensorial</span>
       <div class="mb-4">
         <div id="pomo-face-box" class="w-40 h-44 mx-auto rounded-2xl bg-stone-900 border border-stone-800 p-3 flex flex-col items-center justify-center gap-2 shadow-inner">
           <img id="pomo-img" src="focus_normal.jpg" alt="Estat del Pomodoro" class="w-28 h-28 rounded-xl object-cover border border-stone-800" />
@@ -216,16 +220,16 @@
 
     <!-- VISTA 5: RUTINA DE MATÍ GUIADA -->
     <section id="view-routine" class="w-full flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-sky-500 font-semibold uppercase mb-2 text-center block w-full">Rutina de Matí</span>
+      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-2 text-center block w-full">Rutina de Matí</span>
       
-      <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex flex-col items-center justify-center mb-6">
+      <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex flex-col items-center justify-center mb-6">
         <p id="routine-step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
           Carregant rutina...
         </p>
         <!-- Imatge en acabar la rutina de matí -->
         <div id="routine-completion-badge" class="hidden flex-col items-center gap-3 mt-1">
-          <img src="completat.jpg" alt="Rutina completada" class="w-24 h-24 rounded-2xl object-cover border border-emerald-700 shadow-md" />
-          <span class="text-sm text-emerald-400 font-medium">Has completat la rutina de matí!</span>
+          <img src="completat.jpg" alt="Rutina completada" class="w-24 h-24 rounded-2xl object-cover border border-sky-500 shadow-md" />
+          <span class="text-sm text-sky-400 font-medium">Has completat la rutina de matí!</span>
         </div>
       </div>
 
@@ -246,9 +250,9 @@
           type="text" 
           id="routine-input-new" 
           placeholder="Nou pas per a la rutina..." 
-          class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-emerald-600 placeholder-stone-500"
+          class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500"
         />
-        <button id="btn-routine-add" class="bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold px-4 py-2.5 rounded-xl text-xs transition">
+        <button id="btn-routine-add" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-4 py-2.5 rounded-xl text-xs transition border border-stone-700">
           Afegir
         </button>
       </div>
@@ -264,9 +268,9 @@
 
     <!-- VISTA 6: LLISTA DE RECÀRREGA (HOBBIES) -->
     <section id="view-hobbies" class="w-full flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-2">Recàrrega i Descans</span>
+      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-2 text-center block w-full">Recàrrega i Descans</span>
       
-      <div class="w-full bg-stone-900/90 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex items-center justify-center mb-6">
+      <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex items-center justify-center mb-6">
         <p id="hobby-step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200">
           Carregant opcions de descans...
         </p>
@@ -276,23 +280,23 @@
         <button id="btn-hobby-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8249;
         </button>
-        <button id="btn-hobby-next" class="flex-2 grow bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-bold py-4 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
+        <button id="btn-hobby-next" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
           Següent opció &#8250;
         </button>
       </div>
 
-      <div class="w-full bg-stone-900/50 border border-stone-800 rounded-xl p-4 mb-6 text-left">
+      <div class="w-full bg-stone-900 border border-stone-800 rounded-xl p-4 mb-6 text-left">
         <span class="text-xs text-stone-400 block mb-2 uppercase tracking-widest">Personalitzar Hobbies</span>
         <div class="flex gap-2 mb-2">
           <input 
             type="text" 
             id="hobby-input-new" 
             placeholder="Nou hobby o activitat..." 
-            class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600 placeholder-stone-500"
+            class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500"
           />
-        <button id="btn-hobby-add" class="bg-stone-200 hover:bg-stone-300 text-stone-900 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-300 font-semibold px-3 py-2 rounded-lg text-xs transition">
-          Afegir
-        </button>
+          <button id="btn-hobby-add" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-3 py-2 rounded-lg text-xs transition border border-stone-700">
+            Afegir
+          </button>
         </div>
         <button id="btn-hobby-reset" class="text-[10px] text-stone-500 hover:text-stone-300 underline transition">
           Restaurar llista predeterminada
@@ -304,31 +308,31 @@
       </button>
     </section>
 
-<!-- VISTA 7: CONFIGURACIÓ (SUPABASE SYNC) -->
+    <!-- VISTA 7: CONFIGURACIÓ (SUPABASE SYNC) -->
     <section id="view-settings" class="w-full flex flex-col items-center hidden text-left">
-      <span class="text-xs tracking-widest text-emerald-500 font-semibold uppercase mb-4 text-center">Sincronització al Núvol</span>
+      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-4 text-center block w-full">Sincronització al Núvol</span>
 
       <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 space-y-4 mb-6">
-        <div class="bg-emerald-950/30 border border-emerald-800/40 rounded-xl p-3">
-          <p class="text-[11px] text-emerald-300 font-medium">✨ Motor IA Local AuDHD Actiu</p>
+        <div id="ai-info-box" class="bg-sky-950/30 border border-sky-500/40 rounded-xl p-3">
+          <p class="text-[11px] text-sky-400 font-semibold">✨ Motor IA Local AuDHD Actiu</p>
           <p class="text-[10px] text-stone-400 mt-0.5">El desglossament de micro-passos en català funciona automàticament sense claus externes ni límits.</p>
         </div>
 
         <div>
           <!-- URL de Supabase predeterminada i en mode només lectura -->
           <label class="text-xs text-stone-300 font-semibold block mb-1">1. URL del Projecte Supabase</label>
-          <input type="text" id="cfg-supa-url" value="https://qstjwfqrkemyfzudtoxb.supabase.co" readonly class="w-full bg-stone-950/50 border border-stone-800/60 text-stone-400 rounded-lg px-3 py-2 text-xs focus:outline-none mb-3 cursor-not-allowed" />
+          <input type="text" id="cfg-supa-url" value="https://qstjwfqrkemyfzudtoxb.supabase.co" readonly class="w-full bg-stone-950 border border-stone-800 text-stone-400 rounded-lg px-3 py-2 text-xs focus:outline-none mb-3 cursor-not-allowed opacity-75" />
           
           <!-- Clau Pública predeterminada i en mode només lectura -->
           <label class="text-xs text-stone-300 font-semibold block mb-1">2. Clau Pública (Anon / Publishable Key)</label>
-          <input type="password" id="cfg-supa-key" value="sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq" readonly class="w-full bg-stone-950/50 border border-stone-800/60 text-stone-400 rounded-lg px-3 py-2 text-xs focus:outline-none mb-3 cursor-not-allowed" />
+          <input type="password" id="cfg-supa-key" value="sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq" readonly class="w-full bg-stone-950 border border-stone-800 text-stone-400 rounded-lg px-3 py-2 text-xs focus:outline-none mb-3 cursor-not-allowed opacity-75" />
 
           <!-- Únic camp lliure: L'usuari -->
           <label class="text-xs text-stone-300 font-semibold block mb-1">3. Codi d'Usuari (el mateix al mòbil i al PC)</label>
-          <input type="text" id="cfg-sync-id" placeholder="ex: el-meu-espai-123" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600" />
+          <input type="text" id="cfg-sync-id" placeholder="ex: el-meu-espai-123" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
         </div>
 
-        <button id="btn-save-settings" class="w-full bg-emerald-700 hover:bg-emerald-600 text-stone-100 font-semibold py-2.5 rounded-xl text-xs transition">
+        <button id="btn-save-settings" class="w-full bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-2.5 rounded-xl text-xs transition shadow-md">
           Desar i Sincronitzar
         </button>
       </div>
@@ -347,9 +351,9 @@
         type="text" 
         id="thought-input" 
         placeholder="Aparcar pensament..." 
-        class="w-full bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-800 text-stone-900 dark:text-stone-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-sky-500 dark:focus:border-emerald-600 placeholder-stone-400 dark:placeholder-stone-500 shadow-sm transition"
+        class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500 shadow-sm transition"
       />
-      <button id="btn-park" class="bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-300 font-semibold px-4 py-2 rounded-xl text-xs transition shadow-sm">
+      <button id="btn-park" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-4 py-2 rounded-xl text-xs transition border border-stone-700 shadow-sm">
         Aparcar
       </button>
     </div>
@@ -359,24 +363,25 @@
         type="text" 
         id="task-input" 
         placeholder="Escriu una tasca..." 
-        class="w-full bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-800 text-stone-900 dark:text-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500 dark:focus:border-emerald-600 placeholder-stone-400 dark:placeholder-stone-500 shadow-sm transition"
+        class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500 placeholder-stone-500 shadow-sm transition"
       />
-      <button id="btn-send" class="bg-sky-500 hover:bg-sky-400 dark:bg-emerald-700 dark:hover:bg-emerald-600 text-stone-950 dark:text-stone-100 font-semibold px-5 py-3 rounded-xl text-sm transition shadow-md">
+      <button id="btn-send" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-5 py-3 rounded-xl text-sm transition shadow-md">
         Processar
       </button>
     </div>
   </footer>
 
-  <script src="app.js"></script>
   <!-- Baner d'actualització pendent -->
   <div id="update-banner" class="fixed bottom-6 left-6 right-6 max-w-md mx-auto bg-stone-900 border border-sky-500/50 text-stone-200 p-4 rounded-2xl shadow-2xl flex justify-between items-center z-50 hidden">
     <div class="text-left text-xs">
       <p class="font-bold text-sky-400">Hi ha actualitzacions noves! ✨</p>
       <p class="text-stone-400 mt-0.5">S'ha publicat una nova versió de l'app.</p>
     </div>
-    <button onclick="applyUpdate()" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shrink-0">
+    <button onclick="applyUpdate()" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shrink-0">
       Actualitzar
     </button>
   </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
