@@ -6,7 +6,7 @@ const IMAGES = {
   avis: "avis.jpg"             // 4. Quan falten 5 minuts o menys de Pomodoro
 };
 
-// --- DICCIONARI DE 10 CATEGORIES HABITUALS AuDHD ---
+// --- DICCIONARI DE CATEGORIES HABITUALS AuDHD ---
 const catalegTasquesTDAH = {
   netejar_cuina: {
     titol: "Netejar la cuina",
@@ -14,9 +14,9 @@ const catalegTasquesTDAH = {
     passos: [
       "Posar música animada",
       "Llençar només els envasos i brossa visible",
-      "Agrupar tots els plats bruts dins l'aixeta",
+      "Agrupar tots els plats bruts dins l'aigüera",
       "Rentar només cinc peces o omplir el rentaplats",
-      "Passar una drap humit pel marbre"
+      "Passar un drap humit pel marbre"
     ]
   },
   posar_rentadora: {
@@ -72,14 +72,14 @@ const catalegTasquesTDAH = {
       "Guardar la resta de la llista per més tard"
     ]
   },
- motxilla_uni: {
+  motxilla_uni: {
     titol: "Preparar la motxilla de la uni",
     paraules_clau: ["motxilla", "uni", "universitat", "clase", "apunts", "ordinador", "carregador", "claus", "cartera"],
     passos: [
       "Deixar la motxilla oberta damunt del llit",
       "Ficar a dins l'ordinador portàtil i la tablet",
       "Afegir els carregadors i els auriculars",
-      "Afegir la llibreta i el estoig amb bolígrafs",
+      "Afegir la llibreta i l'estoig amb bolígrafs",
       "Comprovar que portes la cartera i el necesser d'imprescindibles",
       "Tancar la motxilla i deixar-la a l'entrada de l'habitació"
     ]
@@ -94,7 +94,7 @@ const catalegTasquesTDAH = {
       "Completar les dades bàsiques pas a pas sense pressa",
       "Enviar el formulari i fer captura del comprovant"
     ]
-  },
+  }
 };
 
 // --- VALORS PREDETERMINATS ---
@@ -105,7 +105,7 @@ const defaultRoutineSteps = [
   "Skincare bàsic",
   "Fer el llit",
   "Cafè i medicació",
-  "Preparar l'esmorzar",
+  "Preparar l'esmorzar"
 ];
 
 const defaultHobbies = [
@@ -115,7 +115,7 @@ const defaultHobbies = [
   "Fer Diamond Painting",
   "Jugar a la Switch sense mirar el mòbil",
   "Veure Gilmore Girls",
-  "Mirar Pinterest per motivar-me",
+  "Mirar Pinterest per motivar-me"
 ];
 
 // --- ESTAT CENTRALITZAT (Local + Núvol) ---
@@ -134,10 +134,10 @@ let state = {
   updatedAt: 0
 };
 
-// Configuració de Supabase (URL i Key fixades, usuari dinàmic)
+// Configuració de Supabase (URL i Key fixades o guardades, usuari dinàmic)
 let config = {
-  supaUrl: "https://qstjwfqrkemyfzudtoxb.supabase.co", // Posa aquí la teva URL real
-  supaKey: "sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq",           // Posa aquí la teva Clau Pública real
+  supaUrl: localStorage.getItem("aibuddy_supa_url") || "https://qstjwfqrkemyfzudtoxb.supabase.co",
+  supaKey: localStorage.getItem("aibuddy_supa_key") || "sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq",
   syncId: localStorage.getItem("aibuddy_sync_id") || "usuari_principal"
 };
 
@@ -227,7 +227,7 @@ async function saveState() {
   const baseUrl = cleanSupaUrl(config.supaUrl);
   if (baseUrl && config.supaKey && config.syncId) {
     try {
-      statusBadge.textContent = "🔄 Sincr...";
+      if (statusBadge) statusBadge.textContent = "🔄 Sincr...";
       const res = await fetch(`${baseUrl}/rest/v1/user_state`, {
         method: "POST",
         headers: {
@@ -243,22 +243,22 @@ async function saveState() {
         })
       });
       if (res.ok) {
-        statusBadge.textContent = "🟢 Sincronitzat";
+        if (statusBadge) statusBadge.textContent = "🟢 Sincronitzat";
       } else {
-        statusBadge.textContent = "🟠 Error Núvol";
+        if (statusBadge) statusBadge.textContent = "🟠 Error Núvol";
       }
     } catch (err) {
-      statusBadge.textContent = "⚪ Offline";
+      if (statusBadge) statusBadge.textContent = "⚪ Offline";
     }
   } else {
-    statusBadge.textContent = "⚪ Local";
+    if (statusBadge) statusBadge.textContent = "⚪ Local";
   }
 }
 
 async function pullRemoteState() {
   const baseUrl = cleanSupaUrl(config.supaUrl);
   if (!baseUrl || !config.supaKey || !config.syncId) {
-    statusBadge.textContent = "⚪ Local";
+    if (statusBadge) statusBadge.textContent = "⚪ Local";
     return;
   }
   try {
@@ -278,15 +278,15 @@ async function pullRemoteState() {
           localStorage.setItem("aibuddy_state", JSON.stringify(state));
           updateAllDisplays();
         }
-        statusBadge.textContent = "🟢 Sincronitzat";
+        if (statusBadge) statusBadge.textContent = "🟢 Sincronitzat";
       } else {
         await saveState();
       }
     } else {
-      statusBadge.textContent = "🟠 Error Núvol";
+      if (statusBadge) statusBadge.textContent = "🟠 Error Núvol";
     }
   } catch (e) {
-    statusBadge.textContent = "⚪ Offline";
+    if (statusBadge) statusBadge.textContent = "⚪ Offline";
   }
 }
 
@@ -295,7 +295,7 @@ setInterval(pullRemoteState, 20000);
 
 // --- GESTIÓ DE VISTES ---
 function switchView(viewId) {
-  const views = ["view-menu", "view-tasks", "view-thoughts", "view-pomodoro", "view-routine", "view-hobbies", "view-settings","view-quick-todo"];
+  const views = ["view-menu", "view-tasks", "view-thoughts", "view-pomodoro", "view-routine", "view-hobbies", "view-settings", "view-quick-todo"];
   views.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.add("hidden");
@@ -309,9 +309,9 @@ function switchView(viewId) {
   if (target) target.classList.remove("hidden");
 
   if (viewId === "view-settings") {
-    cfgSupaUrl.value = config.supaUrl;
-    cfgSupaKey.value = config.supaKey;
-    cfgSyncId.value = config.syncId;
+    if (cfgSupaUrl) cfgSupaUrl.value = config.supaUrl;
+    if (cfgSupaKey) cfgSupaKey.value = config.supaKey;
+    if (cfgSyncId) cfgSyncId.value = config.syncId;
   }
   updateAllDisplays();
 }
@@ -327,6 +327,8 @@ function updateAllDisplays() {
 }
 
 function updateTaskDisplay() {
+  if (!stepDisplay || !completionBadge || !stepCounter) return;
+
   if (Array.isArray(state.currentSteps) && state.currentSteps.length > 0 && state.currentIndex < state.currentSteps.length) {
     completionBadge.classList.add("hidden");
     completionBadge.classList.remove("flex");
@@ -334,7 +336,6 @@ function updateTaskDisplay() {
     stepDisplay.textContent = state.currentSteps[state.currentIndex];
     stepCounter.textContent = `Pas ${state.currentIndex + 1} de ${state.currentSteps.length}`;
   } else {
-    // 3. Quan s'acaba una tasca (qualsevol), mostrem la imatge de completat
     stepDisplay.classList.add("hidden");
     if (taskCompleteImg) taskCompleteImg.src = IMAGES.completat;
     completionBadge.classList.remove("hidden");
@@ -344,6 +345,8 @@ function updateTaskDisplay() {
 }
 
 function updateRoutineDisplay() {
+  if (!routineStepDisplay) return;
+
   if (Array.isArray(state.routineSteps) && state.routineSteps.length > 0 && state.routineIndex < state.routineSteps.length) {
     if (routineCompletionBadge) {
       routineCompletionBadge.classList.add("hidden");
@@ -361,6 +364,8 @@ function updateRoutineDisplay() {
 }
 
 function updateHobbyDisplay() {
+  if (!hobbyStepDisplay) return;
+
   if (Array.isArray(state.hobbySteps) && state.hobbySteps.length > 0) {
     if (state.hobbyIndex >= state.hobbySteps.length) state.hobbyIndex = 0;
     hobbyStepDisplay.textContent = state.hobbySteps[state.hobbyIndex];
@@ -370,26 +375,32 @@ function updateHobbyDisplay() {
 }
 
 // --- NAVEGACIÓ DE TASQUES I PLANTILLES ---
-btnOk.addEventListener("click", () => {
-  if (state.currentIndex < state.currentSteps.length) {
-    state.currentIndex++;
-    saveState();
-  }
-});
+if (btnOk) {
+  btnOk.addEventListener("click", () => {
+    if (state.currentIndex < state.currentSteps.length) {
+      state.currentIndex++;
+      saveState();
+    }
+  });
+}
 
-btnNext.addEventListener("click", () => {
-  if (state.currentIndex < state.currentSteps.length - 1) {
-    state.currentIndex++;
-    saveState();
-  }
-});
+if (btnNext) {
+  btnNext.addEventListener("click", () => {
+    if (state.currentIndex < state.currentSteps.length - 1) {
+      state.currentIndex++;
+      saveState();
+    }
+  });
+}
 
-btnPrev.addEventListener("click", () => {
-  if (state.currentIndex > 0) {
-    state.currentIndex--;
-    saveState();
-  }
-});
+if (btnPrev) {
+  btnPrev.addEventListener("click", () => {
+    if (state.currentIndex > 0) {
+      state.currentIndex--;
+      saveState();
+    }
+  });
+}
 
 function loadTemplate(categoriaId) {
   const aliasMap = {
@@ -498,64 +509,80 @@ function generarMicroPassos(rawTask) {
 }
 
 // --- ESDEVENIMENTS DEL BOTÓ ENVIAR I TECLA ENTER ---
-btnSend.addEventListener("click", () => {
-  const taskText = taskInput.value.trim();
-  if (!taskText) return;
+if (btnSend && taskInput) {
+  btnSend.addEventListener("click", () => {
+    const taskText = taskInput.value.trim();
+    if (!taskText) return;
 
-  switchView("view-tasks");
-  taskInput.value = "";
+    switchView("view-tasks");
+    taskInput.value = "";
 
-  stepDisplay.classList.remove("hidden", "animate-subtle-pulse");
-  completionBadge.classList.add("hidden");
+    if (stepDisplay) stepDisplay.classList.remove("hidden", "animate-subtle-pulse");
+    if (completionBadge) completionBadge.classList.add("hidden");
 
-  state.currentSteps = generarMicroPassos(taskText);
-  state.currentIndex = 0;
-  saveState();
-});
+    state.currentSteps = generarMicroPassos(taskText);
+    state.currentIndex = 0;
+    saveState();
+  });
 
-taskInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") btnSend.click();
-});
+  taskInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") btnSend.click();
+  });
+}
 
 // --- LÒGICA DE RUTINA DE MATÍ ---
-btnRoutineOk.addEventListener("click", () => {
-  if (state.routineIndex < state.routineSteps.length) {
-    state.routineIndex++;
-    saveState();
-  } else {
+if (btnRoutineOk) {
+  btnRoutineOk.addEventListener("click", () => {
+    if (state.routineIndex < state.routineSteps.length) {
+      state.routineIndex++;
+      saveState();
+    } else {
+      state.routineIndex = 0;
+      saveState();
+    }
+  });
+}
+
+if (btnRoutineNext) {
+  btnRoutineNext.addEventListener("click", () => {
+    if (state.routineIndex < state.routineSteps.length - 1) {
+      state.routineIndex++;
+      saveState();
+    }
+  });
+}
+
+if (btnRoutinePrev) {
+  btnRoutinePrev.addEventListener("click", () => {
+    if (state.routineIndex > 0) {
+      state.routineIndex--;
+      saveState();
+    }
+  });
+}
+
+if (btnRoutineAdd && routineInputNew) {
+  btnRoutineAdd.addEventListener("click", () => {
+    const newStep = routineInputNew.value.trim();
+    if (newStep) {
+      state.routineSteps.push(newStep);
+      routineInputNew.value = "";
+      saveState();
+    }
+  });
+
+  routineInputNew.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") btnRoutineAdd.click();
+  });
+}
+
+if (btnRoutineReset) {
+  btnRoutineReset.addEventListener("click", () => {
+    state.routineSteps = [...defaultRoutineSteps];
     state.routineIndex = 0;
     saveState();
-  }
-});
-
-btnRoutineNext.addEventListener("click", () => {
-  if (state.routineIndex < state.routineSteps.length - 1) {
-    state.routineIndex++;
-    saveState();
-  }
-});
-
-btnRoutinePrev.addEventListener("click", () => {
-  if (state.routineIndex > 0) {
-    state.routineIndex--;
-    saveState();
-  }
-});
-
-btnRoutineAdd.addEventListener("click", () => {
-  const newStep = routineInputNew.value.trim();
-  if (newStep) {
-    state.routineSteps.push(newStep);
-    routineInputNew.value = "";
-    saveState();
-  }
-});
-
-btnRoutineReset.addEventListener("click", () => {
-  state.routineSteps = [...defaultRoutineSteps];
-  state.routineIndex = 0;
-  saveState();
-});
+  });
+}
 
 // --- LÒGICA DE LA TO-DO LIST RÀPIDA ---
 function renderQuickTodoList() {
@@ -577,7 +604,7 @@ function renderQuickTodoList() {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = item.completed || false;
-    checkbox.className = "w-4 h-4 accent-amber-500 rounded cursor-pointer";
+    checkbox.className = "w-4 h-4 accent-sky-500 rounded cursor-pointer";
     checkbox.addEventListener("change", () => {
       state.quickTodoList[idx].completed = checkbox.checked;
       saveState();
@@ -591,7 +618,7 @@ function renderQuickTodoList() {
     leftDiv.appendChild(textSpan);
 
     const delBtn = document.createElement("button");
-    delBtn.className = "text-stone-600 hover:text-stone-300 text-xs px-2 py-1 shrink-0";
+    delBtn.className = "text-stone-500 hover:text-stone-300 text-xs px-2 py-1 shrink-0";
     delBtn.textContent = "✕";
     delBtn.addEventListener("click", () => {
       state.quickTodoList.splice(idx, 1);
@@ -604,7 +631,6 @@ function renderQuickTodoList() {
   });
 }
 
-// Esdeveniments per afegir elements a la To-Do Ràpida
 if (btnAddQuickTodo && quickTodoInput) {
   btnAddQuickTodo.addEventListener("click", () => {
     const text = quickTodoInput.value.trim();
@@ -629,37 +655,50 @@ if (btnClearQuickTodos) {
 }
 
 // --- LÒGICA DE HOBBIES ---
-btnHobbyNext.addEventListener("click", () => {
-  if (state.hobbySteps.length > 0) {
-    state.hobbyIndex = (state.hobbyIndex + 1) % state.hobbySteps.length;
-    saveState();
-  }
-});
+if (btnHobbyNext) {
+  btnHobbyNext.addEventListener("click", () => {
+    if (state.hobbySteps.length > 0) {
+      state.hobbyIndex = (state.hobbyIndex + 1) % state.hobbySteps.length;
+      saveState();
+    }
+  });
+}
 
-btnHobbyPrev.addEventListener("click", () => {
-  if (state.hobbySteps.length > 0) {
-    state.hobbyIndex = (state.hobbyIndex - 1 + state.hobbySteps.length) % state.hobbySteps.length;
-    saveState();
-  }
-});
+if (btnHobbyPrev) {
+  btnHobbyPrev.addEventListener("click", () => {
+    if (state.hobbySteps.length > 0) {
+      state.hobbyIndex = (state.hobbyIndex - 1 + state.hobbySteps.length) % state.hobbySteps.length;
+      saveState();
+    }
+  });
+}
 
-btnHobbyAdd.addEventListener("click", () => {
-  const newHobby = hobbyInputNew.value.trim();
-  if (newHobby) {
-    state.hobbySteps.push(newHobby);
-    hobbyInputNew.value = "";
-    saveState();
-  }
-});
+if (btnHobbyAdd && hobbyInputNew) {
+  btnHobbyAdd.addEventListener("click", () => {
+    const newHobby = hobbyInputNew.value.trim();
+    if (newHobby) {
+      state.hobbySteps.push(newHobby);
+      hobbyInputNew.value = "";
+      saveState();
+    }
+  });
 
-btnHobbyReset.addEventListener("click", () => {
-  state.hobbySteps = [...defaultHobbies];
-  state.hobbyIndex = 0;
-  saveState();
-});
+  hobbyInputNew.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") btnHobbyAdd.click();
+  });
+}
+
+if (btnHobbyReset) {
+  btnHobbyReset.addEventListener("click", () => {
+    state.hobbySteps = [...defaultHobbies];
+    state.hobbyIndex = 0;
+    saveState();
+  });
+}
 
 // --- LÒGICA DE PENSAMENTS APARCATS ---
 function showToast(msg = "+ Pensament guardat") {
+  if (!toastNotification) return;
   toastNotification.textContent = msg;
   toastNotification.classList.remove("opacity-0", "translate-y-[-10px]");
   toastNotification.classList.add("opacity-100", "translate-y-0");
@@ -670,24 +709,27 @@ function showToast(msg = "+ Pensament guardat") {
   }, 2500);
 }
 
-btnPark.addEventListener("click", () => {
-  const thoughtText = thoughtInput.value.trim();
-  if (thoughtText) {
-    state.parkedThoughts.push({
-      text: thoughtText,
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    });
-    thoughtInput.value = "";
-    saveState();
-    showToast("+ Pensament guardat");
-  }
-});
+if (btnPark && thoughtInput) {
+  btnPark.addEventListener("click", () => {
+    const thoughtText = thoughtInput.value.trim();
+    if (thoughtText) {
+      state.parkedThoughts.push({
+        text: thoughtText,
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      });
+      thoughtInput.value = "";
+      saveState();
+      showToast("+ Pensament guardat");
+    }
+  });
 
-thoughtInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") btnPark.click();
-});
+  thoughtInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") btnPark.click();
+  });
+}
 
 function renderParkedThoughts() {
+  if (!thoughtsListContainer) return;
   thoughtsListContainer.innerHTML = "";
   if (!state.parkedThoughts || state.parkedThoughts.length === 0) {
     thoughtsListContainer.innerHTML = '<p class="text-xs text-stone-500 text-center py-8">No hi ha pensaments aparcats encara.</p>';
@@ -710,7 +752,7 @@ function renderParkedThoughts() {
     timeSpan.textContent = item.time;
 
     const delBtn = document.createElement("button");
-    delBtn.className = "text-stone-600 hover:text-stone-300 text-xs px-1";
+    delBtn.className = "text-stone-500 hover:text-stone-300 text-xs px-1";
     delBtn.textContent = "✕";
     delBtn.addEventListener("click", () => {
       state.parkedThoughts.splice(idx, 1);
@@ -725,18 +767,20 @@ function renderParkedThoughts() {
   });
 }
 
-btnClearThoughts.addEventListener("click", () => {
-  state.parkedThoughts = [];
-  saveState();
-});
+if (btnClearThoughts) {
+  btnClearThoughts.addEventListener("click", () => {
+    state.parkedThoughts = [];
+    saveState();
+  });
+}
 
 // --- LÒGICA DEL POMODORO SENSORIAL AMB IMATGES ---
 function startPomodoro() {
   switchView("view-pomodoro");
   pomoCurrentSeconds = pomoTotalSeconds;
   isPomoPaused = false;
-  btnPomoOk.textContent = "Pausar";
-  pomoBar.style.width = "100%";
+  if (btnPomoOk) btnPomoOk.textContent = "Pausar";
+  if (pomoBar) pomoBar.style.width = "100%";
   updatePomodoroVisuals();
 
   if (pomoTimer) clearInterval(pomoTimer);
@@ -745,12 +789,12 @@ function startPomodoro() {
     if (!isPomoPaused) {
       pomoCurrentSeconds--;
       const percentage = Math.max(0, (pomoCurrentSeconds / pomoTotalSeconds) * 100);
-      pomoBar.style.width = `${percentage}%`;
+      if (pomoBar) pomoBar.style.width = `${percentage}%`;
       updatePomodoroVisuals();
 
       if (pomoCurrentSeconds <= 0) {
         clearInterval(pomoTimer);
-        pomoBar.style.width = "0%";
+        if (pomoBar) pomoBar.style.width = "0%";
       }
     }
   }, 1000);
@@ -758,55 +802,63 @@ function startPomodoro() {
 window.startPomodoro = startPomodoro;
 
 function updatePomodoroVisuals() {
+  if (!pomoImg || !pomoStatusLabel) return;
+
   if (pomoCurrentSeconds <= 0) {
-    // 3. Quan s'acabi el Pomodoro
     pomoImg.src = IMAGES.completat;
     pomoStatusLabel.textContent = "Temps completat!";
   } else if (isPomoPaused) {
-    // 2. Quan es pausi el Pomodoro
     pomoImg.src = IMAGES.pausa;
     pomoStatusLabel.textContent = "En Pausa";
   } else if (pomoCurrentSeconds <= 300) {
-    // 4. Quan faltin 5 minuts (300 segons) o menys
     pomoImg.src = IMAGES.avis;
     pomoStatusLabel.textContent = "Últims 5 minuts";
   } else {
-    // 1. Quan el Pomodoro estigui en marxa
     pomoImg.src = IMAGES.focus;
     pomoStatusLabel.textContent = "En Focus";
   }
 }
 
-btnPomoOk.addEventListener("click", () => {
-  isPomoPaused = !isPomoPaused;
-  btnPomoOk.textContent = isPomoPaused ? "Reprendre" : "Pausar";
-  updatePomodoroVisuals();
-});
+if (btnPomoOk) {
+  btnPomoOk.addEventListener("click", () => {
+    isPomoPaused = !isPomoPaused;
+    btnPomoOk.textContent = isPomoPaused ? "Reprendre" : "Pausar";
+    updatePomodoroVisuals();
+  });
+}
 
-btnPomoReset.addEventListener("click", () => {
-  startPomodoro();
-});
+if (btnPomoReset) {
+  btnPomoReset.addEventListener("click", () => {
+    startPomodoro();
+  });
+}
 
-btnPomoNext.addEventListener("click", () => {
-  if (pomoTimer) clearInterval(pomoTimer);
-  switchView("view-menu");
-});
+if (btnPomoNext) {
+  btnPomoNext.addEventListener("click", () => {
+    if (pomoTimer) clearInterval(pomoTimer);
+    switchView("view-menu");
+  });
+}
 
 // --- DESAR CONFIGURACIÓ SUPABASE ---
-btnSaveSettings.addEventListener("click", async () => {
-  config.supaUrl = cleanSupaUrl(cfgSupaUrl.value);
-  config.supaKey = cfgSupaKey.value.trim();
-  config.syncId = cfgSyncId.value.trim() || "usuari_principal";
+if (btnSaveSettings) {
+  btnSaveSettings.addEventListener("click", async () => {
+    if (cfgSupaUrl) config.supaUrl = cleanSupaUrl(cfgSupaUrl.value);
+    if (cfgSupaKey) config.supaKey = cfgSupaKey.value.trim();
+    if (cfgSyncId) config.syncId = cfgSyncId.value.trim() || "usuari_principal";
 
-  localStorage.setItem("aibuddy_supa_url", config.supaUrl);
-  localStorage.setItem("aibuddy_supa_key", config.supaKey);
-  localStorage.setItem("aibuddy_sync_id", config.syncId);
+    localStorage.setItem("aibuddy_supa_url", config.supaUrl);
+    localStorage.setItem("aibuddy_supa_key", config.supaKey);
+    localStorage.setItem("aibuddy_sync_id", config.syncId);
 
-  await pullRemoteState();
-  await saveState();
-  showToast("Sincronització desada!");
-  switchView("view-menu");
-});
+    btnSaveSettings.textContent = "Sincronitzant...";
+    await pullRemoteState();
+    await saveState();
+    btnSaveSettings.textContent = "Desar i Sincronitzar";
+    showToast("✓ Sincronització desada!");
+    switchView("view-menu");
+  });
+}
 
 // --- GESTIÓ DE TEMES (CLAR / FOSC) ---
 function initTheme() {
@@ -847,22 +899,18 @@ loadLocalState();
 updateAllDisplays();
 pullRemoteState();
 
-// --- SISTEMA D'ACTUALITZACIONS AUTOMÀTIQUES (SENSE MODIFICAR RES A MANO) ---
+// --- SISTEMA D'ACTUALITZACIONS AUTOMÀTIQUES ---
 async function checkForUpdates() {
   try {
-    // Demanem les capçaleres del teu index.html a GitHub Pages
-    const res = await fetch("./index.html", { method: "HEAD" });
+    const res = await fetch("./index.html", { method: "HEAD", cache: "no-store" });
     if (res.ok) {
-      // Obtenim la data de l'última modificació que has pujat a GitHub
       const lastModified = res.headers.get("last-modified");
       if (lastModified) {
         const localVersion = localStorage.getItem("aibuddy_app_version");
 
         if (!localVersion) {
-          // Primera vegada que s'executa al dispositiu
           localStorage.setItem("aibuddy_app_version", lastModified);
         } else if (localVersion !== lastModified) {
-          // Si la data de GitHub és més nova que la guardada, mostrem el baner
           const banner = document.getElementById("update-banner");
           if (banner) banner.classList.remove("hidden");
         }
@@ -874,10 +922,8 @@ async function checkForUpdates() {
 }
 
 window.applyUpdate = function() {
-  // Netegem la versió guardada i recarreguem la pàgina forçant la descàrrega nova
   localStorage.removeItem("aibuddy_app_version");
-  window.location.reload(true);
+  window.location.reload();
 };
 
-// Comprovar actualitzacions en obrir l'app
 checkForUpdates();
