@@ -19,13 +19,13 @@
     <div></div> <!-- Espaiador esquerre per centrar el títol -->
     <h1 class="text-lg font-bold tracking-wide text-sky-400 text-center cursor-pointer" onclick="switchView('view-menu')">AI Buddy</h1>
     <div class="flex justify-end items-center gap-2">
-      <span id="status-badge" title="Estat de sincronització" class="text-xs bg-stone-900 text-stone-400 px-3 py-1 rounded-full border border-stone-800 flex items-center gap-1.5">
-        ⚪ Local
+      <span id="status-badge" onclick="switchView('view-settings')" title="Estat de sincronització i usuari" class="cursor-pointer text-xs bg-stone-900 text-stone-400 px-3 py-1 rounded-full border border-stone-800 flex items-center gap-1.5 truncate max-w-[130px]">
+        ⚪ Convidat
       </span>
       <button onclick="toggleTheme()" id="btn-theme-toggle" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Canviar tema clar/fosc">
         ☀️
       </button>
-      <button onclick="switchView('view-settings')" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Configuració">
+      <button onclick="switchView('view-settings')" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Configuració i Compte">
         ⚙️
       </button>
     </div>
@@ -308,33 +308,55 @@
       </button>
     </section>
 
-    <!-- VISTA 7: CONFIGURACIÓ (SUPABASE SYNC) -->
+    <!-- VISTA 7: CONFIGURACIÓ (USUARIS I SUPABASE SYNC) -->
     <section id="view-settings" class="w-full flex flex-col items-center hidden text-left">
       <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-4 text-center block w-full">Sincronització al Núvol</span>
 
       <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 space-y-4 mb-6">
         <div id="ai-info-box" class="bg-sky-950/30 border border-sky-500/40 rounded-xl p-3">
           <p class="text-[11px] text-sky-400 font-semibold">✨ Motor IA Local AuDHD Actiu</p>
-          <p class="text-[10px] text-stone-400 mt-0.5">El desglossament de micro-passos en català funciona automàticament sense claus externes ni límits.</p>
+          <p class="text-[10px] text-stone-400 mt-0.5">Pots usar l'app com a <b>convidat</b> (només en aquest dispositiu) o crear el teu propi <b>usuari i contrasenya</b> per sincronitzar al núvol.</p>
         </div>
 
-        <div>
-          <!-- URL de Supabase predeterminada i en mode només lectura -->
-          <label class="text-xs text-stone-300 font-semibold block mb-1">1. URL del Projecte Supabase</label>
-          <input type="text" id="cfg-supa-url" value="https://qstjwfqrkemyfzudtoxb.supabase.co" readonly class="w-full bg-stone-950 border border-stone-800 text-stone-400 rounded-lg px-3 py-2 text-xs focus:outline-none mb-3 cursor-not-allowed opacity-75" />
-          
-          <!-- Clau Pública predeterminada i en mode només lectura -->
-          <label class="text-xs text-stone-300 font-semibold block mb-1">2. Clau Pública (Anon / Publishable Key)</label>
-          <input type="password" id="cfg-supa-key" value="sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq" readonly class="w-full bg-stone-950 border border-stone-800 text-stone-400 rounded-lg px-3 py-2 text-xs focus:outline-none mb-3 cursor-not-allowed opacity-75" />
+        <div class="space-y-3">
+          <!-- Nom d'Usuari -->
+          <div>
+            <label class="text-xs text-stone-300 font-semibold block mb-1">1. Nom d'Usuari</label>
+            <input type="text" id="cfg-sync-id" placeholder="convidat" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
+          </div>
 
-          <!-- Únic camp lliure: L'usuari -->
-          <label class="text-xs text-stone-300 font-semibold block mb-1">3. Codi d'Usuari (el mateix al mòbil i al PC)</label>
-          <input type="text" id="cfg-sync-id" placeholder="ex: el-meu-espai-123" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
+          <!-- Contrasenya -->
+          <div>
+            <label class="text-xs text-stone-300 font-semibold block mb-1">2. Contrasenya <span class="text-[10px] text-stone-400 font-normal">(deixa-ho buit si ets convidat)</span></label>
+            <div class="flex gap-2">
+              <input type="password" id="cfg-sync-pass" placeholder="Escriu una contrasenya teva..." class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
+              <button type="button" id="btn-toggle-pass" class="bg-stone-800 hover:bg-stone-700 text-stone-300 px-3 rounded-lg border border-stone-700 text-xs transition" title="Mostrar/Ocultar contrasenya">
+                👁️
+              </button>
+            </div>
+          </div>
+
+          <!-- Detalls tècnics de Supabase plegats perquè no molestin -->
+          <details class="pt-1">
+            <summary class="text-[10px] text-stone-400 cursor-pointer hover:text-stone-300 select-none">Paràmetres avançats del servidor</summary>
+            <div class="mt-2 space-y-2 pt-2 border-t border-stone-800">
+              <label class="text-[10px] text-stone-400 block">URL del Projecte Supabase</label>
+              <input type="text" id="cfg-supa-url" value="https://qstjwfqrkemyfzudtoxb.supabase.co" readonly class="w-full bg-stone-950 border border-stone-800 text-stone-400 rounded-lg px-3 py-1.5 text-xs focus:outline-none cursor-not-allowed opacity-75" />
+              
+              <label class="text-[10px] text-stone-400 block">Clau Pública (Publishable Key)</label>
+              <input type="password" id="cfg-supa-key" value="sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq" readonly class="w-full bg-stone-950 border border-stone-800 text-stone-400 rounded-lg px-3 py-1.5 text-xs focus:outline-none cursor-not-allowed opacity-75" />
+            </div>
+          </details>
         </div>
 
-        <button id="btn-save-settings" class="w-full bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-2.5 rounded-xl text-xs transition shadow-md">
-          Desar i Sincronitzar
-        </button>
+        <div class="space-y-2 pt-1">
+          <button id="btn-save-settings" class="w-full bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-2.5 rounded-xl text-xs transition shadow-md">
+            Desar i Sincronitzar
+          </button>
+          <button id="btn-logout-guest" class="w-full bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold py-2 rounded-xl text-[11px] transition border border-stone-700">
+            Tornar a mode Convidat
+          </button>
+        </div>
       </div>
 
       <button onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
@@ -381,6 +403,10 @@
       Actualitzar
     </button>
   </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
 
   <script src="app.js"></script>
 </body>
