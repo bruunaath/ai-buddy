@@ -6,9 +6,8 @@ const IMAGES = {
   avis: "avis.jpg"             // 4. Quan falten 5 minuts o menys de Pomodoro
 };
 
-// ID especial a Supabase on es guarden totes les sessions creades i nom de l'administradora
-const ACCESS_LOG_ID = "__registre_accessos__";
-const ADMIN_USER = "carla-brunat";
+// Neteja preventiva de qualsevol contrasenya antiga en text pla al navegador (Compliment RGPD)
+localStorage.removeItem("aibuddy_sync_pass");
 
 // --- DICCIONARI DE CATEGORIES HABITUALS AuDHD ---
 const catalegTasquesTDAH = {
@@ -101,14 +100,14 @@ const catalegTasquesTDAH = {
   }
 };
 
-// --- VALORS PREDETERMINATS ---
+// --- VALORS PREDETERMINATS (Adaptats per evitar dades mèdiques per defecte - Art. 9 RGPD / MDR) ---
 const defaultRoutineSteps = [
   "Posar música animada",
   "Obrir els llençols per ventilar el llit",
   "Rentar-me les dents",
   "Skincare bàsic",
   "Fer el llit",
-  "Cafè i medicació",
+  "Cafè o infusió i suplementació/hidratació",
   "Preparar l'esmorzar"
 ];
 
@@ -142,12 +141,15 @@ function getInitialState() {
 // --- ESTAT CENTRALITZAT ---
 let state = getInitialState();
 
-// Configuració d'Usuari i Supabase (Per defecte: "convidat" i contrasenya buida)
+// Configuració de Supabase i Sessió Autenticada amb JWT (Sense contrasenyes en text pla)
 let config = {
-  supaUrl: localStorage.getItem("aibuddy_supa_url") || "https://qstjwfqrkemyfzudtoxb.supabase.co",
-  supaKey: localStorage.getItem("aibuddy_supa_key") || "sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq",
+  supaUrl: "https://qstjwfqrkemyfzudtoxb.supabase.co",
+  supaKey: "sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq",
   syncUser: localStorage.getItem("aibuddy_sync_user") || "convidat",
-  syncPass: localStorage.getItem("aibuddy_sync_pass") || ""
+  userId: localStorage.getItem("aibuddy_user_id") || "",
+  accessToken: localStorage.getItem("aibuddy_access_token") || "",
+  refreshToken: localStorage.getItem("aibuddy_refresh_token") || "",
+  rgpdConsent: localStorage.getItem("aibuddy_rgpd_consent") === "true"
 };
 
 // Variables del Pomodoro Sensorial
@@ -155,6 +157,7 @@ let pomoTimer = null;
 let pomoTotalSeconds = 1500; // 25 minuts
 let pomoCurrentSeconds = 1500;
 let isPomoPaused = false;
+let pendingServerVersion = null;
 
 // --- ELEMENTS DOM ---
 const statusBadge = document.getElementById("status-badge");
@@ -202,14 +205,14 @@ const btnAddQuickTodo = document.getElementById("btn-add-quick-todo");
 const quickTodoListContainer = document.getElementById("quick-todo-list");
 const btnClearQuickTodos = document.getElementById("btn-clear-quick-todos");
 
-const cfgSupaUrl = document.getElementById("cfg-supa-url");
-const cfgSupaKey = document.getElementById("cfg-supa-key");
 const cfgSyncId = document.getElementById("cfg-sync-id");
 const cfgSyncPass = document.getElementById("cfg-sync-pass");
+const chkRgpdConsent = document.getElementById("chk-rgpd-consent");
 const btnTogglePass = document.getElementById("btn-toggle-pass");
 const btnSaveSettings = document.getElementById("btn-save-settings");
 const btnLogoutGuest = document.getElementById("btn-logout-guest");
-const btnAdminPanel = document.getElementById("btn-admin-panel");
+const btnExportData = document.getElementById("btn-export-data");
+const btnDeleteAccount = document.getElementById("btn-delete-account");
 
 // --- MOSTRAR / OCULTAR CONTRASENYA ---
 window.togglePassVisibility = function() {
@@ -226,34 +229,15 @@ window.togglePassVisibility = function() {
   }
 };
 
-// --- COMPROVACIÓ D'ADMIN (NOMÉS CARLA-BRUNAT VEU EL BOTÓ D'ADMIN) ---
-function updateAdminButtonVisibility() {
-  if (!btnAdminPanel) return;
-  const user = (config.syncUser || "").trim().toLowerCase();
-  const pass = (config.syncPass || "").trim();
-  if (user === ADMIN_USER && pass !== "") {
-    btnAdminPanel.classList.remove("hidden");
-  } else {
-    btnAdminPanel.classList.add("hidden");
-  }
-}
-
-// --- GESTIÓ MULTI-USUARI (CONVIDAT vs COMPTE PROPI) ---
+// --- GESTIÓ D'USUARI AUTENTICAT vs MODE CONVIDAT (100% LOCAL) ---
 function isGuestMode() {
   const user = (config.syncUser || "").trim().toLowerCase();
-  const pass = (config.syncPass || "").trim();
-  return !user || user === "convidat" || pass === "";
-}
-
-function getCloudSyncKey() {
-  const user = (config.syncUser || "").trim().toLowerCase();
-  const pass = (config.syncPass || "").trim();
-  return `${user}::${pass}`;
+  return !user || user === "convidat" || !config.userId || !config.accessToken;
 }
 
 function getLocalStorageKey() {
   if (isGuestMode()) return "aibuddy_state_convidat";
-  return `aibuddy_state_${getCloudSyncKey()}`;
+  return `aibuddy_state_${config.userId}`;
 }
 
 function cleanSupaUrl(rawUrl) {
@@ -264,73 +248,104 @@ function cleanSupaUrl(rawUrl) {
     .replace(/\/+$/, "");
 }
 
-// --- REGISTRE D'ACCESSOS AL NÚVOL (PER AL FITXER ADMIN.HTML) ---
-function getDeviceName() {
-  const ua = navigator.userAgent || "";
-  if (/iPhone|iPad|iPod/i.test(ua)) return "iPhone / iPad";
-  if (/Android/i.test(ua)) return "Mòbil Android";
-  if (/Mac/i.test(ua)) return "Ordinador Mac";
-  if (/Win/i.test(ua)) return "Ordinador Windows";
-  return "Navegador Web";
+// Converteix un nom d'usuari senzill en un email sintètic vàlid per a Supabase Auth
+function toSyntheticEmail(rawUsername) {
+  const clean = rawUsername.trim().toLowerCase();
+  if (clean.includes("@")) return clean;
+  const safeUser = clean
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9._-]/g, "");
+  return `${safeUser || "usuari"}@aibuddy.local`;
 }
 
-async function registrarSessioAlNuvol(usuari, esNouCompte = false) {
+// --- AUTENTICACIÓ XIFRADA AMB SUPABASE AUTH (/auth/v1/) ---
+async function authenticateSupabaseUser(username, password) {
   const baseUrl = cleanSupaUrl(config.supaUrl);
-  if (!baseUrl || !config.supaKey) return;
+  const email = toSyntheticEmail(username);
+
+  // 1. Intentem iniciar sessió amb el compte existent
+  const loginRes = await fetch(`${baseUrl}/auth/v1/token?grant_type=password`, {
+    method: "POST",
+    headers: {
+      "apikey": config.supaKey,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  });
+
+  if (loginRes.ok) {
+    const data = await loginRes.json();
+    if (data.access_token && data.user && data.user.id) {
+      return {
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token || "",
+        userId: data.user.id
+      };
+    }
+  }
+
+  // 2. Si no existeix el compte, el registrem automàticament a Supabase Auth
+  const signupRes = await fetch(`${baseUrl}/auth/v1/signup`, {
+    method: "POST",
+    headers: {
+      "apikey": config.supaKey,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      email,
+      password,
+      data: { display_name: username.trim() }
+    })
+  });
+
+  if (signupRes.ok) {
+    const signupData = await signupRes.json();
+    const token = signupData.access_token || (signupData.session && signupData.session.access_token);
+    const refresh = signupData.refresh_token || (signupData.session && signupData.session.refresh_token) || "";
+    const uid = (signupData.user && signupData.user.id) || signupData.id;
+
+    if (token && uid) {
+      return {
+        accessToken: token,
+        refreshToken: refresh,
+        userId: uid
+      };
+    }
+  }
+
+  throw new Error("Credencials incorrectes o error d'autenticació.");
+}
+
+// Renovació silenciosa del token JWT si caduca
+async function refreshAccessToken() {
+  if (!config.refreshToken) return false;
+  const baseUrl = cleanSupaUrl(config.supaUrl);
 
   try {
-    const getUrl = `${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(ACCESS_LOG_ID)}&select=data`;
-    const getRes = await fetch(getUrl, {
-      headers: {
-        "apikey": config.supaKey,
-        "Authorization": `Bearer ${config.supaKey}`
-      }
-    });
-
-    let sessions = [];
-    if (getRes.ok) {
-      const rows = await getRes.json();
-      if (rows.length > 0 && rows[0].data && Array.isArray(rows[0].data.sessions)) {
-        sessions = rows[0].data.sessions;
-      }
-    }
-
-    const ara = new Date().toISOString();
-    const dispositiu = getDeviceName();
-    const cleanUser = usuari.trim().toLowerCase();
-
-    const indexExistent = sessions.findIndex(s => s.usuari.toLowerCase() === cleanUser);
-    if (indexExistent >= 0) {
-      sessions[indexExistent].ultimAcces = ara;
-      sessions[indexExistent].dispositiu = dispositiu;
-      sessions[indexExistent].totalAccessos = (sessions[indexExistent].totalAccessos || 1) + 1;
-    } else {
-      sessions.unshift({
-        usuari: usuari.trim(),
-        creatEl: ara,
-        ultimAcces: ara,
-        dispositiu: dispositiu,
-        tipus: esNouCompte ? "Nou registre" : "Sessió activa",
-        totalAccessos: 1
-      });
-    }
-
-    await fetch(`${baseUrl}/rest/v1/user_state`, {
+    const res = await fetch(`${baseUrl}/auth/v1/token?grant_type=refresh_token`, {
       method: "POST",
       headers: {
         "apikey": config.supaKey,
-        "Authorization": `Bearer ${config.supaKey}`,
-        "Content-Type": "application/json",
-        "Prefer": "resolution=merge-duplicates"
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        id: ACCESS_LOG_ID,
-        data: { sessions, updatedAt: Date.now() },
-        updated_at: ara
-      })
+      body: JSON.stringify({ refresh_token: config.refreshToken })
     });
+
+    if (!res.ok) return false;
+    const data = await res.json();
+    if (data.access_token && data.user && data.user.id) {
+      config.accessToken = data.access_token;
+      config.refreshToken = data.refresh_token || config.refreshToken;
+      config.userId = data.user.id;
+      localStorage.setItem("aibuddy_access_token", config.accessToken);
+      localStorage.setItem("aibuddy_refresh_token", config.refreshToken);
+      localStorage.setItem("aibuddy_user_id", config.userId);
+      return true;
+    }
+    return false;
   } catch (e) {
-    console.log("No s'ha pogut actualitzar el registre d'accessos:", e);
+    return false;
   }
 }
 
@@ -358,33 +373,49 @@ async function saveState() {
   }
 
   const baseUrl = cleanSupaUrl(config.supaUrl);
-  const cloudId = getCloudSyncKey();
+  if (!baseUrl || !config.supaKey || !config.userId || !config.accessToken) return;
 
-  if (baseUrl && config.supaKey && cloudId) {
-    try {
-      if (statusBadge) statusBadge.textContent = "🔄 Sincr...";
-      const res = await fetch(`${baseUrl}/rest/v1/user_state`, {
+  try {
+    if (statusBadge) statusBadge.textContent = "🔄 Sincr...";
+    let res = await fetch(`${baseUrl}/rest/v1/user_state`, {
+      method: "POST",
+      headers: {
+        "apikey": config.supaKey,
+        "Authorization": `Bearer ${config.accessToken}`,
+        "Content-Type": "application/json",
+        "Prefer": "resolution=merge-duplicates"
+      },
+      body: JSON.stringify({
+        id: config.userId,
+        data: state,
+        updated_at: new Date().toISOString()
+      })
+    });
+
+    if (res.status === 401 && await refreshAccessToken()) {
+      res = await fetch(`${baseUrl}/rest/v1/user_state`, {
         method: "POST",
         headers: {
           "apikey": config.supaKey,
-          "Authorization": `Bearer ${config.supaKey}`,
+          "Authorization": `Bearer ${config.accessToken}`,
           "Content-Type": "application/json",
           "Prefer": "resolution=merge-duplicates"
         },
         body: JSON.stringify({
-          id: cloudId,
+          id: config.userId,
           data: state,
           updated_at: new Date().toISOString()
         })
       });
-      if (res.ok) {
-        if (statusBadge) statusBadge.textContent = `🟢 ${config.syncUser}`;
-      } else {
-        if (statusBadge) statusBadge.textContent = "🟠 Error Núvol";
-      }
-    } catch (err) {
-      if (statusBadge) statusBadge.textContent = "⚪ Offline";
     }
+
+    if (res.ok) {
+      if (statusBadge) statusBadge.textContent = `🟢 ${config.syncUser}`;
+    } else {
+      if (statusBadge) statusBadge.textContent = "🟠 Error Núvol";
+    }
+  } catch (err) {
+    if (statusBadge) statusBadge.textContent = "⚪ Offline";
   }
 }
 
@@ -395,20 +426,29 @@ async function pullRemoteState() {
   }
 
   const baseUrl = cleanSupaUrl(config.supaUrl);
-  const cloudId = getCloudSyncKey();
-  if (!baseUrl || !config.supaKey || !cloudId) {
+  if (!baseUrl || !config.supaKey || !config.userId || !config.accessToken) {
     if (statusBadge) statusBadge.textContent = "⚪ Local";
     return false;
   }
 
   try {
-    const url = `${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(cloudId)}&select=data`;
-    const res = await fetch(url, {
+    const url = `${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(config.userId)}&select=data`;
+    let res = await fetch(url, {
       headers: {
         "apikey": config.supaKey,
-        "Authorization": `Bearer ${config.supaKey}`
+        "Authorization": `Bearer ${config.accessToken}`
       }
     });
+
+    if (res.status === 401 && await refreshAccessToken()) {
+      res = await fetch(url, {
+        headers: {
+          "apikey": config.supaKey,
+          "Authorization": `Bearer ${config.accessToken}`
+        }
+      });
+    }
+
     if (res.ok) {
       const rows = await res.json();
       if (rows.length > 0 && rows[0].data) {
@@ -453,15 +493,15 @@ function switchView(viewId) {
   if (target) target.classList.remove("hidden");
 
   if (viewId === "view-settings") {
-    if (cfgSupaUrl) cfgSupaUrl.value = config.supaUrl;
-    if (cfgSupaKey) cfgSupaKey.value = config.supaKey;
     if (cfgSyncId) cfgSyncId.value = config.syncUser || "convidat";
     if (cfgSyncPass) {
-      cfgSyncPass.value = config.syncPass || "";
+      cfgSyncPass.value = "";
       cfgSyncPass.type = "password";
     }
+    if (chkRgpdConsent) {
+      chkRgpdConsent.checked = config.rgpdConsent || !isGuestMode();
+    }
     if (btnTogglePass) btnTogglePass.textContent = "👁️";
-    updateAdminButtonVisibility();
   }
   updateAllDisplays();
 }
@@ -474,7 +514,6 @@ function updateAllDisplays() {
   updateHobbyDisplay();
   renderParkedThoughts();
   renderQuickTodoList();
-  updateAdminButtonVisibility();
 }
 
 function updateTaskDisplay() {
@@ -756,6 +795,7 @@ function renderQuickTodoList() {
     checkbox.type = "checkbox";
     checkbox.checked = item.completed || false;
     checkbox.className = "w-4 h-4 accent-sky-500 rounded cursor-pointer";
+    checkbox.setAttribute("aria-label", `Marcar tasca: ${item.text}`);
     checkbox.addEventListener("change", () => {
       state.quickTodoList[idx].completed = checkbox.checked;
       saveState();
@@ -769,8 +809,10 @@ function renderQuickTodoList() {
     leftDiv.appendChild(textSpan);
 
     const delBtn = document.createElement("button");
+    delBtn.type = "button";
     delBtn.className = "text-stone-500 hover:text-stone-300 text-xs px-2 py-1 shrink-0";
     delBtn.textContent = "✕";
+    delBtn.setAttribute("aria-label", `Esborrar tasca: ${item.text}`);
     delBtn.addEventListener("click", () => {
       state.quickTodoList.splice(idx, 1);
       saveState();
@@ -903,8 +945,10 @@ function renderParkedThoughts() {
     timeSpan.textContent = item.time;
 
     const delBtn = document.createElement("button");
+    delBtn.type = "button";
     delBtn.className = "text-stone-500 hover:text-stone-300 text-xs px-1";
     delBtn.textContent = "✕";
+    delBtn.setAttribute("aria-label", `Esborrar pensament: ${item.text}`);
     delBtn.addEventListener("click", () => {
       state.parkedThoughts.splice(idx, 1);
       saveState();
@@ -991,108 +1035,192 @@ if (btnPomoNext) {
   });
 }
 
+// --- INICI DE SESSIÓ I SINCRONITZACIÓ AMB CONSENTIMENT RGPD ---
 if (btnSaveSettings) {
   btnSaveSettings.addEventListener("click", async () => {
     const enteredUser = (cfgSyncId ? cfgSyncId.value.trim() : "") || "convidat";
     const enteredPass = cfgSyncPass ? cfgSyncPass.value.trim() : "";
 
-    // RESTRICCIÓ ESTRICTA D'ADMINISTRADORA
-    if (enteredUser.toLowerCase() === "carla-brunat") {
-      if (enteredPass !== "heyjude") {
-        showToast("⚠️ Contrasenya d'administradora incorrecta");
-        if (cfgSyncPass) cfgSyncPass.focus();
-        return;
-      }
-    } else if (enteredUser.toLowerCase() !== "convidat" && !enteredPass) {
-      showToast("⚠️ Afegeix una contrasenya per al teu usuari");
+    // Si l'usuari tria explícitament "convidat", queda en mode 100% local
+    if (enteredUser.toLowerCase() === "convidat") {
+      logoutToGuestMode("Mode Convidat actiu (100% Local)");
+      return;
+    }
+
+    // Verificació obligatòria del consentiment explícit RGPD abans de pujar dades al núvol
+    if (chkRgpdConsent && !chkRgpdConsent.checked) {
+      showToast("⚠️ Marca la casella de consentiment RGPD per sincronitzar");
+      chkRgpdConsent.focus();
+      return;
+    }
+
+    if (!enteredPass || enteredPass.length < 6) {
+      showToast("⚠️ La contrasenya ha de tenir almenys 6 caràcters");
       if (cfgSyncPass) cfgSyncPass.focus();
       return;
     }
 
-    if (cfgSupaUrl) config.supaUrl = cleanSupaUrl(cfgSupaUrl.value);
-    if (cfgSupaKey) config.supaKey = cfgSupaKey.value.trim();
-    config.syncUser = enteredUser;
-    config.syncPass = enteredUser.toLowerCase() === "convidat" ? "" : enteredPass;
+    btnSaveSettings.disabled = true;
+    btnSaveSettings.textContent = "Autenticant...";
 
-    localStorage.setItem("aibuddy_supa_url", config.supaUrl);
-    localStorage.setItem("aibuddy_supa_key", config.supaKey);
-    localStorage.setItem("aibuddy_sync_user", config.syncUser);
-    localStorage.setItem("aibuddy_sync_pass", config.syncPass);
+    try {
+      const authData = await authenticateSupabaseUser(enteredUser, enteredPass);
 
-    loadLocalState();
-    updateAllDisplays();
+      config.syncUser = enteredUser;
+      config.userId = authData.userId;
+      config.accessToken = authData.accessToken;
+      config.refreshToken = authData.refreshToken;
+      config.rgpdConsent = true;
 
-    if (isGuestMode()) {
-      if (statusBadge) statusBadge.textContent = "⚪ Convidat";
-      showToast("Mode Convidat actiu (Local)");
+      localStorage.setItem("aibuddy_sync_user", config.syncUser);
+      localStorage.setItem("aibuddy_user_id", config.userId);
+      localStorage.setItem("aibuddy_access_token", config.accessToken);
+      localStorage.setItem("aibuddy_refresh_token", config.refreshToken);
+      localStorage.setItem("aibuddy_rgpd_consent", "true");
+      localStorage.removeItem("aibuddy_sync_pass");
+
+      if (cfgSyncPass) cfgSyncPass.value = "";
+
+      loadLocalState();
+      updateAllDisplays();
+
+      btnSaveSettings.textContent = "Sincronitzant...";
+      await pullRemoteState();
+      await saveState();
+
+      showToast(`✓ Sessió xifrada activa: ${config.syncUser}`);
       switchView("view-menu");
-      return;
+    } catch (err) {
+      showToast("⚠️ Usuari o contrasenya incorrectes");
+    } finally {
+      btnSaveSettings.disabled = false;
+      btnSaveSettings.textContent = "Desar i Sincronitzar";
     }
-
-    btnSaveSettings.textContent = "Sincronitzant...";
-    const esNouCompte = await pullRemoteState();
-    await saveState();
-    await registrarSessioAlNuvol(config.syncUser, esNouCompte);
-    btnSaveSettings.textContent = "Desar i Sincronitzar";
-    updateAdminButtonVisibility();
-    showToast(`✓ Sessió iniciada: ${config.syncUser}`);
-    switchView("view-menu");
   });
 }
 
-// --- TORNAR A MODE CONVIDAT ---
+// --- TANCAR SESSIÓ I TORNAR A MODE CONVIDAT ---
+function logoutToGuestMode(toastMsg = "Has tornat a mode Convidat") {
+  config.syncUser = "convidat";
+  config.userId = "";
+  config.accessToken = "";
+  config.refreshToken = "";
+
+  localStorage.setItem("aibuddy_sync_user", "convidat");
+  localStorage.removeItem("aibuddy_user_id");
+  localStorage.removeItem("aibuddy_access_token");
+  localStorage.removeItem("aibuddy_refresh_token");
+  localStorage.removeItem("aibuddy_sync_pass");
+
+  if (cfgSyncId) cfgSyncId.value = "convidat";
+  if (cfgSyncPass) {
+    cfgSyncPass.value = "";
+    cfgSyncPass.type = "password";
+  }
+  if (btnTogglePass) btnTogglePass.textContent = "👁️";
+
+  loadLocalState();
+  updateAllDisplays();
+  if (statusBadge) statusBadge.textContent = "⚪ Convidat";
+  showToast(toastMsg);
+  switchView("view-menu");
+}
+
 if (btnLogoutGuest) {
   btnLogoutGuest.addEventListener("click", () => {
-    config.syncUser = "convidat";
-    config.syncPass = "";
-    localStorage.setItem("aibuddy_sync_user", "convidat");
-    localStorage.setItem("aibuddy_sync_pass", "");
-
-    if (cfgSyncId) cfgSyncId.value = "convidat";
-    if (cfgSyncPass) {
-      cfgSyncPass.value = "";
-      cfgSyncPass.type = "password";
-    }
-    if (btnTogglePass) btnTogglePass.textContent = "👁️";
-
-    loadLocalState();
-    updateAllDisplays();
-    if (statusBadge) statusBadge.textContent = "⚪ Convidat";
-    showToast("Has tornat a mode Convidat");
-    switchView("view-menu");
+    logoutToGuestMode("Has tornat a mode Convidat");
   });
 }
 
-// --- VERIFICACIÓ TEXTUAL ESTRICTA D'ADMINISTRACIÓ ---
-async function esAdministradorAutoritzat(usuari, contrasenya) {
-  const usuariNetejat = (usuari || "").trim().toLowerCase();
-  const contrasenyaNetejada = (contrasenya || "").trim();
-
-  // Verificació textual bàsica: ha de ser necessàriament carla-brunat i tenir contrasenya
-  if (usuariNetejat !== "carla-brunat" || !contrasenyaNetejada) {
-    return false;
-  }
-
-  // Verificació de seguretat contra el servidor de Supabase
-  const clauServidor = `${usuariNetejat}::${contrasenyaNetejada}`;
-  const baseUrl = cleanSupaUrl(config.supaUrl);
-  
-  if (!baseUrl || !config.supaKey) return false;
-
+// --- DRETS RGPD: ART. 20 PORTABILITAT (.JSON) I ART. 17 SUPRESSIÓ TOTAL ---
+function exportMyData() {
   try {
-    const res = await fetch(`${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(clauServidor)}&select=id`, {
-      headers: {
-        "apikey": config.supaKey,
-        "Authorization": `Bearer ${config.supaKey}`
-      }
-    });
-    
-    if (!res.ok) return false;
-    const files = await res.json();
-    return files.length > 0; // Només retorna true si existeix textualment al servidor
-  } catch (err) {
-    return false;
+    const exportPayload = {
+      app: "AI Buddy - Organitzador Personal i Focus",
+      exportedAt: new Date().toISOString(),
+      usuari: isGuestMode() ? "convidat (local)" : config.syncUser,
+      state: state
+    };
+
+    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "aibuddy_dades_usuari.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("📥 Dades exportades (.JSON)");
+  } catch (e) {
+    showToast("⚠️ Error en exportar les dades");
   }
+}
+window.exportMyData = exportMyData;
+
+if (btnExportData) {
+  btnExportData.addEventListener("click", exportMyData);
+}
+
+async function deleteMyCloudData() {
+  const confirmMsg = isGuestMode()
+    ? "Vols esborrar totes les dades guardades en aquest dispositiu?"
+    : `Vols eliminar definitivament totes les teves dades del núvol (${config.syncUser}) i d'aquest dispositiu? Aquesta acció és irreversible.`;
+
+  if (!confirm(confirmMsg)) return;
+
+  const baseUrl = cleanSupaUrl(config.supaUrl);
+  const currentUserId = config.userId;
+  const currentToken = config.accessToken;
+
+  if (!isGuestMode() && baseUrl && config.supaKey && currentUserId && currentToken) {
+    try {
+      await fetch(`${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(currentUserId)}`, {
+        method: "DELETE",
+        headers: {
+          "apikey": config.supaKey,
+          "Authorization": `Bearer ${currentToken}`
+        }
+      });
+
+      await fetch(`${baseUrl}/auth/v1/logout`, {
+        method: "POST",
+        headers: {
+          "apikey": config.supaKey,
+          "Authorization": `Bearer ${currentToken}`
+        }
+      });
+    } catch (e) {
+      console.error("Error eliminant les dades del núvol:", e);
+    }
+  }
+
+  // Netegem totes les claus d'usuari i d'estat de localStorage
+  const savedTheme = localStorage.getItem("aibuddy_theme");
+  const savedVersion = localStorage.getItem("aibuddy_app_version");
+  localStorage.clear();
+  if (savedTheme) localStorage.setItem("aibuddy_theme", savedTheme);
+  if (savedVersion) localStorage.setItem("aibuddy_app_version", savedVersion);
+
+  config.syncUser = "convidat";
+  config.userId = "";
+  config.accessToken = "";
+  config.refreshToken = "";
+  config.rgpdConsent = false;
+
+  if (chkRgpdConsent) chkRgpdConsent.checked = false;
+  state = getInitialState();
+  localStorage.setItem("aibuddy_state_convidat", JSON.stringify(state));
+
+  updateAllDisplays();
+  if (statusBadge) statusBadge.textContent = "⚪ Convidat";
+  showToast("🗑️ Compte i dades eliminats correctament");
+  switchView("view-menu");
+}
+window.deleteMyCloudData = deleteMyCloudData;
+
+if (btnDeleteAccount) {
+  btnDeleteAccount.addEventListener("click", deleteMyCloudData);
 }
 
 // --- GESTIÓ DE TEMES (CLAR / FOSC) ---
@@ -1131,20 +1259,25 @@ initTheme();
 // --- INICIALITZACIÓ ---
 loadLocalState();
 updateAllDisplays();
+if (statusBadge) {
+  statusBadge.textContent = isGuestMode() ? "⚪ Convidat" : `🟢 ${config.syncUser}`;
+}
 pullRemoteState();
 
-// --- SISTEMA D'ACTUALITZACIONS AUTOMÀTIQUES ---
+// --- SISTEMA D'ACTUALITZACIONS AUTOMÀTIQUES (BASAT EN VERSION.JSON) ---
 async function checkForUpdates() {
   try {
-    const res = await fetch("./index.html", { method: "HEAD", cache: "no-store" });
+    const res = await fetch(`./version.json?t=${Date.now()}`, { cache: "no-store" });
     if (res.ok) {
-      const lastModified = res.headers.get("last-modified");
-      if (lastModified) {
+      const data = await res.json();
+      if (data && data.version) {
+        const serverVersion = String(data.version).trim();
         const localVersion = localStorage.getItem("aibuddy_app_version");
 
         if (!localVersion) {
-          localStorage.setItem("aibuddy_app_version", lastModified);
-        } else if (localVersion !== lastModified) {
+          localStorage.setItem("aibuddy_app_version", serverVersion);
+        } else if (localVersion !== serverVersion) {
+          pendingServerVersion = serverVersion;
           const banner = document.getElementById("update-banner");
           if (banner) banner.classList.remove("hidden");
         }
@@ -1156,7 +1289,11 @@ async function checkForUpdates() {
 }
 
 window.applyUpdate = function() {
-  localStorage.removeItem("aibuddy_app_version");
+  if (pendingServerVersion) {
+    localStorage.setItem("aibuddy_app_version", pendingServerVersion);
+  } else {
+    localStorage.removeItem("aibuddy_app_version");
+  }
   window.location.reload();
 };
 
