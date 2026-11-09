@@ -2,8 +2,8 @@
 <html lang="ca">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AI Buddy - Gestor AuDHD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Buddy - Organitzador Personal i Focus</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0a0a0a">
   <meta name="mobile-web-app-capable" content="yes">
@@ -22,17 +22,17 @@
       <span id="status-badge" onclick="switchView('view-settings')" title="Estat de sincronització i usuari" class="cursor-pointer text-xs bg-stone-900 text-stone-400 px-3 py-1 rounded-full border border-stone-800 flex items-center gap-1.5 truncate max-w-[130px]">
         ⚪ Convidat
       </span>
-      <button type="button" onclick="toggleTheme()" id="btn-theme-toggle" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Canviar tema clar/fosc">
+      <button type="button" onclick="toggleTheme()" id="btn-theme-toggle" aria-label="Canviar entre tema clar i fosc" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Canviar tema clar/fosc">
         ☀️
       </button>
-      <button type="button" onclick="switchView('view-settings')" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Configuració i Compte">
+      <button type="button" onclick="switchView('view-settings')" aria-label="Obrir configuració i compte" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Configuració i Compte">
         ⚙️
       </button>
     </div>
   </header>
 
   <!-- Toast Notificació Adaptat -->
-  <div id="toast-notification" class="fixed top-20 bg-stone-900 border border-sky-500/50 text-stone-200 text-xs px-4 py-2.5 rounded-xl shadow-2xl transition-all duration-300 transform opacity-0 translate-y-[-10px] pointer-events-none z-50">
+  <div id="toast-notification" role="status" aria-live="polite" class="fixed top-20 bg-stone-900 border border-sky-500/50 text-stone-200 text-xs px-4 py-2.5 rounded-xl shadow-2xl transition-all duration-300 transform opacity-0 translate-y-[-10px] pointer-events-none z-50">
     + Pensament guardat per més tard
   </div>
 
@@ -45,32 +45,32 @@
       
       <button type="button" onclick="switchView('view-tasks')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>Tasques i Micro-passos</span>
-        <span class="text-stone-500">&#8250;</span>
+        <span class="text-stone-500" aria-hidden="true">&#8250;</span>
       </button>
 
       <button type="button" onclick="switchView('view-thoughts')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>Pensaments Aparcats</span>
-        <span class="text-stone-500">&#8250;</span>
+        <span class="text-stone-500" aria-hidden="true">&#8250;</span>
       </button>
 
       <button type="button" onclick="startPomodoro()" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>Pomodoro</span>
-        <span class="text-stone-500">&#8250;</span>
+        <span class="text-stone-500" aria-hidden="true">&#8250;</span>
       </button>
 
       <button type="button" onclick="switchView('view-routine')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>Rutina de Matí Guiada</span>
-        <span class="text-stone-500">&#8250;</span>
+        <span class="text-stone-500" aria-hidden="true">&#8250;</span>
       </button>
 
       <button type="button" onclick="switchView('view-hobbies')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>Hobbies de Descans</span>
-        <span class="text-stone-500">&#8250;</span>
+        <span class="text-stone-500" aria-hidden="true">&#8250;</span>
       </button>
 
       <button type="button" onclick="switchView('view-quick-todo')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition">
         <span>To-Do List Ràpida</span>
-        <span class="text-stone-500">&#8250;</span>
+        <span class="text-stone-500" aria-hidden="true">&#8250;</span>
       </button>
     </section>
 
@@ -107,7 +107,7 @@
       <span id="step-counter" class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-2 text-center block w-full">Pas Actual</span>
       
       <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex flex-col items-center justify-center mb-6">
-        <p id="step-display" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200 text-center">
+        <p id="step-display" role="status" aria-live="polite" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200 text-center">
           Escriu una tasca per començar...
         </p>
         <div id="completion-badge" class="hidden flex-col items-center gap-3 mt-1">
@@ -117,13 +117,13 @@
       </div>
 
       <div class="flex gap-4 w-full mb-6">
-        <button type="button" id="btn-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+        <button type="button" id="btn-prev" aria-label="Pas anterior de la tasca" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8249;
         </button>
         <button type="button" id="btn-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
           OK
         </button>
-        <button type="button" id="btn-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+        <button type="button" id="btn-next" aria-label="Pas següent de la tasca" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8250;
         </button>
       </div>
@@ -142,6 +142,7 @@
           type="text" 
           id="quick-todo-input" 
           placeholder="Apunta una tasca ràpida..." 
+          aria-label="Nova tasca ràpida"
           class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500"
         />
         <button type="button" id="btn-add-quick-todo" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-sm">
@@ -207,7 +208,7 @@
         <button type="button" id="btn-pomo-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
           Pausar
         </button>
-        <button type="button" id="btn-pomo-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center" title="Tornar al menú">
+        <button type="button" id="btn-pomo-next" aria-label="Aturar Pomodoro i tornar al menú principal" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center" title="Tornar al menú">
           &#8250;
         </button>
       </div>
@@ -232,13 +233,13 @@
       </div>
 
       <div class="flex gap-4 w-full mb-4">
-        <button type="button" id="btn-routine-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+        <button type="button" id="btn-routine-prev" aria-label="Pas anterior de la rutina" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8249;
         </button>
         <button type="button" id="btn-routine-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
           OK
         </button>
-        <button type="button" id="btn-routine-next" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+        <button type="button" id="btn-routine-next" aria-label="Pas següent de la rutina" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8250;
         </button>
       </div>
@@ -248,6 +249,7 @@
           type="text" 
           id="routine-input-new" 
           placeholder="Nou pas per a la rutina..." 
+          aria-label="Nou pas per a la rutina"
           class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500"
         />
         <button type="button" id="btn-routine-add" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-4 py-2.5 rounded-xl text-xs transition border border-stone-700">
@@ -275,7 +277,7 @@
       </div>
 
       <div class="flex gap-4 w-full mb-6">
-        <button type="button" id="btn-hobby-prev" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
+        <button type="button" id="btn-hobby-prev" aria-label="Opció de descans anterior" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
           &#8249;
         </button>
         <button type="button" id="btn-hobby-next" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
@@ -290,6 +292,7 @@
             type="text" 
             id="hobby-input-new" 
             placeholder="Nou hobby o activitat..." 
+            aria-label="Nou hobby o activitat"
             class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500"
           />
           <button type="button" id="btn-hobby-add" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-3 py-2 rounded-lg text-xs transition border border-stone-700">
@@ -312,39 +315,37 @@
 
       <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 space-y-4 mb-6">
         <div id="ai-info-box" class="bg-sky-950/30 border border-sky-500/40 rounded-xl p-3">
-          <p class="text-[11px] text-sky-400 font-semibold">✨ Motor IA Local AuDHD Actiu</p>
-          <p class="text-[10px] text-stone-400 mt-0.5">Pots usar l'app com a <b>convidat</b> (només en aquest dispositiu) o crear el teu propi <b>usuari i contrasenya</b> per sincronitzar al núvol.</p>
+          <p class="text-[11px] text-sky-400 font-semibold">✨ Motor Heurístic Local Actiu (100% Privat)</p>
+          <p class="text-[10px] text-stone-400 mt-0.5 leading-relaxed">El desglossament de tasques funciona amb un algorisme lògic local al teu propi dispositiu sense enviar textos a cap IA externa. Pots usar l'app com a <b>convidat</b> (100% local) o autenticar-te per sincronitzar al núvol.</p>
         </div>
 
         <div class="space-y-3">
           <!-- Nom d'Usuari -->
           <div>
-            <label class="text-xs text-stone-300 font-semibold block mb-1">1. Nom d'Usuari</label>
+            <label for="cfg-sync-id" class="text-xs text-stone-300 font-semibold block mb-1">1. Nom d'Usuari</label>
             <input type="text" id="cfg-sync-id" placeholder="convidat" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
           </div>
 
           <!-- Contrasenya amb botó d'ull directe -->
           <div>
-            <label class="text-xs text-stone-300 font-semibold block mb-1">2. Contrasenya <span class="text-[10px] text-stone-400 font-normal">(deixa-ho buit si ets convidat)</span></label>
+            <label for="cfg-sync-pass" class="text-xs text-stone-300 font-semibold block mb-1">2. Contrasenya <span class="text-[10px] text-stone-400 font-normal">(deixa-ho buit si ets convidat)</span></label>
             <div class="flex gap-2 items-center">
-              <input type="password" id="cfg-sync-pass" placeholder="Escriu una contrasenya teva..." autocomplete="new-password" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
-              <button type="button" id="btn-toggle-pass" onclick="togglePassVisibility()" class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3.5 py-2 rounded-lg border border-stone-700 text-sm transition shrink-0 cursor-pointer select-none" title="Mostrar o ocultar la contrasenya">
+              <input type="password" id="cfg-sync-pass" placeholder="Escriu una contrasenya teva..." autocomplete="current-password" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
+              <button type="button" id="btn-toggle-pass" onclick="togglePassVisibility()" aria-label="Mostrar o ocultar la contrasenya" class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3.5 py-2 rounded-lg border border-stone-700 text-sm transition shrink-0 cursor-pointer select-none" title="Mostrar o ocultar la contrasenya">
                 👁️
               </button>
             </div>
           </div>
 
-          <!-- Detalls tècnics de Supabase plegats -->
-          <details class="pt-1">
-            <summary class="text-[10px] text-stone-400 cursor-pointer hover:text-stone-300 select-none">Paràmetres avançats del servidor</summary>
-            <div class="mt-2 space-y-2 pt-2 border-t border-stone-800">
-              <label class="text-[10px] text-stone-400 block">URL del Projecte Supabase</label>
-              <input type="text" id="cfg-supa-url" value="https://qstjwfqrkemyfzudtoxb.supabase.co" readonly class="w-full bg-stone-950 border border-stone-800 text-stone-400 rounded-lg px-3 py-1.5 text-xs focus:outline-none cursor-not-allowed opacity-75" />
-              
-              <label class="text-[10px] text-stone-400 block">Clau Pública (Publishable Key)</label>
-              <input type="password" id="cfg-supa-key" value="sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq" readonly class="w-full bg-stone-950 border border-stone-800 text-stone-400 rounded-lg px-3 py-1.5 text-xs focus:outline-none cursor-not-allowed opacity-75" />
-            </div>
-          </details>
+          <!-- Casella de Consentiment Explícit RGPD -->
+          <div class="pt-1">
+            <label for="chk-rgpd-consent" class="flex items-start gap-2.5 cursor-pointer select-none">
+              <input type="checkbox" id="chk-rgpd-consent" class="mt-0.5 w-4 h-4 accent-sky-500 rounded cursor-pointer shrink-0" />
+              <span class="text-[10px] text-stone-400 leading-snug">
+                Accepto la Política de Privadesa i consenteixo que les meves tasques i rutines es desin de forma xifrada a Supabase amb l'única finalitat de sincronitzar els meus dispositius.
+              </span>
+            </label>
+          </div>
         </div>
 
         <div class="space-y-2 pt-1">
@@ -354,12 +355,30 @@
           <button type="button" id="btn-logout-guest" class="w-full bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold py-2 rounded-xl text-[11px] transition border border-stone-700">
             Tornar a mode Convidat
           </button>
-
-          <!-- BOTÓ EXCLUSIU PER A CARLA-BRUNAT (Ocult per a tota la resta d'usuaris) -->
-          <a href="admin.html" id="btn-admin-panel" class="hidden w-full bg-stone-950 hover:bg-stone-800 text-sky-400 font-semibold py-2.5 rounded-xl text-xs transition border border-sky-500/40 text-center block mt-2">
-            🛡️ Obrir Panell d'Accessos (Admin)
-          </a>
         </div>
+
+        <!-- Secció Drets de Privadesa RGPD (Arts. 17 i 20) -->
+        <div class="pt-3 border-t border-stone-800 space-y-2">
+          <span class="text-[10px] text-stone-400 uppercase tracking-widest font-semibold block">Els meus Drets de Privadesa (RGPD)</span>
+          <button type="button" id="btn-export-data" class="w-full bg-stone-950 hover:bg-stone-800 text-stone-300 font-semibold py-2 px-3 rounded-xl text-[11px] transition border border-stone-800 text-center">
+            📥 Descarregar les meves dades (.JSON) — Art. 20 Portabilitat
+          </button>
+          <button type="button" id="btn-delete-account" class="w-full bg-stone-950 hover:bg-rose-950/30 text-rose-400 font-semibold py-2 px-3 rounded-xl text-[11px] transition border border-rose-800/50 text-center">
+            🗑️ Eliminar el meu compte i dades del núvol — Art. 17 Dret a la Supressió
+          </button>
+        </div>
+
+        <!-- Avís Legal, Privadesa (RGPD) i Exempció Mèdica -->
+        <details class="pt-2 border-t border-stone-800 text-[10px] text-stone-400">
+          <summary class="cursor-pointer hover:text-stone-300 font-semibold select-none py-1">
+            ⚖️ Avís Legal, Privadesa (RGPD) i Exempció Mèdica
+          </summary>
+          <div class="mt-2 space-y-2 leading-relaxed text-stone-400 bg-stone-950 p-3 rounded-xl border border-stone-800">
+            <p><b>1. Mode Convidat (100% Local):</b> En mode convidat, totes les teves tasques, rutines i pensaments es guarden exclusivament a la memòria interna del teu navegador (<code>localStorage</code>) sense cap rastreig ni transferència a servidors externs (exempt de cookies analítiques segons la Directiva ePrivacy).</p>
+            <p><b>2. Mode Núvol i Protecció de Dades (RGPD):</b> Si actives la sincronització, s'utilitza autenticació xifrada amb aïllament estricte per usuari (Row Level Security) a Supabase. Pots exportar les teves dades en format JSON (Art. 20) o eliminar el teu compte i totes les dades del núvol de manera immediata i irreversible (Art. 17) amb els botons superiors.</p>
+            <p><b>3. Exempció Mèdica (Reglament MDR) i Transparència (EU AI Act):</b> AI Buddy és una eina de benestar, organització personal i gestió d'hàbits quotidians. No és un producte sanitari ni substitueix en cap cas el diagnòstic, consell o tractament mèdic o psicològic professional. El motor de divisió de passos funciona mitjançant regles heurístiques locals deterministes sense perfilat automatitzat.</p>
+          </div>
+        </details>
       </div>
 
       <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
@@ -376,6 +395,7 @@
         type="text" 
         id="thought-input" 
         placeholder="Aparcar pensament..." 
+        aria-label="Escriu un pensament per aparcar"
         class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500 shadow-sm transition"
       />
       <button type="button" id="btn-park" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-4 py-2 rounded-xl text-xs transition border border-stone-700 shadow-sm">
@@ -388,6 +408,7 @@
         type="text" 
         id="task-input" 
         placeholder="Escriu una tasca..." 
+        aria-label="Escriu una tasca per desglossar en micro-passos"
         class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500 placeholder-stone-500 shadow-sm transition"
       />
       <button type="button" id="btn-send" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-5 py-3 rounded-xl text-sm transition shadow-md">
