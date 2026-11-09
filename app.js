@@ -998,7 +998,7 @@ if (btnSaveSettings) {
 
     // RESTRICCIÓ ESTRICTA D'ADMINISTRADORA
     if (enteredUser.toLowerCase() === "carla-brunat") {
-      if (enteredPass !== "elpolloelpollitoelpollo") {
+      if (enteredPass !== "heyjude") {
         showToast("⚠️ Contrasenya d'administradora incorrecta");
         if (cfgSyncPass) cfgSyncPass.focus();
         return;
