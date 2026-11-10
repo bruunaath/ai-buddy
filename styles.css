@@ -1,5 +1,5 @@
 /* =========================================================
-   PALETA DE COLORS SOL·LICITADA I VARIABLES DE TEMA
+   PALETA DE COLORS I PROTECCIÓ SENSORIAL
    - Blau mitjà / Blau cel: #5C8ED6 / #6B9EE8
    - Groc mantega / Groc pastel: #F7E671 / #FAEA87
    - Blau fosc / Blau marí: #2B4380 / #1E3264
@@ -18,19 +18,19 @@
   --off-white: #F5F5F7;
   --dark-ink: #1A1A1A;
 
-  /* Tema Clar per defecte basat en la paleta (#EFEFF4 / #F5F5F7) */
+  /* Mode Clar per defecte (Blanc trencat suau) */
   --bg-main: #EFEFF4;
   --bg-card: #F5F5F7;
-  --bg-subtle: #E5E6F0;
+  --bg-subtle: #E4E5F0;
   --text-main: #1A1A1A;
   --border-color: #CBD5E1;
 }
 
 body.dark-mode {
-  /* Tema Fosc basat en Blau Marí Profund i Gris Molt Fosc (#1A1A1A / #1E3264) */
+  /* Mode Nocturn (Negre / Gris molt fosc i Blau marí) */
   --bg-main: #1A1A1A;
   --bg-card: #1E3264;
-  --bg-subtle: #152347;
+  --bg-subtle: #142246;
   --text-main: #F5F5F7;
   --border-color: #2B4380;
 }
@@ -64,11 +64,10 @@ body {
   border-color: var(--border-color);
 }
 
-/* Botons de la paleta */
 .btn-primary {
   background-color: var(--blue-mid);
   color: #FFFFFF;
-  border: 2px solid var(--blue-navy);
+  border: 1.5px solid var(--blue-navy);
 }
 .btn-primary:hover {
   background-color: var(--blue-sky);
@@ -77,7 +76,7 @@ body {
 .btn-accent {
   background-color: var(--yellow-butter);
   color: var(--dark-ink);
-  border: 2px solid var(--blue-navy);
+  border: 1.5px solid var(--blue-navy);
 }
 .btn-accent:hover {
   background-color: var(--yellow-pastel);
@@ -92,24 +91,23 @@ body {
   border-color: var(--blue-mid);
 }
 
-/* Càpsules seleccionables (Rutina i Hobbies) */
+/* Càpsules d'hàbits i hobbies seleccionables */
 .habit-capsule {
   background-color: var(--bg-card);
   color: var(--text-main);
   border: 2px solid var(--border-color);
   border-radius: 9999px;
-  padding: 0.75rem 1.15rem;
+  padding: 0.7rem 1.1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.15s ease;
 }
 
 .habit-capsule:hover {
   border-color: var(--blue-mid);
-  transform: translateY(-1px);
 }
 
 .habit-capsule.selected {
@@ -117,20 +115,17 @@ body {
   color: var(--dark-ink);
   border-color: var(--blue-navy);
   font-weight: 700;
-  box-shadow: 0 3px 0 var(--blue-navy);
 }
 
-/* Animació suau del robot penjant de la segona 'd' */
 @keyframes robot-swing {
-  0%, 100% { transform: rotate(-4deg); }
-  50% { transform: rotate(5deg); }
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(4deg); }
 }
 
 .animate-robot-swing {
-  animation: robot-swing 3.2s ease-in-out infinite;
+  animation: robot-swing 3.5s ease-in-out infinite;
 }
 
-/* Evitar zoom en inputs iOS i permetre selecció */
 input, select {
   font-size: 16px !important;
   user-select: text;
@@ -140,26 +135,24 @@ input, select {
 
 button {
   touch-action: manipulation;
-  transition: transform 0.1s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition: transform 0.1s ease, background-color 0.15s ease;
 }
 
 button:active {
   transform: scale(0.97);
 }
 
-/* Accessibilitat Europea WCAG 2.1 AA */
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 summary:focus-visible {
-  outline: 3px solid var(--blue-mid) !important;
+  outline: 2px solid var(--blue-mid) !important;
   outline-offset: 2px !important;
 }
 
-/* Scrollbar personalitzada */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -170,28 +163,30 @@ summary:focus-visible {
 }
 
 /* =========================================================
-   MODE COMPACTE FLOTANT (MINI-WIDGET PER A PC / PORTÀTIL I MÒBIL)
-   S'activa automàticament quan s'obre amb ?widget=todo o ?widget=pomodoro
+   MODE FINESTRA FLOTANT DE WIDGET (DES DE LA ICONA DE L'APP)
+   - En ?widget=todo mostra només la llista To-Do ràpida.
+   - En ?widget=pomodoro mostra només la barra, la imatge, pausar/reprendre i la caixeta d'aparcar pensaments.
    ========================================================= */
-body.widget-floating-mode {
-  padding: 0.5rem !important;
-  justify-content: flex-start !important;
-}
-
-body.widget-floating-mode #app-window-bar,
-body.widget-floating-mode #main-header,
-body.widget-floating-mode #main-footer,
-body.widget-floating-mode #todo-landscape-illustration,
-body.widget-floating-mode #pomo-config-details,
-body.widget-floating-mode #btn-popout-todo,
-body.widget-floating-mode #btn-popout-pomo,
-body.widget-floating-mode #btn-todo-back-menu,
-body.widget-floating-mode #btn-pomo-back-menu {
+body.widget-todo-mode #app-window-title,
+body.widget-todo-mode #main-header,
+body.widget-todo-mode #main-footer,
+body.widget-todo-mode #todo-landscape-illustration,
+body.widget-todo-mode #btn-todo-back-menu {
   display: none !important;
 }
 
-body.widget-floating-mode main {
-  margin: 0 !important;
-  padding: 0 !important;
-  width: 100% !important;
+body.widget-pomo-mode #app-window-title,
+body.widget-pomo-mode #main-header,
+body.widget-pomo-mode #pomo-section-title,
+body.widget-pomo-mode #pomo-config-details,
+body.widget-pomo-mode #btn-pomo-back-menu,
+body.widget-pomo-mode #btn-pomo-next,
+body.widget-pomo-mode #footer-task-box {
+  display: none !important;
+}
+
+body.widget-pomo-mode #main-footer {
+  display: block !important;
+  border-top: none !important;
+  padding-top: 0.25rem !important;
 }
