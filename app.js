@@ -927,6 +927,7 @@ if (btnPomoNext) {
 
 // --- INICI DE SESSIÓ XIFRADA (SHA-256) I SINCRONITZACIÓ AMB CONSENTIMENT RGPD ---
 // --- DESAR CONFIGURACIÓ, XIFRAT AMB SHA-256 I VALIDACIÓ DE NOM ÚNIC AL NÚVOL ---
+// --- INICI DE SESSIÓ XIFRAT (SHA-256) I VALIDACIÓ D'USUARI ÚNIC AL NÚVOL ---
 if (btnSaveSettings) {
   btnSaveSettings.addEventListener("click", async () => {
     const enteredUser = (cfgSyncId ? cfgSyncId.value.trim() : "") || "convidat";
@@ -952,65 +953,62 @@ if (btnSaveSettings) {
     }
 
     btnSaveSettings.disabled = true;
-    btnSaveSettings.textContent = "Verificant compte...";
+    btnSaveSettings.textContent = "Verificant credencials...";
 
     try {
       const baseUrl = cleanSupaUrl(config.supaUrl);
       const cleanUser = enteredUser.toLowerCase();
-      const newHash = await computeSecureSyncHash(cleanUser, enteredPass);
+      const enteredHash = await computeSecureSyncHash(cleanUser, enteredPass);
 
-      // 1. Comprovem si el nom d'usuari ja existeix a Supabase
-      const checkUrl = `${baseUrl}/rest/v1/user_state?select=id`;
-      const checkRes = await fetch(checkUrl, {
+      // 1. Comprovem si el nom d'usuari ja existeix a la taula 'user_credentials'
+      const checkRes = await fetch(`${baseUrl}/rest/v1/user_credentials?username=eq.${encodeURIComponent(cleanUser)}`, {
         headers: {
           "apikey": config.supaKey,
           "Authorization": `Bearer ${config.supaKey}`
         }
       });
 
-      if (checkRes.ok) {
-        const rows = await checkRes.json();
-        
-        // Comprovem si hi ha algun registre guardat amb aquest mateix nom d'usuari o hash
-        // Per fer-ho infal·lible, comprovarem si ja existeixen dades al servidor
-        // Com que l'id a Supabase és el hash SHA-256, guardarem un registre auxiliar o validarem el hash.
-        // Com a mesura de seguretat estricta: si el hash no coincideix amb un de existent per a aquest usuari, comprovem si el nom d'usuari ja està registrat.
-        
-        // Com que guardem el hash com a ID, podem verificar si existeix exactament el nostre hash o si hi ha col·lisió de nom.
-        // Verifiquem si al localStorage o Supabase ja existeix una clau per a aquest usuari:
-      }
+      if (!checkRes.ok) throw new Error("Error de connexió amb el servidor");
 
-      // Generem el hash segur
-      const secureHash = await computeSecureSyncHash(enteredUser, enteredPass);
+      const existingUsers = await checkRes.json();
 
-      // Comprovació de seguretat addicional per evitar duplicitats de nom amb diferent clau:
-      // Consultem si hi ha alguna fila al servidor amb un hash diferent però que correspongui al mateix usuari (si guardéssim el meta). 
-      // Com que el hash inclou la contrasenya, si algú posa el mateix nom amb una altra contrasenya, generarà un hash diferent. 
-      // Per evitar que algú ocupi un nom existent, podem fer un petit filtre de seguretat o deixar que el hash asseguri la relació unívoca usuari-contrasenya.
-      
-      // En el nostre model actual amb hash SHA-256(usuari + contrasenya), la combinació "usuari + contrasenya" és única i inalterable. 
-      // Si algú posa el mateix nom d'usuari però una altra contrasenya, es crearà un espai diferent al núvol (sense accés a les teves dades). 
-      // Però si vols que **ningú pugui ni tan sols crear un compte amb un nom ja existent**, fem la comprovació de nom net:
-
-      // Validació de nom d'usuari unic al servidor:
-      const allRowsRes = await fetch(`${baseUrl}/rest/v1/user_state?select=id`, {
-        headers: {
-          "apikey": config.supaKey,
-          "Authorization": `Bearer ${config.supaKey}`
+      if (existingUsers.length > 0) {
+        // L'usuari ja existeix: comprovem si la contrasenya és correcta
+        const storedHash = existingUsers[0].password_hash;
+        if (storedHash !== enteredHash) {
+          showToast("❌ Contrasenya incorrecta per a aquest usuari");
+          btnSaveSettings.disabled = false;
+          btnSaveSettings.textContent = "Desar i Sincronitzar";
+          if (cfgSyncPass) cfgSyncPass.focus();
+          return;
         }
-      });
-
-      if (allRowsRes.ok) {
-        const allRows = await allRowsRes.json();
-        // Comprovem si el nom d'usuari ja s'està utilitzant amb una altra contrasenya (altre hash).
-        // Com que el hash és irreversible, guardem el nom d'usuari en clar dins del JSON de l'estat (state.username = enteredUser)
-        const nomOcupatPerAltre = allRows.some(async (row) => {
-          // Si necessites restringir-ho estricte per nom, pots consultar la taula.
+      } else {
+        // L'usuari no existeix: el creem a la taula de credencials
+        const insertRes = await fetch(`${baseUrl}/rest/v1/user_credentials`, {
+          method: "POST",
+          headers: {
+            "apikey": config.supaKey,
+            "Authorization": `Bearer ${config.supaKey}`,
+            "Content-Type": "application/json",
+            "Prefer": "resolution=ignore-duplicates"
+          },
+          body: JSON.stringify({
+            username: cleanUser,
+            password_hash: enteredHash
+          })
         });
+
+        if (!insertRes.ok) {
+          showToast("⚠️ Aquest nom d'usuari ja està registrat amb una altra contrasenya.");
+          btnSaveSettings.disabled = false;
+          btnSaveSettings.textContent = "Desar i Sincronitzar";
+          return;
+        }
       }
 
-      config.syncUser = enteredUser;
-      config.syncHash = secureHash;
+      // Credencials correctes: establim la sessió
+      config.syncUser = cleanUser;
+      config.syncHash = enteredHash;
       config.rgpdConsent = true;
 
       localStorage.setItem("aibuddy_sync_user", config.syncUser);
@@ -1026,10 +1024,11 @@ if (btnSaveSettings) {
       await pullRemoteState();
       await saveState();
 
-      showToast(`✓ Sessió xifrada activa: ${config.syncUser}`);
+      showToast(`✓ Sessió iniciada correctament: ${config.syncUser}`);
       switchView("view-menu");
     } catch (err) {
-      showToast("⚠️ Error en iniciar la sessió");
+      console.error(err);
+      showToast("⚠️ Error en validar les credencials al núvol");
     } finally {
       btnSaveSettings.disabled = false;
       btnSaveSettings.textContent = "Desar i Sincronitzar";
