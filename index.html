@@ -5,475 +5,725 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Buddy - Assistent personal per al teu dia a dia</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0a0a0a">
+  <meta name="theme-color" content="#2B4380">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-neutral-950 text-stone-100 min-h-screen flex flex-col items-center justify-between p-4 md:p-8 font-sans relative transition-colors duration-200">
+<body class="min-h-screen flex flex-col items-center justify-between p-3 sm:p-5 md:p-7 font-sans relative transition-colors duration-200">
 
-  <!-- Header Adaptatiu: Estat de Connexió, Ajuda, Tema i Configuració -->
-  <header class="w-full max-w-md md:max-w-3xl lg:max-w-4xl grid grid-cols-3 items-center py-2.5 border-b border-stone-800">
-    <div class="flex items-center">
-      <button type="button" onclick="openOnboarding()" aria-label="Obrir guia d'introducció" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition flex items-center gap-1" title="Com funciona AI Buddy">
+  <!-- Barra superior de títol de finestra -->
+  <div id="app-window-bar" class="w-full max-w-5xl flex justify-between items-center text-[11px] font-semibold px-3 py-1.5 rounded-t-2xl bg-[#2B4380] text-[#EFEFF4] border-b border-white/10">
+    <span class="truncate">🤖 AI Buddy - Assistent personal per al teu dia a dia</span>
+    <div class="flex items-center gap-2 shrink-0">
+      <button type="button" onclick="openFloatingWidget('todo')" class="hover:text-[#F7E671] transition hidden sm:inline" title="Obrir Widget Flotant To-Do">🪟 Widget To-Do</button>
+      <span class="opacity-40 hidden sm:inline">|</span>
+      <button type="button" onclick="openFloatingWidget('pomodoro')" class="hover:text-[#F7E671] transition hidden sm:inline" title="Obrir Widget Flotant Pomodoro">🍅 Widget Pomo</button>
+    </div>
+  </div>
+
+  <!-- Header Principal amb Logo Bubble 60s/70s i Robot penjant de la segona 'd' -->
+  <header id="main-header" class="w-full max-w-5xl grid grid-cols-3 items-center py-3 px-4 bg-card border-x border-b border-theme rounded-b-2xl shadow-sm mb-4">
+    <div class="flex items-center gap-2">
+      <button type="button" onclick="openOnboarding()" aria-label="Obrir guia d'introducció" class="btn-secondary text-xs px-3 py-1.5 rounded-full font-semibold flex items-center gap-1.5 shadow-sm">
         <span>❓</span>
-        <span class="hidden sm:inline text-[11px]">Guia</span>
+        <span>Guia</span>
       </button>
     </div>
-    <h1 class="text-lg md:text-xl font-bold tracking-wide text-sky-400 text-center cursor-pointer" onclick="switchView('view-menu')">AI Buddy</h1>
-    <div class="flex justify-end items-center gap-2">
-      <span id="status-badge" onclick="switchView('view-settings')" title="Estat de sincronització i usuari" class="cursor-pointer text-xs bg-stone-900 text-stone-400 px-3 py-1 rounded-full border border-stone-800 flex items-center gap-1.5 truncate max-w-[130px] md:max-w-[180px]">
+
+    <!-- TITOL CENTRAL "AI BUDDY" RETRO BUBBLE LETTERING AMB ROBOT INTEGRAT -->
+    <div class="flex justify-center items-center cursor-pointer select-none" onclick="switchView('view-menu')" title="Tornar al Dashboard Principal">
+      <svg class="h-12 sm:h-14 md:h-16 w-auto overflow-visible drop-shadow-md" viewBox="0 0 360 105" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="AI Buddy">
+        <defs>
+          <filter id="retro-shadow" x="-10%" y="-10%" width="130%" height="130%">
+            <feDropShadow dx="2" dy="4" stdDeviation="0" flood-color="#1E3264" />
+          </filter>
+        </defs>
+        <!-- Grup de lletres Bubble 60s/70s superposades (atapeïdes i orgàniques) -->
+        <g filter="url(#retro-shadow)" stroke="#1E3264" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" style="font-family: 'Fredoka', cursive; font-weight: 700; font-size: 62px;">
+          <!-- A + I -->
+          <text x="12" y="64" fill="#F7E671" transform="rotate(-5 25 50)">a</text>
+          <text x="44" y="62" fill="#6B9EE8" transform="rotate(3 52 50)">i</text>
+          <!-- b + u + d + d + y superposades -->
+          <text x="82" y="65" fill="#F7E671" transform="rotate(-4 98 52)">b</text>
+          <text x="120" y="66" fill="#6B9EE8" transform="rotate(2 138 52)">u</text>
+          <text x="158" y="64" fill="#F7E671" transform="rotate(-3 175 52)">d</text>
+          <!-- Segona 'd' d'on es penja el robot -->
+          <text x="198" y="65" fill="#5C8ED6">d</text>
+          <text x="236" y="64" fill="#F7E671" transform="rotate(4 252 52)">y</text>
+        </g>
+
+        <!-- Robot simpàtic penjant de la segona 'd' (x=215, y=62) -->
+        <g class="origin-top animate-robot-swing" style="transform-origin: 218px 62px;">
+          <!-- Braços agafats a la panxa inferior de la segona 'd' -->
+          <path d="M210 60 C208 68, 210 73, 213 76" stroke="#1E3264" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M226 60 C228 68, 226 73, 223 76" stroke="#1E3264" stroke-width="3.5" stroke-linecap="round"/>
+          <!-- Manetes agafant el traç de la lletra -->
+          <circle cx="210" cy="59" r="3.5" fill="#F7E671" stroke="#1E3264" stroke-width="2"/>
+          <circle cx="226" cy="59" r="3.5" fill="#F7E671" stroke="#1E3264" stroke-width="2"/>
+          <!-- Antena -->
+          <line x1="218" y1="68" x2="218" y2="73" stroke="#1E3264" stroke-width="2.5"/>
+          <circle cx="218" cy="67" r="3" fill="#F7E671" stroke="#1E3264" stroke-width="2"/>
+          <!-- Cap arrodonit del robot Buddy -->
+          <rect x="206" y="73" width="24" height="18" rx="7" fill="#EFEFF4" stroke="#1E3264" stroke-width="2.5"/>
+          <!-- Ulls alegres i somriure -->
+          <circle cx="213" cy="80" r="2" fill="#1E3264"/>
+          <circle cx="223" cy="80" r="2" fill="#1E3264"/>
+          <path d="M214 85 Q218 88 222 85" stroke="#1E3264" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <!-- Cos petit penjant -->
+          <rect x="211" y="91" width="14" height="9" rx="4" fill="#6B9EE8" stroke="#1E3264" stroke-width="2"/>
+          <!-- Cametes penjant -->
+          <path d="M214 100 L212 105" stroke="#1E3264" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M222 100 L224 105" stroke="#1E3264" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="flex justify-end items-center gap-1.5 sm:gap-2">
+      <span id="status-badge" onclick="switchView('view-settings')" title="Estat de sincronització i usuari" class="cursor-pointer text-xs btn-secondary px-2.5 py-1.5 rounded-full flex items-center gap-1.5 truncate max-w-[110px] md:max-w-[160px] font-semibold">
         ⚪ Convidat
       </span>
-      <button type="button" onclick="toggleTheme()" id="btn-theme-toggle" aria-label="Canviar entre tema clar i fosc" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Canviar tema clar/fosc">
-        ☀️
+      <button type="button" onclick="toggleTheme()" id="btn-theme-toggle" aria-label="Canviar entre tema clar i fosc" class="btn-secondary text-xs px-2.5 py-1.5 rounded-full" title="Canviar tema clar/fosc">
+        🌙
       </button>
-      <button type="button" onclick="switchView('view-settings')" aria-label="Obrir configuració i compte" class="text-xs bg-stone-900 hover:bg-stone-800 text-stone-300 px-2.5 py-1 rounded-full border border-stone-800 transition" title="Configuració i Compte">
+      <button type="button" onclick="switchView('view-settings')" aria-label="Obrir configuració i compte" class="btn-secondary text-xs px-2.5 py-1.5 rounded-full" title="Configuració i Compte">
         ⚙️
       </button>
     </div>
   </header>
 
-  <!-- Toast Notificació Adaptat -->
-  <div id="toast-notification" role="status" aria-live="polite" class="fixed top-20 bg-stone-900 border border-sky-500/50 text-stone-200 text-xs px-4 py-2.5 rounded-xl shadow-2xl transition-all duration-300 transform opacity-0 translate-y-[-10px] pointer-events-none z-50">
+  <!-- Toast Notificació -->
+  <div id="toast-notification" role="status" aria-live="polite" class="fixed top-20 bg-[#2B4380] border-2 border-[#F7E671] text-white font-semibold text-xs px-4 py-2.5 rounded-2xl shadow-2xl transition-all duration-300 transform opacity-0 translate-y-[-10px] pointer-events-none z-50">
     + Pensament guardat per més tard
   </div>
 
-  <!-- MODAL D'INTRODUCCIÓ (ONBOARDING PER A CONVIDATS DE 0) -->
-  <div id="onboarding-modal" role="dialog" aria-modal="true" aria-labelledby="onboarding-title" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-    <div class="bg-stone-900 border border-stone-800 rounded-2xl max-w-2xl w-full p-6 md:p-8 shadow-2xl space-y-6 text-left overflow-y-auto max-h-[90vh]">
-      <div class="flex justify-between items-start gap-4 border-b border-stone-800 pb-4">
+  <!-- MODAL D'INTRODUCCIÓ (ONBOARDING) -->
+  <div id="onboarding-modal" role="dialog" aria-modal="true" aria-labelledby="onboarding-title" class="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-card border-2 border-[#5C8ED6] rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl space-y-5 text-left overflow-y-auto max-h-[90vh]">
+      <div class="flex justify-between items-start gap-4 border-b border-theme pb-4">
         <div>
-          <span class="text-[10px] tracking-widest text-sky-400 font-semibold uppercase block mb-1">Benvingut/da al Mode Convidat (100% Privat)</span>
-          <h2 id="onboarding-title" class="text-xl md:text-2xl font-bold text-stone-100">Què és AI Buddy i com t'ajuda?</h2>
+          <span class="text-[11px] tracking-widest text-[#5C8ED6] font-bold uppercase block mb-1">Benvingut/da a AI Buddy (100% Privat)</span>
+          <h2 id="onboarding-title" class="text-xl md:text-2xl font-extrabold">Com funciona el teu assistent diari?</h2>
         </div>
-        <button type="button" onclick="closeOnboarding()" aria-label="Tancar introducció" class="text-stone-400 hover:text-stone-200 text-lg px-2 py-1 rounded-lg">✕</button>
+        <button type="button" onclick="closeOnboarding()" aria-label="Tancar introducció" class="btn-secondary text-sm px-3 py-1 rounded-xl font-bold">✕</button>
       </div>
 
-      <p class="text-xs md:text-sm text-stone-300 leading-relaxed">
-        <b>AI Buddy</b> és un organitzador personal dissenyat per reduir la sobrecàrrega mental i el bloqueig davant les tasques. Ara mateix ets en <b>Mode Convidat</b>: tot funciona a l'instant al teu navegador sense necessitat de registre.
+      <p class="text-xs md:text-sm opacity-90 leading-relaxed">
+        <b>AI Buddy</b> redueix la sobrecàrrega mental dividint objectius en passos petits, aparcant distraccions i oferint ginys flotants per a ordinador i mòbil.
       </p>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-        <div class="bg-stone-950 border border-stone-800 p-4 rounded-xl space-y-1.5">
-          <div class="text-sky-400 font-bold text-xs md:text-sm flex items-center gap-2">
-            <span>Desglossament en Micro-passos</span>
-          </div>
-          <p class="text-[11px] md:text-xs text-stone-400 leading-relaxed">
-            Escriu qualsevol tasca que et costi començar a la barra inferior (o tria una plantilla) i prem <b>Processar</b>. L'app la dividirà en passos petits i et mostrarà <b>només un pas a la vegada</b> perquè avancis sense pressió.
+        <div class="p-4 rounded-2xl bg-subtle border border-theme space-y-1.5">
+          <div class="font-bold text-xs md:text-sm text-[#5C8ED6]">🪟 Widgets Flotants (PC i Mòbil)</div>
+          <p class="text-xs opacity-80 leading-relaxed">
+            A l'ordinador, prem <b>"Obrir en finestra flotant"</b> per tenir la To-Do o el Pomodoro en una mini-finestra sempre visible (Picture-in-Picture). Al mòbil, afegeix l'app a la pantalla d'inici per usar les dreceres ràpides.
           </p>
         </div>
-
-        <div class="bg-stone-950 border border-stone-800 p-4 rounded-xl space-y-1.5">
-          <div class="text-sky-400 font-bold text-xs md:text-sm flex items-center gap-2">
-            <span>Pomodoro i Descansos Automàtics</span>
-          </div>
-          <p class="text-[11px] md:text-xs text-stone-400 leading-relaxed">
-            Treballa amb una barra visual tranquil·la (per defecte 25 min). En acabar cada bloc, s'activarà automàticament un <b>descans curt de 5 min</b>, i després de <b>5 pomodoros</b> tindràs un <b>descans llarg de 15 min</b> (tot personalitzable!).
-          </p>
-        </div>
-
-        <div class="bg-stone-950 border border-stone-800 p-4 rounded-xl space-y-1.5">
-          <div class="text-sky-400 font-bold text-xs md:text-sm flex items-center gap-2">
-            <span>Aparcament de Pensaments</span>
-          </div>
-          <p class="text-[11px] md:text-xs text-stone-400 leading-relaxed">
-            Et ve una idea o distracció mentre intentes concentrar-te? Escriu-la a <i>"Aparcar pensament..."</i>. Quedarà desada en lloc segur per revisar-la més tard sense perdre el fil actual.
-          </p>
-        </div>
-
-        <div class="bg-stone-950 border border-stone-800 p-4 rounded-xl space-y-1.5">
-          <div class="text-sky-400 font-bold text-xs md:text-sm flex items-center gap-2">
-            <span>Rutines, Hobbies i Sincronització</span>
-          </div>
-          <p class="text-[11px] md:text-xs text-stone-400 leading-relaxed">
-            Crea la teva rutina de matí pas a pas, guarda idees de descans o fes servir la To-Do ràpida. Si mai vols sincronitzar entre mòbil i ordinador, pots crear un usuari xifrat a <b>Configuració (⚙️)</b>.
+        <div class="p-4 rounded-2xl bg-subtle border border-theme space-y-1.5">
+          <div class="font-bold text-xs md:text-sm text-[#5C8ED6]">👣 Micro-passos i Plantilles</div>
+          <p class="text-xs opacity-80 leading-relaxed">
+            Escriu una tasca complexa a baix o tria una plantilla antibloqueig. L'app et guia d'un pas en un pas perquè no et bloquegis.
           </p>
         </div>
       </div>
 
-      <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2 border-t border-stone-800">
-        <span class="text-[11px] text-stone-400">Pots tornar a obrir aquesta guia sempre que vulguis amb el botó <b>❓ Guia</b> de dalt a l'esquerra.</span>
-        <button type="button" onclick="closeOnboarding()" class="w-full sm:w-auto bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-6 py-3 rounded-xl text-xs md:text-sm transition shadow-lg shrink-0">
-          Començar ara
+      <div class="flex justify-end pt-2 border-t border-theme">
+        <button type="button" onclick="closeOnboarding()" class="btn-accent font-bold px-6 py-3 rounded-2xl text-xs md:text-sm shadow-md">
+          Entesos, comencem!
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Contenidor Principal de Vistes (Adaptable a mòbil i escriptori) -->
-  <main class="w-full max-w-md md:max-w-3xl lg:max-w-4xl my-auto flex flex-col items-center text-center py-6">
+  <!-- CONTENIDOR PRINCIPAL DE VISTES -->
+  <main class="w-full max-w-5xl my-auto flex flex-col items-center py-2 flex-1">
 
-    <!-- VISTA 1: MENU PRINCIPAL -->
-<section id="view-menu" class="w-full flex flex-col gap-4">
-  <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-1 text-center block w-full">MENÚ PRINCIPAL</span>
-  
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 w-full">
-    <button type="button" onclick="switchView('view-tasks')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
-      <div class="text-left">
-        <span class="block font-semibold">Tasques i Micro-passos</span>
-        <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Desglossa tasques pas a pas</span>
-      </div>
-      <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
-    </button>
+    <!-- ==========================================
+         VISTA 1: DASHBOARD PRINCIPAL (PANTALLA D'INICI)
+         ========================================== -->
+    <section id="view-menu" class="w-full flex flex-col gap-5 text-left">
 
-    <button type="button" onclick="switchView('view-thoughts')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
-      <div class="text-left">
-        <span class="block font-semibold">Pensaments Aparcats</span>
-        <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Allibera la ment de distraccions</span>
-      </div>
-      <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
-    </button>
-
-    <button type="button" onclick="openPomodoroView()" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
-      <div class="text-left">
-        <span class="block font-semibold">Pomodoro Sensorial</span>
-        <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Focus i descansos automàtics</span>
-      </div>
-      <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
-    </button>
-
-    <button type="button" onclick="switchView('view-routine')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
-      <div class="text-left">
-        <span class="block font-semibold">Rutina de Matí Guiada</span>
-        <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Segueix la teva seqüència diària</span>
-      </div>
-      <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
-    </button>
-
-    <button type="button" onclick="switchView('view-hobbies')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
-      <div class="text-left">
-        <span class="block font-semibold">Hobbies de Descans</span>
-        <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Idees per recarregar energia</span>
-      </div>
-      <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
-    </button>
-
-    <button type="button" onclick="switchView('view-quick-todo')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
-      <div class="text-left">
-        <span class="block font-semibold">To-Do List Ràpida</span>
-        <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Llista directa d'encàrrecs</span>
-      </div>
-      <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
-    </button>
-  </div>
-</section>
-
-    <!-- VISTA 2: TASQUES I MICRO-PASSOS -->
-    <section id="view-tasks" class="w-full flex flex-col items-center hidden">
-      <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <!-- Columna Esquerra a Desktop: Plantilles ràpides -->
-        <div class="w-full lg:col-span-5 flex flex-col items-center lg:items-start">
-          <span class="text-[10px] tracking-widest text-stone-400 uppercase mb-2 block w-full text-center lg:text-left">Plantilles ràpides anti-bloqueig</span>
-          <div class="w-full grid grid-cols-2 gap-2 max-h-[145px] lg:max-h-none overflow-y-auto pr-1">
-            <button type="button" onclick="loadTemplate('planificar_dia')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              Planificar el dia
+      <!-- 1. Capçalera i context d'usuari + Ginys flotants ràpids -->
+      <div class="bg-card border border-theme rounded-3xl p-5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h2 id="dash-greeting" class="text-lg md:text-xl font-extrabold">Bon dia, Convidat! 👋</h2>
+            <span id="dash-streak-badge" class="bg-[#F7E671] text-[#1A1A1A] text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border border-[#2B4380]/20">
+              🔥 1 dia seguit
+            </span>
+          </div>
+          <p id="dash-motivation" class="text-xs opacity-80">Pas a pas es fa camí. Tria per on començar avui sense pressa.</p>
+        </div>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2.5 w-full md:w-auto justify-end">
+          <div id="dash-datetime" class="text-xs font-bold bg-subtle px-3.5 py-2 rounded-2xl border border-theme text-center w-full sm:w-auto">
+            📅 Carregant data...
+          </div>
+          <div class="flex gap-1.5 w-full sm:w-auto">
+            <button type="button" onclick="openFloatingWidget('todo')" class="flex-1 sm:flex-initial btn-primary text-[11px] font-bold px-3 py-2 rounded-2xl flex items-center justify-center gap-1 shadow-sm" title="Obrir mini-finestra flotant de To-Do">
+              <span>🪟</span> <span>Mini To-Do</span>
             </button>
-            <button type="button" onclick="loadTemplate('estudiar_temari')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              Començar temari
-            </button>
-            <button type="button" onclick="loadTemplate('respondre_correus')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              Respondre correus
-            </button>
-            <button type="button" onclick="loadTemplate('motxilla_uni')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              Motxilla Universitat
-            </button>
-            <button type="button" onclick="loadTemplate('ordenar_escriptori')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              Ordenar escriptori
-            </button>
-            <button type="button" onclick="loadTemplate('netejar_cuina')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              Netejar cuina
-            </button>
-            <button type="button" onclick="loadTemplate('posar_rentadora')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              Posar rentadora
-            </button>
-            <button type="button" onclick="loadTemplate('tramits_administratius')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              Tràmits i papers
+            <button type="button" onclick="openFloatingWidget('pomodoro')" class="flex-1 sm:flex-initial btn-accent text-[11px] font-bold px-3 py-2 rounded-2xl flex items-center justify-center gap-1 shadow-sm" title="Obrir mini-finestra flotant de Pomodoro">
+              <span>🍅</span> <span>Mini Pomo</span>
             </button>
           </div>
         </div>
+      </div>
 
-        <!-- Columna Dreta a Desktop: Visor del Pas Actual -->
-        <div class="w-full lg:col-span-7 flex flex-col items-center">
-          <span id="step-counter" class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-2 text-center block w-full">Pas Actual</span>
-          
-          <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[190px] flex flex-col items-center justify-center mb-5">
-            <p id="step-display" role="status" aria-live="polite" class="text-xl md:text-2xl font-medium leading-relaxed text-stone-200 text-center">
-              Escriu una tasca per començar...
-            </p>
-            <div id="completion-badge" class="hidden flex-col items-center gap-3 mt-1">
-              <img id="task-complete-img" src="completat.jpg" alt="Tasca completada" class="w-24 h-24 rounded-2xl object-cover border border-sky-500 shadow-md" />
-              <span class="text-sm text-sky-400 font-medium">Tasca completada!</span>
+      <!-- 2. Targetes de resum (KPIs / Mètriques clau i Anells de Progrés) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <!-- KPI 1: Tasques Ràpides -->
+        <div onclick="switchView('view-quick-todo')" class="bg-card border border-theme rounded-3xl p-4 shadow-sm flex items-center gap-3.5 cursor-pointer hover:border-[#5C8ED6] transition">
+          <div class="relative w-12 h-12 flex items-center justify-center shrink-0">
+            <svg class="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
+              <circle cx="18" cy="18" r="15" fill="none" class="stroke-current opacity-15" stroke-width="3.5"></circle>
+              <circle id="kpi-ring-todo" cx="18" cy="18" r="15" fill="none" stroke="#5C8ED6" stroke-width="3.5" stroke-dasharray="94.2" stroke-dashoffset="94.2" stroke-linecap="round"></circle>
+            </svg>
+            <span id="kpi-pct-todo" class="absolute text-[10px] font-extrabold">0%</span>
+          </div>
+          <div class="overflow-hidden">
+            <span class="text-[11px] opacity-70 font-semibold block truncate">To-Do Ràpida</span>
+            <p id="kpi-count-todo" class="text-sm font-extrabold truncate">0 pendents</p>
+          </div>
+        </div>
+
+        <!-- KPI 2: Rutina Matí -->
+        <div onclick="switchView('view-routine')" class="bg-card border border-theme rounded-3xl p-4 shadow-sm flex items-center gap-3.5 cursor-pointer hover:border-[#5C8ED6] transition">
+          <div class="relative w-12 h-12 flex items-center justify-center shrink-0">
+            <svg class="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
+              <circle cx="18" cy="18" r="15" fill="none" class="stroke-current opacity-15" stroke-width="3.5"></circle>
+              <circle id="kpi-ring-routine" cx="18" cy="18" r="15" fill="none" stroke="#F7E671" stroke-width="3.5" stroke-dasharray="94.2" stroke-dashoffset="94.2" stroke-linecap="round"></circle>
+            </svg>
+            <span id="kpi-pct-routine" class="absolute text-[10px] font-extrabold">0%</span>
+          </div>
+          <div class="overflow-hidden">
+            <span class="text-[11px] opacity-70 font-semibold block truncate">Hàbits Rutina</span>
+            <p id="kpi-count-routine" class="text-sm font-extrabold truncate">0 seleccionats</p>
+          </div>
+        </div>
+
+        <!-- KPI 3: Pomodoro Focus -->
+        <div onclick="openPomodoroView()" class="bg-card border border-theme rounded-3xl p-4 shadow-sm flex items-center gap-3.5 cursor-pointer hover:border-[#5C8ED6] transition">
+          <div class="w-12 h-12 rounded-2xl bg-[#5C8ED6]/15 text-[#5C8ED6] flex items-center justify-center text-xl font-bold shrink-0">
+            🍅
+          </div>
+          <div class="overflow-hidden">
+            <span class="text-[11px] opacity-70 font-semibold block truncate">Blocs Focus</span>
+            <p id="kpi-count-pomo" class="text-sm font-extrabold truncate">0 completats</p>
+          </div>
+        </div>
+
+        <!-- KPI 4: Pensaments Aparcats -->
+        <div onclick="switchView('view-thoughts')" class="bg-card border border-theme rounded-3xl p-4 shadow-sm flex items-center gap-3.5 cursor-pointer hover:border-[#5C8ED6] transition">
+          <div class="w-12 h-12 rounded-2xl bg-[#F7E671]/30 text-[#2B4380] flex items-center justify-center text-xl font-bold shrink-0">
+            💭
+          </div>
+          <div class="overflow-hidden">
+            <span class="text-[11px] opacity-70 font-semibold block truncate">Pensaments</span>
+            <p id="kpi-count-thoughts" class="text-sm font-extrabold truncate">0 aparcats</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Graella de Navegació Ràpida a les Vistes Principals -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+        <button type="button" onclick="switchView('view-tasks')" class="bg-card hover:border-[#5C8ED6] border border-theme p-3.5 rounded-2xl flex flex-col items-start gap-1 transition shadow-sm text-left">
+          <span class="text-lg">👣</span>
+          <span class="text-xs font-extrabold">Micro-passos</span>
+          <span class="text-[10px] opacity-70">Pas 1 de 2</span>
+        </button>
+        <button type="button" onclick="switchView('view-templates')" class="bg-card hover:border-[#5C8ED6] border border-theme p-3.5 rounded-2xl flex flex-col items-start gap-1 transition shadow-sm text-left">
+          <span class="text-lg">📋</span>
+          <span class="text-xs font-extrabold">Plantilles</span>
+          <span class="text-[10px] opacity-70">Antibloqueig</span>
+        </button>
+        <button type="button" onclick="switchView('view-quick-todo')" class="bg-card hover:border-[#5C8ED6] border border-theme p-3.5 rounded-2xl flex flex-col items-start gap-1 transition shadow-sm text-left">
+          <span class="text-lg">⚡</span>
+          <span class="text-xs font-extrabold">To-Do Ràpida</span>
+          <span class="text-[10px] opacity-70">Llista directa</span>
+        </button>
+        <button type="button" onclick="openPomodoroView()" class="bg-card hover:border-[#5C8ED6] border border-theme p-3.5 rounded-2xl flex flex-col items-start gap-1 transition shadow-sm text-left">
+          <span class="text-lg">🍅</span>
+          <span class="text-xs font-extrabold">Pomodoro</span>
+          <span class="text-[10px] opacity-70">Focus visual</span>
+        </button>
+        <button type="button" onclick="switchView('view-routine')" class="bg-card hover:border-[#5C8ED6] border border-theme p-3.5 rounded-2xl flex flex-col items-start gap-1 transition shadow-sm text-left">
+          <span class="text-lg">🌅</span>
+          <span class="text-xs font-extrabold">Rutina Guiada</span>
+          <span class="text-[10px] opacity-70">Graella d'hàbits</span>
+        </button>
+        <button type="button" onclick="switchView('view-hobbies')" class="bg-card hover:border-[#5C8ED6] border border-theme p-3.5 rounded-2xl flex flex-col items-start gap-1 transition shadow-sm text-left">
+          <span class="text-lg">🎨</span>
+          <span class="text-xs font-extrabold">Hobbies</span>
+          <span class="text-[10px] opacity-70">Descans actiu</span>
+        </button>
+      </div>
+
+      <!-- 4. Llista d'activitat activa del dia + Historial, Cercador i Streaks -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <!-- Llista d'activitat activa o del dia (7 col) -->
+        <div class="lg:col-span-7 bg-card border border-theme rounded-3xl p-5 shadow-sm flex flex-col justify-between gap-4">
+          <div>
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+              <h3 class="text-sm font-extrabold uppercase tracking-wider text-[#5C8ED6]">📌 Activitat del Dia</h3>
+              <!-- Selector de vista / Filtre -->
+              <div class="flex gap-1 bg-subtle p-1 rounded-xl border border-theme text-[11px] font-bold">
+                <button type="button" onclick="setDashFilter('all')" id="dash-tab-all" class="px-2.5 py-1 rounded-lg bg-[#5C8ED6] text-white transition">Tot avui</button>
+                <button type="button" onclick="setDashFilter('pending')" id="dash-tab-pending" class="px-2.5 py-1 rounded-lg opacity-75 hover:opacity-100 transition">Pendents</button>
+                <button type="button" onclick="setDashFilter('routine')" id="dash-tab-routine" class="px-2.5 py-1 rounded-lg opacity-75 hover:opacity-100 transition">Rutina</button>
+              </div>
+            </div>
+
+            <!-- Contenidor d'elements o Empty State guiat -->
+            <div id="dash-active-list" class="space-y-2 max-h-[230px] overflow-y-auto pr-1">
+              <!-- Es pobla per JS -->
             </div>
           </div>
 
-          <div class="flex gap-4 w-full mb-4">
-            <button type="button" id="btn-prev" aria-label="Pas anterior de la tasca" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
-              &#8249;
-            </button>
-            <button type="button" id="btn-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
-              OK
-            </button>
-            <button type="button" id="btn-next" aria-label="Pas següent de la tasca" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
-              &#8250;
+          <!-- Feedback visual i acció ràpida -->
+          <div id="dash-feedback-banner" class="bg-[#F7E671]/25 border border-[#F7E671] rounded-2xl p-3 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 text-xs">
+              <span class="text-lg">✨</span>
+              <span id="dash-feedback-text" class="font-semibold">Completa una tasca o pas de rutina per sumar a la teva ratxa d'avui!</span>
+            </div>
+            <button type="button" onclick="switchView('view-quick-todo')" class="btn-primary text-[11px] font-bold px-3 py-1.5 rounded-xl shrink-0">
+              + Afegir
             </button>
           </div>
         </div>
+
+        <!-- Historial, Cercador i Mètrica de Continuïtat (Streaks) (5 col) -->
+        <div class="lg:col-span-5 bg-card border border-theme rounded-3xl p-5 shadow-sm flex flex-col justify-between gap-4">
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <h3 class="text-sm font-extrabold uppercase tracking-wider text-[#5C8ED6]">🕒 Historial i Continuïtat</h3>
+              <span class="text-[11px] opacity-70 font-semibold">Últims 7 dies</span>
+            </div>
+
+            <!-- Mètrica de continuïtat (Streaks visuals dels últims 7 dies) -->
+            <div id="dash-streak-days" class="grid grid-cols-7 gap-1.5 text-center bg-subtle p-2.5 rounded-2xl border border-theme">
+              <!-- Es genera dinàmicament -->
+            </div>
+
+            <!-- Cercador i filtre d'historial -->
+            <div class="flex gap-2">
+              <div class="relative flex-1">
+                <input type="text" id="history-search-input" placeholder="🔍 Cerca completats o pensaments..." class="w-full bg-subtle border border-theme rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-[#5C8ED6]" />
+              </div>
+              <select id="history-type-filter" aria-label="Filtrar historial per categoria" class="bg-subtle border border-theme rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none">
+                <option value="all">Tots</option>
+                <option value="todo">Tasques</option>
+                <option value="thought">Pensaments</option>
+                <option value="routine">Rutina</option>
+              </select>
+            </div>
+
+            <!-- Llista d'historial / arxivats -->
+            <div id="dash-history-list" class="space-y-1.5 max-h-[130px] overflow-y-auto pr-1 text-xs">
+              <!-- Es pobla per JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VISTA 2: TASQUES I MICRO-PASSOS
+         ========================================== -->
+    <section id="view-tasks" class="w-full max-w-2xl flex flex-col items-center hidden">
+      <!-- Secció superior: Botó d'accés a la pantalla de plantilles ràpides antibloqueig -->
+      <div class="w-full mb-5">
+        <button type="button" onclick="switchView('view-templates')" class="w-full btn-accent font-extrabold py-3.5 px-5 rounded-2xl shadow-md flex justify-between items-center text-sm transition">
+          <span class="flex items-center gap-2">📋 Obrir Plantilles Ràpides Antibloqueig</span>
+          <span class="text-base font-bold">Veure totes &#8250;</span>
+        </button>
       </div>
 
-      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition mt-2">
+      <!-- Resta de la pàgina: Flux guiat ("PAS 1 DE 2") -->
+      <span id="step-counter" class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-2.5 text-center block w-full">
+        PAS 1 DE 2
+      </span>
+
+      <!-- Targeta central destacada -->
+      <div class="w-full bg-card border-2 border-[#5C8ED6]/40 rounded-3xl p-8 md:p-10 shadow-xl min-h-[200px] flex flex-col items-center justify-center mb-5 text-center">
+        <p id="step-display" role="status" aria-live="polite" class="text-xl md:text-2xl font-bold leading-relaxed">
+          Escriu una tasca o tria una plantilla ràpida
+        </p>
+        <div id="completion-badge" class="hidden flex-col items-center gap-3 mt-1">
+          <img id="task-complete-img" src="completat.jpg" alt="Tasca completada" class="w-24 h-24 rounded-2xl object-cover border-2 border-[#F7E671] shadow-md" />
+          <span class="text-sm text-[#5C8ED6] font-extrabold">🎉 Tasca completada!</span>
+        </div>
+      </div>
+
+      <!-- Barra de navegació amb botons (< i >) i botó central ("OK") -->
+      <div class="flex gap-4 w-full mb-5">
+        <button type="button" id="btn-prev" aria-label="Pas anterior de la tasca" class="flex-1 btn-secondary font-extrabold py-4 rounded-2xl text-xl flex justify-center items-center shadow-sm">
+          &lt;
+        </button>
+        <button type="button" id="btn-ok" class="flex-[2] grow btn-primary font-extrabold py-4 rounded-2xl shadow-lg text-xl flex justify-center items-center">
+          OK
+        </button>
+        <button type="button" id="btn-next" aria-label="Pas següent de la tasca" class="flex-1 btn-secondary font-extrabold py-4 rounded-2xl text-xl flex justify-center items-center shadow-sm">
+          &gt;
+        </button>
+      </div>
+
+      <button type="button" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition mt-1">
         &#8249; Tornar al menú principal
       </button>
     </section>
 
-    <!-- VISTA NOVA: TO-DO LIST RÀPIDA -->
-    <section id="view-quick-todo" class="w-full max-w-2xl flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-4 text-center block w-full">⚡ To-Do List Ràpida</span>
-
-      <div class="flex gap-2 w-full mb-4">
-        <input 
-          type="text" 
-          id="quick-todo-input" 
-          placeholder="Apunta una tasca ràpida..." 
-          aria-label="Nova tasca ràpida"
-          class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500"
-        />
-        <button type="button" id="btn-add-quick-todo" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-5 py-2.5 rounded-xl text-xs transition shadow-sm">
-          Afegir
+    <!-- ==========================================
+         VISTA NOVA: PLANTILLES RÀPIDES ANTIBLOQUEIG
+         ========================================== -->
+    <section id="view-templates" class="w-full max-w-3xl flex flex-col items-center hidden">
+      <div class="w-full flex justify-between items-center mb-4">
+        <div class="text-left">
+          <span class="text-[11px] tracking-widest text-[#5C8ED6] font-extrabold uppercase block">Catàleg Guiat</span>
+          <h2 class="text-lg md:text-xl font-extrabold">Plantilles Ràpides Antibloqueig</h2>
+        </div>
+        <button type="button" onclick="switchView('view-tasks')" class="btn-secondary text-xs font-bold px-3.5 py-2 rounded-xl">
+          &#8249; Tornar a Tasques
         </button>
       </div>
 
-      <div id="quick-todo-list" class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 min-h-[220px] max-h-[340px] overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-2.5 content-start text-left mb-4">
-        <p class="text-xs text-stone-500 text-center py-8 md:col-span-2">No hi ha tasques ràpides pendents.</p>
+      <!-- Contenidor amb scroll vertical de targetes horitzontals -->
+      <div id="templates-cards-container" class="w-full max-h-[430px] overflow-y-auto space-y-3 pr-1 mb-5 text-left">
+        <!-- Es genera per JS amb quadradet d'imatge/icona a l'esquerra, títol en negreta, descripció i botó "Read Details" -->
       </div>
 
-      <div class="flex justify-between w-full mb-6">
-        <button type="button" id="btn-clear-quick-todos" class="text-[11px] text-stone-500 hover:text-stone-300 transition">
-          Esborrar totes les tasques ràpides
-        </button>
-      </div>
-
-      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
 
-    <!-- VISTA 3: PENSAMENTS APARCATS -->
+    <!-- ==========================================
+         VISTA 3: PENSAMENTS APARCATS (MANTINGUDA)
+         ========================================== -->
     <section id="view-thoughts" class="w-full max-w-2xl flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-4 text-center block w-full">Pensaments Aparcats</span>
+      <span class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-4 text-center block w-full">💭 Pensaments Aparcats</span>
 
-      <div id="thoughts-list" class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-4 min-h-[220px] max-h-[340px] overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-2.5 content-start text-left mb-4">
-        <p class="text-xs text-stone-500 text-center py-8 md:col-span-2">No hi ha pensaments aparcats encara.</p>
+      <div id="thoughts-list" class="w-full bg-card border border-theme rounded-3xl p-4 min-h-[220px] max-h-[340px] overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-2.5 content-start text-left mb-4 shadow-sm">
+        <p class="text-xs opacity-60 text-center py-8 md:col-span-2">No hi ha pensaments aparcats encara.</p>
       </div>
 
-      <div class="flex gap-2 w-full mb-6">
-        <button type="button" id="btn-clear-thoughts" class="w-full bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-400 text-xs py-2.5 rounded-xl transition">
-          Esborrar tots
+      <div class="flex gap-2 w-full mb-5">
+        <button type="button" id="btn-clear-thoughts" class="w-full btn-secondary text-xs font-semibold py-2.5 rounded-2xl transition">
+          Esborrar tots els pensaments
         </button>
       </div>
 
-      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
 
-    <!-- VISTA 4: POMODORO SENSORIAL (AMB PERSONALITZACIÓ I DESCANSOS AUTOMÀTICS) -->
+    <!-- ==========================================
+         VISTA 4: POMODORO SENSORIAL (AMB SUPORT WIDGET FLOTANT)
+         ========================================== -->
     <section id="view-pomodoro" class="w-full flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-4 text-center block w-full">Pomodoro Sensorial i Cicles de Descans</span>
+      <div class="w-full flex justify-between items-center mb-4">
+        <span class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase">🍅 Pomodoro Sensorial i Cicles de Descans</span>
+        <button type="button" id="btn-popout-pomo" onclick="openFloatingWidget('pomodoro')" class="btn-accent text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-sm flex items-center gap-1.5">
+          <span>🪟</span> <span>Obrir en finestra flotant</span>
+        </button>
+      </div>
 
-      <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-6 items-center mb-6">
+      <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-6 items-center mb-4">
         <!-- Columna Esquerra: Avatar i Estat -->
         <div class="md:col-span-5 flex flex-col items-center">
-          <div id="pomo-face-box" class="w-44 h-48 mx-auto rounded-2xl bg-stone-900 border border-stone-800 p-4 flex flex-col items-center justify-center gap-2.5 shadow-inner">
-            <img id="pomo-img" src="focus_normal.jpg" alt="Estat del Pomodoro" class="w-28 h-28 rounded-xl object-cover border border-stone-800" />
-            <span id="pomo-status-label" class="text-[11px] text-sky-400 font-semibold uppercase tracking-widest text-center">En Focus</span>
+          <div id="pomo-face-box" class="w-44 h-48 mx-auto rounded-3xl bg-card border border-theme p-4 flex flex-col items-center justify-center gap-2.5 shadow-md">
+            <img id="pomo-img" src="focus_normal.jpg" alt="Estat del Pomodoro" class="w-28 h-28 rounded-2xl object-cover border border-theme" />
+            <span id="pomo-status-label" class="text-[11px] text-[#5C8ED6] font-extrabold uppercase tracking-widest text-center">En Focus</span>
           </div>
         </div>
 
-        <!-- Columna Dreta: Barra, Comptador de Cicle i Controls -->
+        <!-- Columna Dreta: Línia de temps, botons i caixeta d'aparcar pensaments -->
         <div class="md:col-span-7 flex flex-col items-center w-full">
-          <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-6 shadow-xl flex flex-col items-center mb-4">
+          <div class="w-full bg-card border border-theme rounded-3xl p-5 shadow-md flex flex-col items-center mb-3.5">
             <div class="w-full flex justify-between items-center mb-2">
-              <span id="pomo-mode-badge" class="text-xs font-bold text-sky-400 uppercase tracking-wider">🎯 Bloc de Focus</span>
-              <span id="pomo-time-display" class="text-sm font-mono font-semibold text-stone-300">25:00</span>
+              <span id="pomo-mode-badge" class="text-xs font-extrabold text-[#5C8ED6] uppercase tracking-wider">🎯 Bloc de Focus</span>
+              <span id="pomo-time-display" class="text-base font-mono font-extrabold">25:00</span>
             </div>
 
-            <div class="w-full bg-stone-950 h-6 rounded-xl overflow-hidden border border-stone-800 p-1 mb-3">
-              <div id="pomo-bar" class="bg-sky-500 h-full rounded-lg transition-all duration-1000 w-full"></div>
+            <div class="w-full bg-subtle h-6 rounded-xl overflow-hidden border border-theme p-1 mb-3">
+              <div id="pomo-bar" class="bg-[#5C8ED6] h-full rounded-lg transition-all duration-1000 w-full"></div>
             </div>
 
-            <div class="w-full flex justify-between items-center text-[11px] text-stone-400">
+            <div class="w-full flex justify-between items-center text-[11px] opacity-80">
               <span id="pomo-cycle-counter">Pomodoros completats: 0 / 5</span>
-              <button type="button" id="btn-pomo-skip-phase" class="text-sky-400 hover:underline text-[11px]">
+              <button type="button" id="btn-pomo-skip-phase" class="text-[#5C8ED6] font-bold hover:underline text-[11px]">
                 Saltar fase &#8250;
               </button>
             </div>
           </div>
 
-          <div class="flex gap-3 w-full mb-4">
-            <button type="button" id="btn-pomo-reset" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-3.5 rounded-xl border border-stone-800 transition text-xs flex justify-center items-center">
+          <div class="flex gap-3 w-full mb-3.5">
+            <button type="button" id="btn-pomo-reset" class="flex-1 btn-secondary font-bold py-3.5 rounded-2xl text-xs flex justify-center items-center">
               Reiniciar
             </button>
-            <button type="button" id="btn-pomo-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-3.5 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
+            <button type="button" id="btn-pomo-ok" class="flex-[2] grow btn-primary font-extrabold py-3.5 rounded-2xl shadow-md text-sm flex justify-center items-center">
               Pausar
             </button>
-            <button type="button" id="btn-pomo-next" aria-label="Aturar Pomodoro i tornar al menú principal" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-3.5 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center" title="Tornar al menú">
+            <button type="button" id="btn-pomo-next" aria-label="Aturar Pomodoro i tornar al menú principal" class="flex-1 btn-secondary font-bold py-3.5 rounded-2xl text-lg flex justify-center items-center" title="Tornar al menú">
               &#8250;
             </button>
           </div>
 
-          <!-- Personalització ràpida de temps dins de la vista Pomodoro -->
-          <details class="w-full bg-stone-900 border border-stone-800 rounded-xl p-3 text-left">
-            <summary class="text-xs text-stone-300 font-semibold cursor-pointer select-none flex justify-between items-center">
-              <span>Personalitzar temps de Focus i Descansos</span>
-              <span class="text-[10px] text-stone-500"> desplegar</span>
+          <!-- Caixeta integrada d'aparcar pensaments (Especialment útil en mode Widget Flotant) -->
+          <div class="w-full bg-card border border-theme rounded-2xl p-3 mb-3 shadow-sm">
+            <label for="pomo-thought-input" class="text-[10px] font-extrabold uppercase tracking-wider text-[#5C8ED6] block mb-1.5 text-left">💭 Aparcar pensament intrusiu sense perdre el focus</label>
+            <div class="flex gap-2">
+              <input type="text" id="pomo-thought-input" placeholder="Escriu el pensament i continua..." class="flex-1 bg-subtle border border-theme rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#5C8ED6]" />
+              <button type="button" id="btn-pomo-park" class="btn-accent font-extrabold px-3.5 py-2 rounded-xl text-xs shrink-0">
+                Aparcar
+              </button>
+            </div>
+          </div>
+
+          <!-- Personalització ràpida de temps -->
+          <details id="pomo-config-details" class="w-full bg-card border border-theme rounded-2xl p-3 text-left">
+            <summary class="text-xs font-bold cursor-pointer select-none flex justify-between items-center">
+              <span>⚙️ Personalitzar temps de Focus i Descansos</span>
+              <span class="text-[10px] opacity-60">desplegar</span>
             </summary>
-            <div class="mt-3 pt-3 border-t border-stone-800 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <div class="mt-3 pt-3 border-t border-theme grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <div>
-                <label for="pomo-cfg-focus" class="text-[10px] text-stone-400 block mb-1">Focus (min)</label>
-                <input type="number" id="pomo-cfg-focus" min="1" max="120" value="25" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-sky-500" />
+                <label for="pomo-cfg-focus" class="text-[10px] opacity-75 block mb-1">Focus (min)</label>
+                <input type="number" id="pomo-cfg-focus" min="1" max="120" value="25" class="w-full bg-subtle border border-theme rounded-lg px-2.5 py-1.5 text-xs" />
               </div>
               <div>
-                <label for="pomo-cfg-short" class="text-[10px] text-stone-400 block mb-1">Descans curt (min)</label>
-                <input type="number" id="pomo-cfg-short" min="1" max="60" value="5" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-sky-500" />
+                <label for="pomo-cfg-short" class="text-[10px] opacity-75 block mb-1">Descans curt</label>
+                <input type="number" id="pomo-cfg-short" min="1" max="60" value="5" class="w-full bg-subtle border border-theme rounded-lg px-2.5 py-1.5 text-xs" />
               </div>
               <div>
-                <label for="pomo-cfg-long" class="text-[10px] text-stone-400 block mb-1">Descans llarg (min)</label>
-                <input type="number" id="pomo-cfg-long" min="1" max="90" value="15" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-sky-500" />
+                <label for="pomo-cfg-long" class="text-[10px] opacity-75 block mb-1">Descans llarg</label>
+                <input type="number" id="pomo-cfg-long" min="1" max="90" value="15" class="w-full bg-subtle border border-theme rounded-lg px-2.5 py-1.5 text-xs" />
               </div>
               <div>
-                <label for="pomo-cfg-cycles" class="text-[10px] text-stone-400 block mb-1">Cicle llarg cada</label>
-                <input type="number" id="pomo-cfg-cycles" min="1" max="12" value="5" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-sky-500" />
+                <label for="pomo-cfg-cycles" class="text-[10px] opacity-75 block mb-1">Cicle llarg</label>
+                <input type="number" id="pomo-cfg-cycles" min="1" max="12" value="5" class="w-full bg-subtle border border-theme rounded-lg px-2.5 py-1.5 text-xs" />
               </div>
             </div>
-            <button type="button" id="btn-save-pomo-inline" class="mt-3 w-full bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-2 rounded-lg text-xs transition">
+            <button type="button" id="btn-save-pomo-inline" class="mt-3 w-full btn-primary font-bold py-2 rounded-xl text-xs">
               Aplicar i Reiniciar Temporitzador
             </button>
           </details>
         </div>
       </div>
 
-      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" id="btn-pomo-back-menu" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
 
-    <!-- VISTA 5: RUTINA DE MATÍ GUIADA -->
+    <!-- ==========================================
+         VISTA 5: RUTINA GUIADA DE PASSOS (GRAELLA D'HÀBITS SELECCIONABLES)
+         ========================================== -->
     <section id="view-routine" class="w-full max-w-2xl flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-2 text-center block w-full">Rutina de Matí</span>
-      
-      <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex flex-col items-center justify-center mb-6">
-        <p id="routine-step-display" class="text-base md:text-xl font-medium leading-relaxed text-stone-200">
-          La teva rutina està buida. Afegeix el teu primer pas a sota per personalitzar-la.
-        </p>
-        <div id="routine-completion-badge" class="hidden flex-col items-center gap-3 mt-1">
-          <img src="completat.jpg" alt="Rutina completada" class="w-24 h-24 rounded-2xl object-cover border border-sky-500 shadow-md" />
-          <span class="text-sm text-sky-400 font-medium">Has completat la teva rutina!</span>
+      <span class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-1 text-center block w-full">🌅 Rutina Guiada de Passos</span>
+      <p class="text-xs opacity-75 mb-4 text-center">Selecciona els hàbits del teu matí i avança pas a pas amb els controls inferiors</p>
+
+      <!-- Targeta d'estat del pas actiu de la rutina -->
+      <div class="w-full bg-card border-2 border-[#5C8ED6]/40 rounded-3xl p-4 mb-4 shadow-sm flex items-center justify-between gap-3">
+        <div class="text-left">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#5C8ED6] block">Pas Actiu Seleccionat</span>
+          <p id="routine-step-display" class="text-sm md:text-base font-extrabold">Selecciona o afegeix hàbits a la graella</p>
+        </div>
+        <div id="routine-completion-badge" class="hidden items-center gap-2 bg-[#F7E671] text-[#1A1A1A] px-3 py-1.5 rounded-2xl text-xs font-extrabold">
+          <span>🎉 Rutina completada!</span>
         </div>
       </div>
 
+      <!-- Graella d'hàbits (selecció múltiple en forma de càpsula arrodonida) -->
+      <div id="routine-habits-grid" class="w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto pr-1 mb-4 text-left">
+        <!-- Es genera per JS (Wake up, Make bed, Drink water, Brush teeth, Breakfast, etc.) -->
+      </div>
+
+      <!-- Secció inferior: Controls de navegació (<, OK, >) -->
       <div class="flex gap-4 w-full mb-4">
-        <button type="button" id="btn-routine-prev" aria-label="Pas anterior de la rutina" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
-          &#8249;
+        <button type="button" id="btn-routine-prev" aria-label="Pas anterior de la rutina" class="flex-1 btn-secondary font-extrabold py-3.5 rounded-2xl text-lg flex justify-center items-center">
+          &lt;
         </button>
-        <button type="button" id="btn-routine-ok" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-xl flex justify-center items-center">
+        <button type="button" id="btn-routine-ok" class="flex-[2] grow btn-primary font-extrabold py-3.5 rounded-2xl shadow-md text-lg flex justify-center items-center">
           OK
         </button>
-        <button type="button" id="btn-routine-next" aria-label="Pas següent de la rutina" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
-          &#8250;
+        <button type="button" id="btn-routine-next" aria-label="Pas següent de la rutina" class="flex-1 btn-secondary font-extrabold py-3.5 rounded-2xl text-lg flex justify-center items-center">
+          &gt;
         </button>
       </div>
 
-      <div class="w-full flex gap-2 mb-2">
+      <!-- Afegir nous passos -->
+      <div class="w-full flex gap-2 mb-3">
         <input 
           type="text" 
           id="routine-input-new" 
           placeholder="Escriu un pas per a la teva rutina..." 
           aria-label="Nou pas per a la rutina"
-          class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500"
+          class="w-full bg-card border border-theme rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#5C8ED6]"
         />
-        <button type="button" id="btn-routine-add" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-4 py-2.5 rounded-xl text-xs transition border border-stone-700">
+        <button type="button" id="btn-routine-add" class="btn-accent font-extrabold px-5 py-2.5 rounded-2xl text-xs shrink-0">
           Afegir
         </button>
       </div>
 
-      <button type="button" id="btn-routine-reset" class="w-full bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-400 text-xs py-2.5 rounded-xl transition mb-6">
+      <!-- Gestió i navegació -->
+      <button type="button" id="btn-routine-reset" class="w-full btn-secondary text-xs font-semibold py-2.5 rounded-2xl mb-4">
         Buidar tota la rutina
       </button>
 
-      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
 
-    <!-- VISTA 6: LLISTA DE RECÀRREGA (HOBBIES) -->
+    <!-- ==========================================
+         VISTA 6: HOBBIES DE DESCANS (GRAELLA DE CÀPSULES SELECCIONABLES)
+         ========================================== -->
     <section id="view-hobbies" class="w-full max-w-2xl flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-2 text-center block w-full">Recàrrega i Descans</span>
-      
-      <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-8 shadow-xl min-h-[180px] flex items-center justify-center mb-6">
-        <p id="hobby-step-display" class="text-base md:text-xl font-medium leading-relaxed text-stone-200">
-          La teva llista de hobbies està buida. Afegeix les teves activitats de descans a sota.
-        </p>
+      <span class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-1 text-center block w-full">🎨 Hobbies de Descans</span>
+      <p id="hobby-step-display" class="text-xs opacity-80 mb-4 text-center font-semibold">Marca els teus hobbies preferits per tenir-los a mà quan necessitis desconnectar</p>
+
+      <!-- Graella de hobbies en forma de càpsula arrodonida amb selecció múltiple -->
+      <div id="hobbies-capsules-grid" class="w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[270px] overflow-y-auto pr-1 mb-5 text-left">
+        <!-- Es genera per JS -->
       </div>
 
-      <div class="flex gap-4 w-full mb-6">
-        <button type="button" id="btn-hobby-prev" aria-label="Opció de descans anterior" class="flex-1 bg-stone-900 hover:bg-stone-800 text-stone-300 font-semibold py-4 rounded-xl border border-stone-800 transition text-lg flex justify-center items-center">
-          &#8249;
-        </button>
-        <button type="button" id="btn-hobby-next" class="flex-2 grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-4 rounded-xl shadow-lg transition text-sm flex justify-center items-center">
-          Següent opció &#8250;
-        </button>
-      </div>
-
-      <div class="w-full bg-stone-900 border border-stone-800 rounded-xl p-4 mb-6 text-left">
-        <span class="text-xs text-stone-400 block mb-2 uppercase tracking-widest">Personalitzar Hobbies</span>
-        <div class="flex gap-2 mb-2">
+      <!-- Secció inferior: Formulari "PERSONALITZAR HOBBIES" -->
+      <div class="w-full bg-card border border-theme rounded-3xl p-4 mb-5 text-left shadow-sm">
+        <span class="text-xs font-extrabold text-[#5C8ED6] block mb-2.5 uppercase tracking-widest">PERSONALITZAR HOBBIES</span>
+        <div class="flex gap-2 mb-2.5">
           <input 
             type="text" 
             id="hobby-input-new" 
             placeholder="Nou hobby o activitat..." 
             aria-label="Nou hobby o activitat"
-            class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500"
+            class="w-full bg-subtle border border-theme rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[#5C8ED6]"
           />
-          <button type="button" id="btn-hobby-add" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-3 py-2 rounded-lg text-xs transition border border-stone-700">
+          <button type="button" id="btn-hobby-add" class="btn-primary font-extrabold px-4 py-2.5 rounded-xl text-xs shrink-0">
             Afegir
           </button>
         </div>
-        <button type="button" id="btn-hobby-reset" class="text-[10px] text-stone-500 hover:text-stone-300 underline transition">
+        <button type="button" id="btn-hobby-reset" class="text-[11px] font-semibold opacity-70 hover:opacity-100 underline transition">
           Buidar llista de hobbies
         </button>
       </div>
 
-      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
 
-    <!-- VISTA 7: CONFIGURACIÓ (USUARIS, POMODORO I SUPABASE SYNC) -->
+    <!-- ==========================================
+         VISTA 7: TO-DO LIST RÀPIDA (AMB IL·LUSTRACIÓ INFERIOR DEL ROBOT I PAISATGE)
+         ========================================== -->
+    <section id="view-quick-todo" class="w-full max-w-2xl flex flex-col items-center hidden">
+      <!-- Capçalera superior -->
+      <div class="w-full flex justify-between items-center mb-3">
+        <h2 class="text-lg md:text-xl font-extrabold text-[#5C8ED6]">⚡ To-Do List Ràpida</h2>
+        <button type="button" id="btn-popout-todo" onclick="openFloatingWidget('todo')" class="btn-accent text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm flex items-center gap-1">
+          <span>🪟</span> <span>Finestra flotant</span>
+        </button>
+      </div>
+
+      <!-- Entrada de tasca ràpida -->
+      <div class="flex gap-2 w-full mb-3.5">
+        <input 
+          type="text" 
+          id="quick-todo-input" 
+          placeholder="Apunta una tasca ràpida..." 
+          aria-label="Nova tasca ràpida"
+          class="w-full bg-card border border-theme rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-[#5C8ED6] shadow-sm"
+        />
+        <button type="button" id="btn-add-quick-todo" class="btn-primary font-extrabold px-6 py-3 rounded-2xl text-xs shadow-md shrink-0">
+          Afegir
+        </button>
+      </div>
+
+      <!-- Contenidor de llista amb scroll vertical -->
+      <div id="quick-todo-list" class="w-full bg-card border border-theme rounded-3xl p-4 min-h-[160px] max-h-[230px] overflow-y-auto space-y-2 text-left mb-3 shadow-sm">
+        <p class="text-xs opacity-60 text-center py-6">No hi ha tasques ràpides pendents.</p>
+      </div>
+
+      <div class="flex justify-between items-center w-full mb-4 px-1">
+        <button type="button" id="btn-clear-quick-todos" class="text-xs font-semibold opacity-70 hover:opacity-100 underline transition">
+          Esborrar totes les tasques ràpides
+        </button>
+        <button type="button" id="btn-todo-back-menu" onclick="switchView('view-menu')" class="text-xs font-bold opacity-80 hover:opacity-100 transition">
+          &#8249; Tornar al menú principal
+        </button>
+      </div>
+
+      <!-- Il·lustració inferior decorativa del robot simpàtic amb paisatge de fons -->
+      <div id="todo-landscape-illustration" class="w-full rounded-3xl overflow-hidden border-2 border-[#5C8ED6]/30 shadow-md bg-gradient-to-b from-[#6B9EE8]/30 via-[#EFEFF4] to-[#F7E671]/35 p-4 flex flex-col items-center justify-center relative min-h-[155px]">
+        <svg class="w-full max-w-md h-36" viewBox="0 0 400 140" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Il·lustració del robot Buddy en un paisatge tranquil">
+          <!-- Sol groc mantega -->
+          <circle cx="330" cy="36" r="22" fill="#F7E671" stroke="#2B4380" stroke-width="2.5"/>
+          <!-- Núvols suaus -->
+          <path d="M55 40 Q65 28 80 35 Q92 25 106 36 Q116 38 112 48 L50 48 Q44 42 55 40 Z" fill="#FFFFFF" stroke="#2B4380" stroke-width="2"/>
+          <path d="M220 28 Q228 18 240 24 Q250 18 260 27 L216 27 Z" fill="#FFFFFF" stroke="#2B4380" stroke-width="2"/>
+          <!-- Muntanyes i turons de fons -->
+          <path d="M-10 135 Q70 65 160 135 Z" fill="#6B9EE8" fill-opacity="0.45" stroke="#2B4380" stroke-width="2"/>
+          <path d="M120 135 Q230 55 340 135 Z" fill="#5C8ED6" fill-opacity="0.55" stroke="#2B4380" stroke-width="2"/>
+          <path d="M260 135 Q340 80 415 135 Z" fill="#2B4380" fill-opacity="0.3" stroke="#2B4380" stroke-width="2"/>
+          <!-- Terra i flors -->
+          <line x1="0" y1="135" x2="400" y2="135" stroke="#2B4380" stroke-width="3"/>
+          <circle cx="90" cy="126" r="4" fill="#F7E671" stroke="#2B4380" stroke-width="1.5"/>
+          <circle cx="300" cy="126" r="4" fill="#F7E671" stroke="#2B4380" stroke-width="1.5"/>
+          <!-- Robot Buddy saludant al centre del paisatge -->
+          <g transform="translate(172, 42)">
+            <line x1="28" y1="0" x2="28" y2="10" stroke="#2B4380" stroke-width="3"/>
+            <circle cx="28" cy="0" r="4.5" fill="#F7E671" stroke="#2B4380" stroke-width="2.5"/>
+            <rect x="6" y="10" width="44" height="34" rx="12" fill="#EFEFF4" stroke="#2B4380" stroke-width="3"/>
+            <!-- Ulls feliços -->
+            <path d="M16 25 Q20 20 24 25" stroke="#2B4380" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M32 25 Q36 20 40 25" stroke="#2B4380" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Somriure -->
+            <path d="M21 33 Q28 39 35 33" stroke="#2B4380" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Cos -->
+            <rect x="12" y="47" width="32" height="28" rx="8" fill="#5C8ED6" stroke="#2B4380" stroke-width="3"/>
+            <rect x="19" y="54" width="18" height="12" rx="4" fill="#F7E671" stroke="#2B4380" stroke-width="2"/>
+            <!-- Braços -->
+            <path d="M12 53 Q-2 42 4 32" stroke="#2B4380" stroke-width="3" stroke-linecap="round"/>
+            <path d="M44 53 Q56 60 52 70" stroke="#2B4380" stroke-width="3" stroke-linecap="round"/>
+            <!-- Cames -->
+            <line x1="21" y1="75" x2="21" y2="90" stroke="#2B4380" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="35" y1="75" x2="35" y2="90" stroke="#2B4380" stroke-width="3.5" stroke-linecap="round"/>
+          </g>
+        </svg>
+        <span class="text-[11px] font-bold text-[#2B4380] mt-1">El teu company Buddy t'acompanya en cada tasca del dia ✨</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VISTA 8: CONFIGURACIÓ (USUARIS, POMODORO I SUPABASE SYNC)
+         ========================================== -->
     <section id="view-settings" class="w-full flex flex-col items-center hidden text-left">
-      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-4 text-center block w-full">Configuració, Pomodoro i Sincronització</span>
+      <span class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-4 text-center block w-full">⚙️ Configuració, Pomodoro i Sincronització</span>
 
       <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 items-start">
         <!-- Bloc Esquerre: Sincronització i Compte -->
-        <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-5 space-y-4">
-          <div id="ai-info-box" class="bg-sky-950/30 border border-sky-500/40 rounded-xl p-3">
-            <p class="text-[11px] text-sky-400 font-semibold">✨ Motor Heurístic Local Actiu (100% Privat)</p>
-            <p class="text-[10px] text-stone-400 mt-0.5 leading-relaxed">El desglossament de tasques funciona amb un algorisme lògic local al teu propi dispositiu sense enviar textos a cap IA externa. Pots usar l'app com a <b>convidat</b> (100% local) o crear el teu <b>usuari i contrasenya</b> (xifrats amb SHA-256) per sincronitzar al núvol.</p>
+        <div class="w-full bg-card border border-theme rounded-3xl p-5 space-y-4 shadow-sm">
+          <div id="ai-info-box" class="bg-[#5C8ED6]/15 border border-[#5C8ED6]/40 rounded-2xl p-3.5">
+            <p class="text-xs text-[#5C8ED6] font-extrabold">✨ Motor Heurístic Local Actiu (100% Privat)</p>
+            <p class="text-[11px] opacity-80 mt-1 leading-relaxed">El desglossament de tasques funciona amb un algorisme lògic local al teu propi dispositiu sense enviar textos a cap IA externa. Pots usar l'app com a <b>convidat</b> o crear el teu <b>usuari i contrasenya</b> (xifrats amb SHA-256) per sincronitzar al núvol.</p>
           </div>
 
           <div class="space-y-3">
             <div>
-              <label for="cfg-sync-id" class="text-xs text-stone-300 font-semibold block mb-1">1. Nom d'Usuari</label>
-              <input type="text" id="cfg-sync-id" placeholder="convidat" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
+              <label for="cfg-sync-id" class="text-xs font-bold block mb-1">1. Nom d'Usuari</label>
+              <input type="text" id="cfg-sync-id" placeholder="convidat" class="w-full bg-subtle border border-theme rounded-xl px-3.5 py-2.5 text-xs" />
             </div>
 
             <div>
-              <label for="cfg-sync-pass" class="text-xs text-stone-300 font-semibold block mb-1">2. Contrasenya <span class="text-[10px] text-stone-400 font-normal">(deixa-ho buit si ets convidat)</span></label>
+              <label for="cfg-sync-pass" class="text-xs font-bold block mb-1">2. Contrasenya <span class="text-[10px] opacity-70 font-normal">(deixa-ho buit si ets convidat)</span></label>
               <div class="flex gap-2 items-center">
-                <input type="password" id="cfg-sync-pass" placeholder="Escriu la teva contrasenya..." autocomplete="current-password" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
-                <button type="button" id="btn-toggle-pass" onclick="togglePassVisibility()" aria-label="Mostrar o ocultar la contrasenya" class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3.5 py-2 rounded-lg border border-stone-700 text-sm transition shrink-0 cursor-pointer select-none" title="Mostrar o ocultar la contrasenya">
+                <input type="password" id="cfg-sync-pass" placeholder="Escriu la teva contrasenya..." autocomplete="current-password" class="w-full bg-subtle border border-theme rounded-xl px-3.5 py-2.5 text-xs" />
+                <button type="button" id="btn-toggle-pass" onclick="togglePassVisibility()" aria-label="Mostrar o ocultar la contrasenya" class="btn-secondary px-3.5 py-2 rounded-xl text-sm shrink-0">
                   👁️
                 </button>
               </div>
@@ -481,97 +731,84 @@
 
             <div class="pt-1">
               <label for="chk-rgpd-consent" class="flex items-start gap-2.5 cursor-pointer select-none">
-                <input type="checkbox" id="chk-rgpd-consent" class="mt-0.5 w-4 h-4 accent-sky-500 rounded cursor-pointer shrink-0" />
-                <span class="text-[10px] text-stone-400 leading-snug">
-                  Accepto la Política de Privadesa i consenteixo que les meves tasques i rutines es desin sota un identificador xifrat (SHA-256) a Supabase amb l'única finalitat de sincronitzar els meus dispositius.
+                <input type="checkbox" id="chk-rgpd-consent" class="mt-0.5 w-4 h-4 accent-[#5C8ED6] rounded cursor-pointer shrink-0" />
+                <span class="text-[11px] opacity-80 leading-snug">
+                  Accepto la Política de Privadesa i consenteixo que les meves tasques i rutines es desin sota un identificador xifrat (SHA-256) a Supabase per sincronitzar els meus dispositius.
                 </span>
               </label>
             </div>
           </div>
 
           <div class="space-y-2 pt-1">
-            <button type="button" id="btn-save-settings" class="w-full bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-2.5 rounded-xl text-xs transition shadow-md">
+            <button type="button" id="btn-save-settings" class="w-full btn-primary font-extrabold py-3 rounded-2xl text-xs shadow-md">
               Desar i Sincronitzar
             </button>
-            <button type="button" id="btn-logout-guest" class="w-full bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold py-2 rounded-xl text-[11px] transition border border-stone-700">
+            <button type="button" id="btn-logout-guest" class="w-full btn-secondary font-bold py-2.5 rounded-2xl text-xs">
               Tornar a mode Convidat
             </button>
           </div>
         </div>
 
         <!-- Bloc Dret: Paràmetres del Pomodoro i Drets RGPD -->
-        <div class="w-full bg-stone-900 border border-stone-800 rounded-2xl p-5 space-y-4">
+        <div class="w-full bg-card border border-theme rounded-3xl p-5 space-y-4 shadow-sm">
           <div>
-            <span class="text-xs text-sky-400 font-semibold uppercase tracking-wider block mb-1">🍅 Configuració del Pomodoro</span>
-            <p class="text-[11px] text-stone-400 mb-3">Personalitza la durada del temps de focus i els descansos automàtics entre sessions.</p>
+            <span class="text-xs text-[#5C8ED6] font-extrabold uppercase tracking-wider block mb-1">🍅 Configuració del Pomodoro</span>
+            <p class="text-[11px] opacity-75 mb-3">Personalitza la durada del temps de focus i els descansos automàtics.</p>
             
             <div class="grid grid-cols-2 gap-3 mb-3">
               <div>
-                <label for="settings-pomo-focus" class="text-[11px] text-stone-300 font-medium block mb-1">Temps de Focus (min)</label>
-                <input type="number" id="settings-pomo-focus" min="1" max="120" value="25" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
+                <label for="settings-pomo-focus" class="text-[11px] font-bold block mb-1">Temps de Focus (min)</label>
+                <input type="number" id="settings-pomo-focus" min="1" max="120" value="25" class="w-full bg-subtle border border-theme rounded-xl px-3 py-2 text-xs" />
               </div>
               <div>
-                <label for="settings-pomo-short" class="text-[11px] text-stone-300 font-medium block mb-1">Descans Curt (min)</label>
-                <input type="number" id="settings-pomo-short" min="1" max="60" value="5" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
+                <label for="settings-pomo-short" class="text-[11px] font-bold block mb-1">Descans Curt (min)</label>
+                <input type="number" id="settings-pomo-short" min="1" max="60" value="5" class="w-full bg-subtle border border-theme rounded-xl px-3 py-2 text-xs" />
               </div>
               <div>
-                <label for="settings-pomo-long" class="text-[11px] text-stone-300 font-medium block mb-1">Descans Llarg (min)</label>
-                <input type="number" id="settings-pomo-long" min="1" max="90" value="15" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
+                <label for="settings-pomo-long" class="text-[11px] font-bold block mb-1">Descans Llarg (min)</label>
+                <input type="number" id="settings-pomo-long" min="1" max="90" value="15" class="w-full bg-subtle border border-theme rounded-xl px-3 py-2 text-xs" />
               </div>
               <div>
-                <label for="settings-pomo-cycles" class="text-[11px] text-stone-300 font-medium block mb-1">Pomodoros per descans llarg</label>
-                <input type="number" id="settings-pomo-cycles" min="1" max="12" value="5" class="w-full bg-stone-950 border border-stone-800 text-stone-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" />
+                <label for="settings-pomo-cycles" class="text-[11px] font-bold block mb-1">Pomodoros cicle llarg</label>
+                <input type="number" id="settings-pomo-cycles" min="1" max="12" value="5" class="w-full bg-subtle border border-theme rounded-xl px-3 py-2 text-xs" />
               </div>
             </div>
 
-            <button type="button" id="btn-save-pomo-settings" class="w-full bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-2.5 rounded-xl text-xs transition shadow-md">
+            <button type="button" id="btn-save-pomo-settings" class="w-full btn-accent font-extrabold py-2.5 rounded-2xl text-xs shadow-sm">
               Desar preferències de Pomodoro
             </button>
           </div>
 
-          <!-- Secció Drets de Privadesa RGPD (Arts. 17 i 20) -->
-          <div class="pt-3 border-t border-stone-800 space-y-2">
-            <span class="text-[10px] text-stone-400 uppercase tracking-widest font-semibold block">Els meus Drets de Privadesa (RGPD)</span>
-            <button type="button" id="btn-export-data" class="w-full bg-stone-950 hover:bg-stone-800 text-stone-300 font-semibold py-2 px-3 rounded-xl text-[11px] transition border border-stone-800 text-center">
+          <div class="pt-3 border-t border-theme space-y-2">
+            <span class="text-[10px] opacity-70 uppercase tracking-widest font-extrabold block">Els meus Drets de Privadesa (RGPD)</span>
+            <button type="button" id="btn-export-data" class="w-full btn-secondary font-bold py-2.5 px-3 rounded-xl text-[11px] text-center">
               📥 Descarregar les meves dades (.JSON) — Art. 20 Portabilitat
             </button>
-            <button type="button" id="btn-delete-account" class="w-full bg-stone-950 hover:bg-rose-950/30 text-rose-400 font-semibold py-2 px-3 rounded-xl text-[11px] transition border border-rose-800/50 text-center">
-              🗑️ Eliminar el meu compte i dades del núvol — Art. 17 Dret a la Supressió
+            <button type="button" id="btn-delete-account" class="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 font-bold py-2.5 px-3 rounded-xl text-[11px] transition border border-rose-500/30 text-center">
+              🗑️ Eliminar el meu compte i dades del núvol — Art. 17 Supressió
             </button>
           </div>
-
-          <!-- Avís Legal, Privadesa (RGPD) i Exempció Mèdica -->
-          <details class="pt-2 border-t border-stone-800 text-[10px] text-stone-400">
-            <summary class="cursor-pointer hover:text-stone-300 font-semibold select-none py-1">
-              ⚖️ Avís Legal, Privadesa (RGPD) i Exempció Mèdica
-            </summary>
-            <div class="mt-2 space-y-2 leading-relaxed text-stone-400 bg-stone-950 p-3 rounded-xl border border-stone-800">
-              <p><b>1. Mode Convidat (100% Local):</b> En mode convidat, totes les teves tasques, rutines i pensaments es guarden exclusivament a la memòria interna del teu navegador (<code>localStorage</code>) sense cap rastreig ni transferència a servidors externs (exempt de cookies analítiques segons la Directiva ePrivacy).</p>
-              <p><b>2. Mode Núvol i Protecció de Dades (RGPD):</b> Si actives la sincronització, la teva contrasenya es transforma localment mitjançant una funció hash criptogràfica unidireccional (SHA-256) i mai s'envia ni s'emmagatzema en text pla. Pots exportar les teves dades en format JSON (Art. 20) o eliminar el teu compte i totes les dades del núvol de manera immediata i irreversible (Art. 17) amb els botons superiors.</p>
-              <p><b>3. Exempció Mèdica (Reglament MDR) i Transparència (EU AI Act):</b> AI Buddy és una eina de benestar, organització personal i gestió d'hàbits quotidians. No és un producte sanitari ni substitueix en cap cas el diagnòstic, consell o tractament mèdic o psicològic professional. El motor de divisió de passos funciona mitjançant regles heurístiques locals deterministes sense perfilat automatitzat.</p>
-            </div>
-          </details>
         </div>
       </div>
 
-      <button type="button" onclick="switchView('view-menu')" class="text-xs text-stone-500 hover:text-stone-300 transition">
+      <button type="button" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
         &#8249; Tornar al menú principal
       </button>
     </section>
 
   </main>
 
-  <!-- Input Area Inferior Adaptada a Mode Clar / Fosc i Pantalla Gran -->
-  <footer class="w-full max-w-md md:max-w-3xl lg:max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-2.5 pt-2">
+  <!-- SECCIÓ INFERIOR CONSTANT: Captura i processament ràpid -->
+  <footer id="main-footer" class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-12 gap-3 pt-4 mt-2 border-t border-theme">
     <div class="flex gap-2 md:col-span-5">
       <input 
         type="text" 
         id="thought-input" 
         placeholder="Aparcar pensament..." 
         aria-label="Escriu un pensament per aparcar"
-        class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-sky-500 placeholder-stone-500 shadow-sm transition"
+        class="w-full bg-card border border-theme rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-[#5C8ED6] shadow-sm"
       />
-      <button type="button" id="btn-park" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold px-4 py-2.5 rounded-xl text-xs transition border border-stone-700 shadow-sm shrink-0">
+      <button type="button" id="btn-park" class="btn-secondary font-extrabold px-4 py-3 rounded-2xl text-xs shadow-sm shrink-0">
         Aparcar
       </button>
     </div>
@@ -580,23 +817,23 @@
       <input 
         type="text" 
         id="task-input" 
-        placeholder="Escriu una tasca per dividir en micro-passos..." 
+        placeholder="Escriu una tasca per dividir en micro-passos" 
         aria-label="Escriu una tasca per desglossar en micro-passos"
-        class="w-full bg-stone-900 border border-stone-800 text-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500 placeholder-stone-500 shadow-sm transition"
+        class="w-full bg-card border border-theme rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-[#5C8ED6] shadow-sm"
       />
-      <button type="button" id="btn-send" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-md shrink-0">
+      <button type="button" id="btn-send" class="btn-primary font-extrabold px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-md shrink-0">
         Processar
       </button>
     </div>
   </footer>
 
-  <!-- Baner d'actualització pendent -->
-  <div id="update-banner" class="fixed bottom-6 left-6 right-6 max-w-md mx-auto bg-stone-900 border border-sky-500/50 text-stone-200 p-4 rounded-2xl shadow-2xl flex justify-between items-center z-50 hidden">
+  <!-- Baner d'actualització -->
+  <div id="update-banner" class="fixed bottom-6 left-6 right-6 max-w-md mx-auto bg-[#2B4380] border-2 border-[#F7E671] text-white p-4 rounded-2xl shadow-2xl flex justify-between items-center z-50 hidden">
     <div class="text-left text-xs">
-      <p class="font-bold text-sky-400">Hi ha actualitzacions noves! ✨</p>
-      <p class="text-stone-400 mt-0.5">S'ha publicat una nova versió de l'app.</p>
+      <p class="font-extrabold text-[#F7E671]">Hi ha actualitzacions noves! ✨</p>
+      <p class="opacity-90 mt-0.5">S'ha publicat una nova versió d'AI Buddy.</p>
     </div>
-    <button type="button" onclick="applyUpdate()" class="bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shrink-0">
+    <button type="button" onclick="applyUpdate()" class="btn-accent font-extrabold px-4 py-2 rounded-xl text-xs shrink-0">
       Actualitzar
     </button>
   </div>
