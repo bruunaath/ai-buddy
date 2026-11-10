@@ -1,38 +1,37 @@
 /* =========================================================
-   NOVA ESTÈTICA DE COLORS VIVA I CÀLIDA (INSPIRADA EN "SO MATCHA" + PALETA BUDDY)
-   - Fons principal càlid crema/matcha suau (#EAE8D7) perquè les targetes i els blaus ressaltin
-   - Blau Cobalt ("so matcha"): #3D67C4 / Blau cel: #6B9EE8
-   - Blau Marí per a vores i profunditat: #1E3264 / #2B4380
-   - Groc Mantega per a accents vius: #F7E671 / #FAEA87
+   PALETA SENSORIAL DE BAIX CONTRAST (SUAU I CALMADA PER A AuDHD)
+   - Fons blanc trencat càlid (#F4F4F0) i targetes suaus (#FAF9F6)
+   - Sense vores negres/marines dures ni ombres sòlides agressives
+   - Blau cel serè (#5C8ED6 / #6B9EE8) i groc mantega pastel (#FAF0CA)
    ========================================================= */
 
 :root {
-  --blue-cobalt: #3D67C4;
-  --blue-mid: #5C8ED6;
-  --blue-sky: #6B9EE8;
-  --yellow-butter: #F7E671;
-  --yellow-pastel: #FAEA87;
-  --blue-navy: #2B4380;
-  --blue-deep: #1E3264;
-  --dark-ink: #1A1A1A;
+  --blue-cobalt: #5C8ED6;
+  --blue-mid: #6B9EE8;
+  --blue-sky: #8BB4F0;
+  --yellow-butter: #F9E98E;
+  --yellow-pastel: #FCF4C5;
+  --blue-navy: #334A7C;
+  --blue-deep: #2C3E66;
+  --dark-ink: #2A3140;
 
-  /* Tema Clar amb personalitat càlida i contrast viu */
-  --bg-main: #EAE8D7;
-  --bg-card: #FAF9F2;
-  --bg-subtle: #DFDEC9;
-  --text-main: #1E3264;
-  --border-color: #2B4380;
-  --card-shadow: #C7C5B0;
+  /* Tema Clar: Baix contrast, càlid i relaxant per a la vista */
+  --bg-main: #F4F4F0;
+  --bg-card: #FAF9F6;
+  --bg-subtle: #EAEAE4;
+  --text-main: #2A3140;
+  --border-color: #DCDCD5;
+  --soft-shadow: 0 4px 14px rgba(44, 62, 102, 0.05);
 }
 
 body.dark-mode {
-  /* Tema Nocturn profund en Blau Marí i Groc Mantega */
-  --bg-main: #121C36;
-  --bg-card: #1E3264;
-  --bg-subtle: #16254C;
-  --text-main: #F5F5F7;
-  --border-color: #5C8ED6;
-  --card-shadow: #0B1224;
+  /* Tema Nocturn: Tons pissarra/marí suaus sense contrastos elèctrics */
+  --bg-main: #141A29;
+  --bg-card: #1C2539;
+  --bg-subtle: #232E47;
+  --text-main: #E6E9F0;
+  --border-color: #2D3B59;
+  --soft-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
 }
 
 * {
@@ -51,8 +50,7 @@ body {
 }
 
 /* =========================================================
-   TIPOGRAFIA "AI BUDDY" ESTIL "SO MATCHA" (IMAGE_67C163.PNG)
-   Lletres ultra-inflades en blau cobalt amb contorn del color del fons per encavalcar-se
+   TIPOGRAFIA "AI BUDDY" ESTIL "SO MATCHA" SUAU
    ========================================================= */
 .matcha-letter {
   font-family: 'Rubik Bubbles', cursive;
@@ -66,58 +64,58 @@ body {
 }
 
 body.dark-mode .matcha-letter {
-  fill: var(--blue-sky);
+  fill: var(--blue-mid);
   stroke: var(--bg-main);
 }
 
 /* =========================================================
-   TRANSICIONS DINÀMIQUES PERÒ CALMADES ENTRE PANTALLES
+   TRANSICIONS DINÀMIQUES FLUIDES I CALMADES ENTRE PANTALLES
    ========================================================= */
 @keyframes viewSlideFadeIn {
   0% {
     opacity: 0;
-    transform: translateY(10px) scale(0.985);
+    transform: translateY(8px);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
 .view-panel:not(.hidden) {
-  animation: viewSlideFadeIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: viewSlideFadeIn 0.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* =========================================================
-   TARGETES, BOTONS I CONTROLS AMB PERSONALITAT (NEO-TACTILE)
+   TARGETES, BOTONS I CONTROLS DE BAIXA ESTIMULACIÓ VISUAL
    ========================================================= */
 .tactile-card {
   background-color: var(--bg-card);
   color: var(--text-main);
-  border: 2px solid var(--border-color);
-  box-shadow: 0 4px 0 var(--card-shadow);
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--soft-shadow);
+  transition: transform 0.18s ease, border-color 0.18s ease;
 }
 
 .highlight-banner {
-  background: linear-gradient(135deg, var(--bg-card) 55%, rgba(247, 230, 113, 0.38) 100%);
+  background: linear-gradient(135deg, var(--bg-card) 40%, rgba(107, 158, 232, 0.12) 100%);
 }
 
 body.dark-mode .highlight-banner {
-  background: linear-gradient(135deg, #1E3264 55%, #2B4380 100%);
+  background: linear-gradient(135deg, #1C2539 40%, #24324F 100%);
 }
 
 .tactile-input {
   background-color: var(--bg-card);
   color: var(--text-main);
-  border: 2px solid var(--border-color);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  border: 1px solid var(--border-color);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .tactile-input:focus {
   outline: none;
   border-color: var(--blue-cobalt);
+  box-shadow: 0 0 0 3px rgba(92, 142, 214, 0.15);
 }
 
 .bg-subtle {
@@ -129,18 +127,18 @@ body.dark-mode .highlight-banner {
   border-color: var(--border-color);
 }
 
-/* Botons del menú principal amb accents de color vius */
+/* Botons del menú principal amb tocs pastel subtils */
 .menu-nav-card {
   background-color: var(--bg-card);
   color: var(--text-main);
-  border: 2px solid var(--border-color);
-  box-shadow: 0 3px 0 var(--border-color);
-  transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.15s ease, background-color 0.15s ease;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--soft-shadow);
+  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.16s ease, border-color 0.16s ease;
 }
 
 .menu-nav-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 0 var(--border-color);
+  transform: translateY(-1.5px);
+  border-color: var(--blue-mid);
 }
 
 .nav-accent-yellow:hover {
@@ -149,64 +147,67 @@ body.dark-mode .highlight-banner {
 }
 
 .nav-accent-blue:hover {
-  background-color: #DDE8FA;
+  background-color: #EBF2FC;
   color: var(--blue-deep);
 }
 
 .nav-accent-sky:hover {
-  background-color: #E3EFFD;
+  background-color: #EEF5FD;
   color: var(--blue-deep);
 }
 
-.nav-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 9999px;
-  border: 1.5px solid var(--blue-deep);
-  display: inline-block;
-  flex-shrink: 0;
+body.dark-mode .nav-accent-yellow:hover,
+body.dark-mode .nav-accent-blue:hover,
+body.dark-mode .nav-accent-sky:hover {
+  background-color: #26334F;
+  color: #F5F5F7;
 }
 
-/* Botons d'acció */
+.nav-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  display: inline-block;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+/* Botons d'acció suaus */
 .btn-primary {
   background-color: var(--blue-cobalt);
   color: #FFFFFF;
-  border: 2px solid var(--blue-deep);
-  box-shadow: 0 3px 0 var(--blue-deep);
+  border: 1px solid transparent;
+  box-shadow: 0 2px 8px rgba(92, 142, 214, 0.25);
 }
 .btn-primary:hover {
   background-color: var(--blue-mid);
-  transform: translateY(-1px);
 }
 
 .btn-accent {
   background-color: var(--yellow-butter);
   color: var(--dark-ink);
-  border: 2px solid var(--blue-deep);
-  box-shadow: 0 3px 0 var(--blue-deep);
+  border: 1px solid #E6D57A;
+  box-shadow: 0 2px 8px rgba(247, 230, 113, 0.25);
 }
 .btn-accent:hover {
   background-color: var(--yellow-pastel);
-  transform: translateY(-1px);
 }
 
 .btn-pill {
   background-color: var(--bg-card);
   color: var(--text-main);
-  border: 2px solid var(--border-color);
-  box-shadow: 0 2px 0 var(--card-shadow);
+  border: 1px solid var(--border-color);
 }
 .btn-pill:hover {
-  background-color: var(--yellow-pastel);
-  color: var(--dark-ink);
-  border-color: var(--blue-deep);
+  background-color: var(--bg-subtle);
+  border-color: var(--blue-mid);
 }
 
-/* Càpsules d'hàbits i hobbies seleccionables */
+/* Càpsules d'hàbits i hobbies seleccionables (sense contorns negres durs) */
 .habit-capsule {
   background-color: var(--bg-card);
   color: var(--text-main);
-  border: 2px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
   border-radius: 9999px;
   padding: 0.7rem 1.15rem;
   display: flex;
@@ -214,30 +215,34 @@ body.dark-mode .highlight-banner {
   justify-content: space-between;
   gap: 0.75rem;
   cursor: pointer;
-  box-shadow: 0 2px 0 var(--card-shadow);
+  box-shadow: var(--soft-shadow);
   transition: all 0.16s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .habit-capsule:hover {
-  transform: translateY(-1px);
-  border-color: var(--blue-cobalt);
+  border-color: var(--blue-mid);
 }
 
 .habit-capsule.selected {
-  background-color: var(--yellow-butter);
+  background-color: var(--yellow-pastel);
   color: var(--dark-ink);
-  border-color: var(--blue-deep);
-  box-shadow: 0 3px 0 var(--blue-deep);
-  font-weight: 800;
+  border-color: #E2D176;
+  font-weight: 700;
+}
+
+body.dark-mode .habit-capsule.selected {
+  background-color: #2A3B5E;
+  color: #F9E98E;
+  border-color: var(--blue-mid);
 }
 
 @keyframes robot-swing {
-  0%, 100% { transform: rotate(-3deg); }
-  50% { transform: rotate(4deg); }
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(3deg); }
 }
 
 .animate-robot-swing {
-  animation: robot-swing 3.5s ease-in-out infinite;
+  animation: robot-swing 4s ease-in-out infinite;
 }
 
 input, select {
@@ -248,30 +253,30 @@ input, select {
 
 button {
   touch-action: manipulation;
-  transition: transform 0.12s ease, background-color 0.15s ease, box-shadow 0.12s ease;
+  transition: transform 0.12s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
 button:active {
-  transform: translateY(1px) scale(0.98) !important;
+  transform: scale(0.98) !important;
 }
 
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 summary:focus-visible {
-  outline: 3px solid var(--blue-cobalt) !important;
+  outline: 2px solid var(--blue-mid) !important;
   outline-offset: 2px !important;
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--blue-cobalt);
+  background: #C4C9D4;
   border-radius: 9999px;
 }
 
