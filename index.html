@@ -5,232 +5,246 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Buddy - Assistent personal per al teu dia a dia</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2B4380">
+  <meta name="theme-color" content="#3D67C4">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Rubik Bubbles replica exactament l'estil "so matcha" ultra-inflat i arrodonit -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rubik+Bubbles&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-4 md:p-6 font-sans relative transition-colors duration-200">
 
   <!-- Barra superior discreta amb el nom de l'aplicació -->
-  <div id="app-window-title" class="w-full max-w-2xl text-center text-[11px] font-semibold opacity-60 pb-1 select-none">
+  <div id="app-window-title" class="w-full max-w-2xl text-center text-[11px] font-bold opacity-60 pb-1 select-none">
     AI Buddy - Assistent personal per al teu dia a dia
   </div>
 
-  <!-- Capçalera Principal: Guia a l'esquerra, Títol Retro Bubble "AI BUDDY" al centre, Perfil/Tema/Config a la dreta -->
-  <header id="main-header" class="w-full max-w-2xl grid grid-cols-3 items-center py-2.5 border-b border-theme mb-4">
+  <!-- Capçalera Principal -->
+  <header id="main-header" class="w-full max-w-2xl grid grid-cols-3 items-center py-2.5 border-b-2 border-theme mb-4">
     <div class="flex items-center">
-      <button type="button" onclick="openOnboarding()" aria-label="Obrir guia d'introducció" class="btn-secondary text-xs px-3 py-1.5 rounded-full font-semibold flex items-center gap-1 transition">
+      <button type="button" onclick="openOnboarding()" aria-label="Obrir guia d'introducció" class="btn-pill text-xs px-3.5 py-1.5 rounded-full font-bold flex items-center gap-1.5">
         <span>❓</span>
         <span class="hidden sm:inline">Guia</span>
       </button>
     </div>
 
-    <!-- TÍTOL CENTRAL "AI BUDDY" ESTIL BUBBLE ANYS 60/70 AMB EL ROBOT PENJANT DE LA SEGONA 'd' -->
+    <!-- TÍTOL CENTRAL "AI BUDDY" ESTIL "SO MATCHA" (LLETRES ULTRA-GRUIXUDES ENCAVALCADES EN BLAU COBALT) -->
     <div class="flex justify-center items-center cursor-pointer select-none" onclick="switchView('view-menu')" title="Anar a l'inici">
-      <svg class="h-12 sm:h-14 w-auto overflow-visible" viewBox="0 0 350 105" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="AI Buddy">
-        <defs>
-          <filter id="bubble-shadow" x="-10%" y="-10%" width="130%" height="130%">
-            <feDropShadow dx="2" dy="4" stdDeviation="0" flood-color="#1E3264" />
-          </filter>
-        </defs>
-        <!-- Lettering Bubble gruixut, arrodonit i superposat orgànicament -->
-        <g filter="url(#bubble-shadow)" stroke="#1E3264" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" style="font-family: 'Fredoka', cursive; font-weight: 700; font-size: 60px;">
-          <text x="14" y="62" fill="#F7E671" transform="rotate(-4 25 50)">a</text>
-          <text x="45" y="60" fill="#6B9EE8" transform="rotate(3 52 50)">i</text>
-          <text x="82" y="63" fill="#F7E671" transform="rotate(-3 98 52)">b</text>
-          <text x="119" y="64" fill="#6B9EE8" transform="rotate(2 136 52)">u</text>
-          <text x="156" y="62" fill="#F7E671" transform="rotate(-2 172 52)">d</text>
-          <text x="195" y="63" fill="#5C8ED6">d</text>
-          <text x="232" y="62" fill="#F7E671" transform="rotate(4 248 52)">y</text>
-        </g>
-        <!-- Robot Buddy penjant de la segona 'd' -->
-        <g class="animate-robot-swing" style="transform-origin: 214px 60px;">
-          <path d="M207 58 C205 66, 207 71, 210 74" stroke="#1E3264" stroke-width="3" stroke-linecap="round"/>
-          <path d="M221 58 C223 66, 221 71, 218 74" stroke="#1E3264" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="207" cy="57" r="3" fill="#F7E671" stroke="#1E3264" stroke-width="2"/>
-          <circle cx="221" cy="57" r="3" fill="#F7E671" stroke="#1E3264" stroke-width="2"/>
-          <line x1="214" y1="67" x2="214" y2="72" stroke="#1E3264" stroke-width="2"/>
-          <circle cx="214" cy="66" r="2.5" fill="#F7E671" stroke="#1E3264" stroke-width="1.8"/>
-          <rect x="203" y="72" width="22" height="16" rx="6" fill="#EFEFF4" stroke="#1E3264" stroke-width="2.2"/>
-          <circle cx="210" cy="79" r="1.8" fill="#1E3264"/>
-          <circle cx="218" cy="79" r="1.8" fill="#1E3264"/>
-          <path d="M211 83 Q214 86 217 83" stroke="#1E3264" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-          <rect x="208" y="88" width="12" height="8" rx="3" fill="#6B9EE8" stroke="#1E3264" stroke-width="2"/>
-        </g>
-      </svg>
+      <div class="relative inline-flex items-center justify-center py-1">
+        <svg class="h-14 sm:h-16 w-auto overflow-visible" viewBox="0 0 360 105" xmlns="http://www.w3.org/2000/svg" aria-label="AI Buddy">
+          <g class="matcha-bubble-group">
+            <!-- Lletres superposades d'esquerra a dreta amb contorn del color del fons com a la imatge "so matcha" -->
+            <text x="15" y="64" class="matcha-letter" transform="rotate(-4 28 50)">a</text>
+            <text x="54" y="63" class="matcha-letter" transform="rotate(3 64 50)">i</text>
+
+            <text x="98" y="65" class="matcha-letter" transform="rotate(-3 114 52)">b</text>
+            <text x="140" y="66" class="matcha-letter" transform="rotate(2 158 52)">u</text>
+            <text x="182" y="64" class="matcha-letter" transform="rotate(-3 200 52)">d</text>
+            <!-- Segona 'd' d'on penja el robotet -->
+            <text x="224" y="65" class="matcha-letter" transform="rotate(1 242 52)">d</text>
+            <text x="266" y="64" class="matcha-letter" transform="rotate(4 284 52)">y</text>
+          </g>
+
+          <!-- Detall integrat tipus fulla/espurna retro com a la 'o' de "so matcha" -->
+          <path d="M202 45 C206 38, 214 38, 212 47 C208 51, 202 49, 202 45 Z" fill="var(--bg-main)" />
+
+          <!-- Robotet simpàtic penjant de la segona 'd' (x=245, y=64) -->
+          <g class="animate-robot-swing" style="transform-origin: 245px 62px;">
+            <path d="M238 60 C236 68, 238 72, 241 75" stroke="#1E3264" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M252 60 C254 68, 252 72, 249 75" stroke="#1E3264" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <circle cx="238" cy="59" r="3.2" fill="#F7E671" stroke="#1E3264" stroke-width="2"/>
+            <circle cx="252" cy="59" r="3.2" fill="#F7E671" stroke="#1E3264" stroke-width="2"/>
+            <line x1="245" y1="68" x2="245" y2="73" stroke="#1E3264" stroke-width="2.2"/>
+            <circle cx="245" cy="67" r="2.6" fill="#F7E671" stroke="#1E3264" stroke-width="1.8"/>
+            <rect x="234" y="73" width="22" height="16" rx="6" fill="#F5F5F7" stroke="#1E3264" stroke-width="2.3"/>
+            <circle cx="241" cy="80" r="1.8" fill="#1E3264"/>
+            <circle cx="249" cy="80" r="1.8" fill="#1E3264"/>
+            <path d="M242 84 Q245 87 248 84" stroke="#1E3264" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+            <rect x="239" y="89" width="12" height="8" rx="3.5" fill="#F7E671" stroke="#1E3264" stroke-width="2"/>
+          </g>
+        </svg>
+      </div>
     </div>
 
     <div class="flex justify-end items-center gap-1.5">
-      <span id="status-badge" onclick="switchView('view-settings')" title="Usuari i sincronització" class="cursor-pointer text-xs btn-secondary px-2.5 py-1.5 rounded-full flex items-center gap-1 truncate max-w-[115px] font-semibold">
+      <span id="status-badge" onclick="switchView('view-settings')" title="Usuari i sincronització" class="cursor-pointer text-xs btn-pill px-3 py-1.5 rounded-full flex items-center gap-1.5 truncate max-w-[120px] font-bold">
         ⚪ Convidat
       </span>
-      <button type="button" onclick="toggleTheme()" id="btn-theme-toggle" aria-label="Canviar entre mode clar i fosc" class="btn-secondary text-xs px-2.5 py-1.5 rounded-full transition" title="Mode clar / nocturn">
+      <button type="button" onclick="toggleTheme()" id="btn-theme-toggle" aria-label="Canviar entre mode clar i fosc" class="btn-pill text-xs px-2.5 py-1.5 rounded-full" title="Mode clar / nocturn">
         🌙
       </button>
-      <button type="button" onclick="switchView('view-settings')" aria-label="Obrir configuració" class="btn-secondary text-xs px-2.5 py-1.5 rounded-full transition" title="Configuració">
+      <button type="button" onclick="switchView('view-settings')" aria-label="Obrir configuració" class="btn-pill text-xs px-2.5 py-1.5 rounded-full" title="Configuració">
         ⚙️
       </button>
     </div>
   </header>
 
   <!-- Toast Notificació -->
-  <div id="toast-notification" role="status" aria-live="polite" class="fixed top-20 bg-[#2B4380] border-2 border-[#F7E671] text-white font-semibold text-xs px-4 py-2.5 rounded-2xl shadow-xl transition-all duration-300 transform opacity-0 translate-y-[-10px] pointer-events-none z-50">
+  <div id="toast-notification" role="status" aria-live="polite" class="fixed top-20 bg-[#2B4380] border-2 border-[#F7E671] text-white font-bold text-xs px-4 py-2.5 rounded-2xl shadow-xl transition-all duration-300 transform opacity-0 translate-y-[-10px] pointer-events-none z-50">
     + Guardat correctament
   </div>
 
   <!-- MODAL DE GUIA (ONBOARDING) -->
-  <div id="onboarding-modal" role="dialog" aria-modal="true" aria-labelledby="onboarding-title" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-    <div class="bg-card border-2 border-[#5C8ED6] rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 text-left">
+  <div id="onboarding-modal" role="dialog" aria-modal="true" aria-labelledby="onboarding-title" class="fixed inset-0 bg-black/65 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+    <div class="tactile-card rounded-3xl max-w-lg w-full p-6 space-y-4 text-left">
       <div class="flex justify-between items-start gap-4 border-b border-theme pb-3">
         <div>
-          <span class="text-[10px] tracking-widest text-[#5C8ED6] font-extrabold uppercase block">Guia Ràpida</span>
+          <span class="text-[10px] tracking-widest text-[#3D67C4] font-extrabold uppercase block">Guia Ràpida</span>
           <h2 id="onboarding-title" class="text-lg font-extrabold">Com funciona AI Buddy?</h2>
         </div>
-        <button type="button" onclick="closeOnboarding()" class="btn-secondary text-xs px-2.5 py-1 rounded-lg font-bold">✕</button>
+        <button type="button" onclick="closeOnboarding()" class="btn-pill text-xs px-2.5 py-1 rounded-lg font-bold">✕</button>
       </div>
       <p class="text-xs opacity-85 leading-relaxed">
-        Cada eina té la seva pròpia pantalla neta i separada perquè puguis concentrar-te en una sola cosa a la vegada sense saturació visual.
+        Cada eina té la seva pròpia pantalla amb transicions suaus perquè puguis concentrar-te en una sola cosa a la vegada.
       </p>
       <ul class="text-xs space-y-2 opacity-90">
-        <li>• <b>Tasques i Micro-passos:</b> Divideix qualsevol feina en passos petits i avança d'un en un.</li>
-        <li>• <b>Pomodoro i Pensaments:</b> Treballa amb barra visual i aparca distraccions a l'instant.</li>
-        <li>• <b>Widgets (Mòbil i PC):</b> Pots obrir la <i>To-Do Ràpida</i> o el <i>Pomodoro</i> en una finestra flotant petita des de les dreceres de la icona de l'app.</li>
+        <li>• <b>Activitat del Dia (Inici):</b> Et mostra directament la teva <i>To-Do List Ràpida</i> per anar tatxant tasques.</li>
+        <li>• <b>Historial i Percentatges:</b> Prem el botó <b>🕒 Historial</b> per veure els percentatges de progrés, la ratxa de dies i el cercador.</li>
+        <li>• <b>Rutina i Micro-passos:</b> Accedeix-hi des dels seus botons dedicats a sota.</li>
       </ul>
       <div class="flex justify-end pt-2 border-t border-theme">
         <button type="button" onclick="closeOnboarding()" class="btn-accent font-extrabold px-5 py-2.5 rounded-xl text-xs">
-          Començar
+          Entesos!
         </button>
       </div>
     </div>
   </div>
 
   <!-- =========================================================
-       CONTENIDOR CENTRAL: NOMÉS ES MOSTRA UNA PANTALLA A LA VEGADA
+       CONTENIDOR CENTRAL AMB TRANSICIONS DINÀMIQUES SUAUS
        ========================================================= -->
   <main class="w-full max-w-2xl my-auto flex flex-col items-center py-2 flex-1">
 
     <!-- ==========================================
-         PANTALLA 1: DASHBOARD / INICI (CALMAT I NET)
+         PANTALLA 1: INICI (SENSE PERCENTATGES NI RUTINA INCRUSTADA)
          ========================================== -->
-    <section id="view-menu" class="w-full flex flex-col gap-4 text-left">
+    <section id="view-menu" class="view-panel w-full flex flex-col gap-4 text-left">
 
-      <!-- 1. Salutació personalitzada + Data/Hora + Botó d'Historial -->
-      <div class="bg-card border border-theme rounded-3xl p-4 shadow-sm flex flex-wrap justify-between items-center gap-3">
+      <!-- 1. Salutació personalitzada + Data/Hora + Accés a Historial (on hi ha els percentatges) -->
+      <div class="tactile-card highlight-banner rounded-3xl p-4 sm:p-5 flex flex-wrap justify-between items-center gap-3">
         <div>
-          <h2 id="dash-greeting" class="text-base sm:text-lg font-extrabold">Bon dia, Convidat 👋</h2>
-          <p id="dash-datetime" class="text-xs opacity-70 font-medium mt-0.5">Carregant data...</p>
+          <h2 id="dash-greeting" class="text-base sm:text-xl font-extrabold">Bona tarda, Convidat 👋</h2>
+          <p id="dash-datetime" class="text-xs opacity-75 font-semibold mt-0.5">Carregant data...</p>
         </div>
         <div class="flex items-center gap-2">
-          <span id="dash-streak-badge" class="bg-[#F7E671] text-[#1A1A1A] text-xs font-extrabold px-3 py-1 rounded-full border border-[#2B4380]/20">
+          <span id="dash-streak-badge" class="bg-[#F7E671] text-[#1A1A1A] text-xs font-extrabold px-3.5 py-1.5 rounded-full border-2 border-[#1E3264]">
             🔥 1 dia
           </span>
-          <button type="button" onclick="switchView('view-history')" class="btn-secondary text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1" title="Obrir historial i cercador">
-            <span>🕒</span> <span>Historial</span>
+          <button type="button" onclick="switchView('view-history')" class="btn-primary text-xs font-extrabold px-3.5 py-1.5 rounded-full flex items-center gap-1.5" title="Veure percentatges i historial">
+            <span>🕒</span> <span>Historial i %</span>
           </button>
         </div>
       </div>
 
-      <!-- 2. Targetes de resum (2 KPIs nets amb barra de progrés) -->
-      <div class="grid grid-cols-2 gap-3">
-        <div onclick="switchView('view-quick-todo')" class="bg-card border border-theme hover:border-[#5C8ED6] rounded-2xl p-3.5 cursor-pointer transition shadow-sm">
-          <div class="flex justify-between items-center mb-1.5">
-            <span class="text-xs font-bold opacity-75">Tasques d'avui</span>
-            <span id="kpi-pct-todo" class="text-xs font-extrabold text-[#5C8ED6]">0%</span>
-          </div>
-          <div class="w-full bg-subtle h-2 rounded-full overflow-hidden mb-1.5">
-            <div id="kpi-bar-todo" class="bg-[#5C8ED6] h-full transition-all duration-300" style="width: 0%"></div>
-          </div>
-          <span id="kpi-count-todo" class="text-[11px] opacity-70 font-semibold">0 pendents</span>
-        </div>
-
-        <div onclick="switchView('view-routine')" class="bg-card border border-theme hover:border-[#5C8ED6] rounded-2xl p-3.5 cursor-pointer transition shadow-sm">
-          <div class="flex justify-between items-center mb-1.5">
-            <span class="text-xs font-bold opacity-75">Rutina diària</span>
-            <span id="kpi-pct-routine" class="text-xs font-extrabold text-[#2B4380]">0%</span>
-          </div>
-          <div class="w-full bg-subtle h-2 rounded-full overflow-hidden mb-1.5">
-            <div id="kpi-bar-routine" class="bg-[#F7E671] h-full transition-all duration-300" style="width: 0%"></div>
-          </div>
-          <span id="kpi-count-routine" class="text-[11px] opacity-70 font-semibold">0 completats</span>
-        </div>
-      </div>
-
-      <!-- 3. Llista d'activitat del dia amb selector simple i Empty State -->
-      <div class="bg-card border border-theme rounded-3xl p-4 shadow-sm">
+      <!-- 2. Widget d'Activitat del Dia (EXCLUSIVAMENT PER A LA TO-DO LIST) -->
+      <div class="tactile-card rounded-3xl p-4 sm:p-5">
         <div class="flex justify-between items-center mb-3">
-          <span class="text-xs font-extrabold uppercase tracking-wider text-[#5C8ED6]">Activitat del dia</span>
-          <div class="flex gap-1 bg-subtle p-1 rounded-xl text-[11px] font-bold">
-            <button type="button" onclick="setDashFilter('all')" id="dash-tab-all" class="px-2.5 py-0.5 rounded-lg bg-[#5C8ED6] text-white">Avui</button>
-            <button type="button" onclick="setDashFilter('pending')" id="dash-tab-pending" class="px-2.5 py-0.5 rounded-lg opacity-70">Pendents</button>
-            <button type="button" onclick="setDashFilter('routine')" id="dash-tab-routine" class="px-2.5 py-0.5 rounded-lg opacity-70">Rutina</button>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#3D67C4]"></span>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-[#2B4380] dark:text-[#F7E671]">Activitat del Dia · To-Do List</span>
+          </div>
+          <!-- Selector només per a la To-Do List (Totes vs Pendents) -->
+          <div class="flex gap-1 bg-subtle p-1 rounded-xl text-[11px] font-bold border border-theme">
+            <button type="button" onclick="setDashFilter('all')" id="dash-tab-all" class="px-3 py-1 rounded-lg bg-[#3D67C4] text-white transition">Totes</button>
+            <button type="button" onclick="setDashFilter('pending')" id="dash-tab-pending" class="px-3 py-1 rounded-lg opacity-75 hover:opacity-100 transition">Pendents</button>
           </div>
         </div>
 
-        <div id="dash-active-list" class="space-y-2 max-h-[150px] overflow-y-auto pr-1">
-          <!-- Es mostra la llista o un Empty State net -->
+        <div id="dash-active-list" class="space-y-2 max-h-[165px] overflow-y-auto pr-1">
+          <!-- Es mostren únicament les tasques de la To-Do List -->
         </div>
 
-        <p id="dash-feedback-msg" class="text-[11px] font-semibold text-[#5C8ED6] mt-2.5 pt-2 border-t border-theme">
-          ✨ Pas a pas: tria una eina a sota quan vulguis començar.
-        </p>
+        <div class="flex justify-between items-center mt-3 pt-2.5 border-t border-theme">
+          <p id="dash-feedback-msg" class="text-[11px] font-bold text-[#3D67C4] dark:text-[#6B9EE8]">
+            ✨ Marca les teves tasques ràpides o afegeix-ne més.
+          </p>
+          <button type="button" onclick="switchView('view-quick-todo')" class="text-xs font-extrabold text-[#2B4380] dark:text-[#F7E671] hover:underline">
+            Obrir To-Do &#8250;
+          </button>
+        </div>
       </div>
 
-      <!-- 4. Menú de les 6 pantalles principals (Botons nets com tenies originalment) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-        <button type="button" onclick="switchView('view-tasks')" class="bg-card hover:border-[#5C8ED6] border border-theme p-4 rounded-2xl text-sm font-bold flex justify-between items-center transition shadow-sm">
-          <span>Tasques i Micro-passos</span>
-          <span class="opacity-50 text-lg">&#8250;</span>
+      <!-- 3. Botons de navegació a les 6 pantalles (Amb tocs de color vius de la paleta) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button type="button" onclick="switchView('view-tasks')" class="menu-nav-card nav-accent-blue p-4 rounded-2xl text-sm font-extrabold flex justify-between items-center">
+          <span class="flex items-center gap-2.5"><span class="nav-dot bg-[#3D67C4]"></span>Tasques i Micro-passos</span>
+          <span class="text-lg font-bold">&#8250;</span>
         </button>
 
-        <button type="button" onclick="switchView('view-quick-todo')" class="bg-card hover:border-[#5C8ED6] border border-theme p-4 rounded-2xl text-sm font-bold flex justify-between items-center transition shadow-sm">
-          <span>To-Do List Ràpida</span>
-          <span class="opacity-50 text-lg">&#8250;</span>
+        <button type="button" onclick="switchView('view-quick-todo')" class="menu-nav-card nav-accent-yellow p-4 rounded-2xl text-sm font-extrabold flex justify-between items-center">
+          <span class="flex items-center gap-2.5"><span class="nav-dot bg-[#F7E671]"></span>To-Do List Ràpida</span>
+          <span class="text-lg font-bold">&#8250;</span>
         </button>
 
-        <button type="button" onclick="openPomodoroView()" class="bg-card hover:border-[#5C8ED6] border border-theme p-4 rounded-2xl text-sm font-bold flex justify-between items-center transition shadow-sm">
-          <span>Pomodoro Sensorial</span>
-          <span class="opacity-50 text-lg">&#8250;</span>
+        <button type="button" onclick="openPomodoroView()" class="menu-nav-card nav-accent-sky p-4 rounded-2xl text-sm font-extrabold flex justify-between items-center">
+          <span class="flex items-center gap-2.5"><span class="nav-dot bg-[#6B9EE8]"></span>Pomodoro Sensorial</span>
+          <span class="text-lg font-bold">&#8250;</span>
         </button>
 
-        <button type="button" onclick="switchView('view-routine')" class="bg-card hover:border-[#5C8ED6] border border-theme p-4 rounded-2xl text-sm font-bold flex justify-between items-center transition shadow-sm">
-          <span>Rutina Guiada de Passos</span>
-          <span class="opacity-50 text-lg">&#8250;</span>
+        <button type="button" onclick="switchView('view-routine')" class="menu-nav-card nav-accent-yellow p-4 rounded-2xl text-sm font-extrabold flex justify-between items-center">
+          <span class="flex items-center gap-2.5"><span class="nav-dot bg-[#F7E671]"></span>Rutina Guiada de Passos</span>
+          <span class="text-lg font-bold">&#8250;</span>
         </button>
 
-        <button type="button" onclick="switchView('view-hobbies')" class="bg-card hover:border-[#5C8ED6] border border-theme p-4 rounded-2xl text-sm font-bold flex justify-between items-center transition shadow-sm">
-          <span>Hobbies de Descans</span>
-          <span class="opacity-50 text-lg">&#8250;</span>
+        <button type="button" onclick="switchView('view-hobbies')" class="menu-nav-card nav-accent-sky p-4 rounded-2xl text-sm font-extrabold flex justify-between items-center">
+          <span class="flex items-center gap-2.5"><span class="nav-dot bg-[#6B9EE8]"></span>Hobbies de Descans</span>
+          <span class="text-lg font-bold">&#8250;</span>
         </button>
 
-        <button type="button" onclick="switchView('view-thoughts')" class="bg-card hover:border-[#5C8ED6] border border-theme p-4 rounded-2xl text-sm font-bold flex justify-between items-center transition shadow-sm">
-          <span>Pensaments Aparcats</span>
-          <span class="opacity-50 text-lg">&#8250;</span>
+        <button type="button" onclick="switchView('view-thoughts')" class="menu-nav-card nav-accent-blue p-4 rounded-2xl text-sm font-extrabold flex justify-between items-center">
+          <span class="flex items-center gap-2.5"><span class="nav-dot bg-[#2B4380]"></span>Pensaments Aparcats</span>
+          <span class="text-lg font-bold">&#8250;</span>
         </button>
       </div>
     </section>
 
     <!-- ==========================================
-         PANTALLA SEPARADA D'HISTORIAL I REGISTRE D'ACTIVITAT
+         PANTALLA D'HISTORIAL (ARA INCLOU ELS PERCENTATGES A DALT)
          ========================================== -->
-    <section id="view-history" class="w-full flex flex-col items-center hidden text-left">
-      <span class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-3 text-center block w-full">🕒 Historial i Continuïtat</span>
+    <section id="view-history" class="view-panel w-full flex flex-col items-center hidden text-left">
+      <span class="text-xs tracking-widest text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase mb-3 text-center block w-full">
+        🕒 Resum de Progrés i Historial
+      </span>
+
+      <!-- PERCENTATGES (KPIs) MOGUTS DINS DE LA PESTANYA D'HISTORIAL -->
+      <div class="w-full grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-4">
+        <div onclick="switchView('view-quick-todo')" class="tactile-card rounded-2xl p-4 cursor-pointer">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs font-extrabold">Tasques d'avui (To-Do)</span>
+            <span id="kpi-pct-todo" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-[#3D67C4] text-white">0%</span>
+          </div>
+          <div class="w-full bg-subtle h-2.5 rounded-full overflow-hidden mb-2 border border-theme">
+            <div id="kpi-bar-todo" class="bg-[#3D67C4] h-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <span id="kpi-count-todo" class="text-[11px] opacity-75 font-bold">0 pendents</span>
+        </div>
+
+        <div onclick="switchView('view-routine')" class="tactile-card rounded-2xl p-4 cursor-pointer">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs font-extrabold">Rutina diària</span>
+            <span id="kpi-pct-routine" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-[#F7E671] text-[#1A1A1A] border border-[#1E3264]">0%</span>
+          </div>
+          <div class="w-full bg-subtle h-2.5 rounded-full overflow-hidden mb-2 border border-theme">
+            <div id="kpi-bar-routine" class="bg-[#F7E671] h-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <span id="kpi-count-routine" class="text-[11px] opacity-75 font-bold">0 completats</span>
+        </div>
+      </div>
 
       <!-- Mètrica de continuïtat (Streaks dels últims 7 dies) -->
-      <div class="w-full bg-card border border-theme rounded-3xl p-4 mb-4 shadow-sm">
-        <span class="text-xs font-bold opacity-75 block mb-2">Continuïtat dels últims 7 dies</span>
+      <div class="w-full tactile-card rounded-3xl p-4 mb-4">
+        <span class="text-xs font-extrabold block mb-2.5">🔥 Continuïtat dels últims 7 dies</span>
         <div id="dash-streak-days" class="grid grid-cols-7 gap-2 text-center"></div>
       </div>
 
-      <!-- Cercador i filtre temporal/categoria -->
-      <div class="w-full bg-card border border-theme rounded-3xl p-4 mb-5 shadow-sm space-y-3">
+      <!-- Cercador i registre d'activitat -->
+      <div class="w-full tactile-card rounded-3xl p-4 mb-5 space-y-3">
         <div class="flex gap-2">
-          <input type="text" id="history-search-input" placeholder="🔍 Cerca tasques completades, pensaments..." class="flex-1 bg-subtle border border-theme rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#5C8ED6]" />
+          <input type="text" id="history-search-input" placeholder="🔍 Cerca tasques completades, pensaments..." class="flex-1 bg-subtle border border-theme rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#3D67C4]" />
           <select id="history-type-filter" aria-label="Filtrar per tipus" class="bg-subtle border border-theme rounded-xl px-3 py-2 text-xs font-bold">
             <option value="all">Tots</option>
             <option value="todo">Tasques</option>
@@ -239,10 +253,10 @@
           </select>
         </div>
 
-        <div id="dash-history-list" class="space-y-2 max-h-[240px] overflow-y-auto pr-1 text-xs"></div>
+        <div id="dash-history-list" class="space-y-2 max-h-[210px] overflow-y-auto pr-1 text-xs"></div>
       </div>
 
-      <button type="button" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
+      <button type="button" onclick="switchView('view-menu')" class="btn-pill px-4 py-2 rounded-full text-xs font-extrabold">
         &#8249; Tornar al menú principal
       </button>
     </section>
@@ -250,43 +264,39 @@
     <!-- ==========================================
          PANTALLA 2: TASQUES I MICRO-PASSOS
          ========================================== -->
-    <section id="view-tasks" class="w-full flex flex-col items-center hidden">
-      <!-- Secció superior: Botó d'accés a la pantalla de plantilles ràpides antibloqueig -->
-      <button type="button" onclick="switchView('view-templates')" class="w-full btn-accent font-extrabold py-3.5 px-5 rounded-2xl shadow-sm flex justify-between items-center text-xs sm:text-sm mb-6 transition">
+    <section id="view-tasks" class="view-panel w-full flex flex-col items-center hidden">
+      <button type="button" onclick="switchView('view-templates')" class="w-full btn-accent font-extrabold py-3.5 px-5 rounded-2xl flex justify-between items-center text-xs sm:text-sm mb-6">
         <span>📋 Plantilles ràpides antibloqueig</span>
         <span>Obrir &#8250;</span>
       </button>
 
-      <!-- Flux guiat: PAS 1 DE 2 -->
-      <span id="step-counter" class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-2.5 text-center block w-full">
+      <span id="step-counter" class="text-xs tracking-widest text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase mb-2.5 text-center block w-full">
         PAS 1 DE 2
       </span>
 
-      <!-- Targeta central destacada -->
-      <div class="w-full bg-card border-2 border-[#5C8ED6]/40 rounded-3xl p-8 md:p-10 shadow-md min-h-[190px] flex flex-col items-center justify-center mb-5 text-center">
-        <p id="step-display" role="status" aria-live="polite" class="text-xl md:text-2xl font-bold leading-relaxed">
+      <div class="w-full tactile-card rounded-3xl p-8 md:p-10 min-h-[190px] flex flex-col items-center justify-center mb-5 text-center">
+        <p id="step-display" role="status" aria-live="polite" class="text-xl md:text-2xl font-extrabold leading-relaxed">
           Escriu una tasca o tria una plantilla ràpida
         </p>
         <div id="completion-badge" class="hidden flex-col items-center gap-3 mt-1">
           <img id="task-complete-img" src="completat.jpg" alt="Tasca completada" class="w-24 h-24 rounded-2xl object-cover border-2 border-[#F7E671] shadow-md" />
-          <span class="text-sm text-[#5C8ED6] font-extrabold">Tasca completada!</span>
+          <span class="text-sm text-[#3D67C4] dark:text-[#F7E671] font-extrabold">Tasca completada!</span>
         </div>
       </div>
 
-      <!-- Barra de navegació amb botons (< i >) i botó central ("OK") -->
       <div class="flex gap-4 w-full mb-5">
-        <button type="button" id="btn-prev" aria-label="Pas anterior" class="flex-1 btn-secondary font-extrabold py-4 rounded-2xl text-lg flex justify-center items-center">
+        <button type="button" id="btn-prev" aria-label="Pas anterior" class="flex-1 btn-pill font-extrabold py-4 rounded-2xl text-lg flex justify-center items-center">
           &lt;
         </button>
-        <button type="button" id="btn-ok" class="flex-[2] grow btn-primary font-extrabold py-4 rounded-2xl shadow-md text-xl flex justify-center items-center">
+        <button type="button" id="btn-ok" class="flex-[2] grow btn-primary font-extrabold py-4 rounded-2xl text-xl flex justify-center items-center">
           OK
         </button>
-        <button type="button" id="btn-next" aria-label="Pas següent" class="flex-1 btn-secondary font-extrabold py-4 rounded-2xl text-lg flex justify-center items-center">
+        <button type="button" id="btn-next" aria-label="Pas següent" class="flex-1 btn-pill font-extrabold py-4 rounded-2xl text-lg flex justify-center items-center">
           &gt;
         </button>
       </div>
 
-      <button type="button" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
+      <button type="button" onclick="switchView('view-menu')" class="btn-pill px-4 py-2 rounded-full text-xs font-extrabold">
         &#8249; Tornar al menú principal
       </button>
     </section>
@@ -294,120 +304,117 @@
     <!-- ==========================================
          PANTALLA 3: PLANTILLES RÀPIDES ANTIBLOQUEIG
          ========================================== -->
-    <section id="view-templates" class="w-full flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-3 text-center block w-full">
+    <section id="view-templates" class="view-panel w-full flex flex-col items-center hidden">
+      <span class="text-xs tracking-widest text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase mb-3 text-center block w-full">
         Plantilles Ràpides Antibloqueig
       </span>
 
-      <!-- Llista de targetes de contingut amb scroll vertical -->
-      <div id="templates-cards-container" class="w-full max-h-[380px] overflow-y-auto space-y-3 pr-1 mb-5 text-left">
-        <!-- Targetes horitzontals generades per JS: quadrat esquerre + títol en negreta + breu descripció + botó "Read Details" -->
-      </div>
+      <div id="templates-cards-container" class="w-full max-h-[380px] overflow-y-auto space-y-3 pr-1 mb-5 text-left"></div>
 
-      <button type="button" onclick="switchView('view-tasks')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
+      <button type="button" onclick="switchView('view-tasks')" class="btn-pill px-4 py-2 rounded-full text-xs font-extrabold">
         &#8249; Tornar a Tasques i Micro-passos
       </button>
     </section>
 
     <!-- ==========================================
-         PANTALLA 4: PENSAMENTS APARCATS (MANTINGUDA IGUAL)
+         PANTALLA 4: PENSAMENTS APARCATS
          ========================================== -->
-    <section id="view-thoughts" class="w-full flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-4 text-center block w-full">Pensaments Aparcats</span>
+    <section id="view-thoughts" class="view-panel w-full flex flex-col items-center hidden">
+      <span class="text-xs tracking-widest text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase mb-4 text-center block w-full">Pensaments Aparcats</span>
 
-      <div id="thoughts-list" class="w-full bg-card border border-theme rounded-3xl p-4 min-h-[220px] max-h-[340px] overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-2.5 content-start text-left mb-4 shadow-sm">
+      <div id="thoughts-list" class="w-full tactile-card rounded-3xl p-4 min-h-[220px] max-h-[340px] overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-2.5 content-start text-left mb-4">
         <p class="text-xs opacity-60 text-center py-8 md:col-span-2">No hi ha pensaments aparcats encara.</p>
       </div>
 
-      <div class="flex gap-2 w-full mb-6">
-        <button type="button" id="btn-clear-thoughts" class="w-full btn-secondary text-xs font-bold py-2.5 rounded-2xl transition">
+      <div class="flex gap-2 w-full mb-5">
+        <button type="button" id="btn-clear-thoughts" class="w-full btn-pill text-xs font-extrabold py-3 rounded-2xl">
           Esborrar tots
         </button>
       </div>
 
-      <button type="button" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
+      <button type="button" onclick="switchView('view-menu')" class="btn-pill px-4 py-2 rounded-full text-xs font-extrabold">
         &#8249; Tornar al menú principal
       </button>
     </section>
 
     <!-- ==========================================
-         PANTALLA 5: POMODORO SENSORIAL (MANTINGUDA IGUAL)
+         PANTALLA 5: POMODORO SENSORIAL
          ========================================== -->
-    <section id="view-pomodoro" class="w-full flex flex-col items-center hidden">
-      <span id="pomo-section-title" class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-4 text-center block w-full">
+    <section id="view-pomodoro" class="view-panel w-full flex flex-col items-center hidden">
+      <span id="pomo-section-title" class="text-xs tracking-widest text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase mb-4 text-center block w-full">
         Pomodoro Sensorial i Cicles de Descans
       </span>
 
       <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-5 items-center mb-4">
         <div class="md:col-span-5 flex flex-col items-center">
-          <div id="pomo-face-box" class="w-40 h-44 mx-auto rounded-3xl bg-card border border-theme p-4 flex flex-col items-center justify-center gap-2 shadow-sm">
-            <img id="pomo-img" src="focus_normal.jpg" alt="Estat del Pomodoro" class="w-28 h-28 rounded-2xl object-cover border border-theme" />
-            <span id="pomo-status-label" class="text-[11px] text-[#5C8ED6] font-extrabold uppercase tracking-widest text-center">En Focus</span>
+          <div id="pomo-face-box" class="w-40 h-44 mx-auto rounded-3xl tactile-card p-4 flex flex-col items-center justify-center gap-2">
+            <img id="pomo-img" src="focus_normal.jpg" alt="Estat del Pomodoro" class="w-28 h-28 rounded-2xl object-cover border-2 border-[#2B4380]" />
+            <span id="pomo-status-label" class="text-[11px] text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase tracking-widest text-center">En Focus</span>
           </div>
         </div>
 
         <div class="md:col-span-7 flex flex-col items-center w-full">
-          <div class="w-full bg-card border border-theme rounded-3xl p-5 shadow-sm flex flex-col items-center mb-3.5">
+          <div class="w-full tactile-card rounded-3xl p-5 flex flex-col items-center mb-3.5">
             <div class="w-full flex justify-between items-center mb-2">
-              <span id="pomo-mode-badge" class="text-xs font-extrabold text-[#5C8ED6] uppercase tracking-wider">🎯 Bloc de Focus</span>
+              <span id="pomo-mode-badge" class="text-xs font-extrabold text-[#3D67C4] dark:text-[#F7E671] uppercase tracking-wider">🎯 Bloc de Focus</span>
               <span id="pomo-time-display" class="text-sm font-mono font-extrabold">25:00</span>
             </div>
 
-            <div class="w-full bg-subtle h-6 rounded-xl overflow-hidden border border-theme p-1 mb-3">
-              <div id="pomo-bar" class="bg-[#5C8ED6] h-full rounded-lg transition-all duration-1000 w-full"></div>
+            <div class="w-full bg-subtle h-6 rounded-xl overflow-hidden border-2 border-[#2B4380] p-1 mb-3">
+              <div id="pomo-bar" class="bg-[#3D67C4] h-full rounded-lg transition-all duration-1000 w-full"></div>
             </div>
 
-            <div class="w-full flex justify-between items-center text-[11px] opacity-75">
+            <div class="w-full flex justify-between items-center text-[11px] font-semibold">
               <span id="pomo-cycle-counter">Pomodoros completats: 0 / 5</span>
-              <button type="button" id="btn-pomo-skip-phase" class="text-[#5C8ED6] font-bold hover:underline text-[11px]">
+              <button type="button" id="btn-pomo-skip-phase" class="text-[#3D67C4] dark:text-[#F7E671] font-extrabold hover:underline text-[11px]">
                 Saltar fase &#8250;
               </button>
             </div>
           </div>
 
           <div class="flex gap-3 w-full mb-3.5">
-            <button type="button" id="btn-pomo-reset" class="flex-1 btn-secondary font-bold py-3.5 rounded-2xl text-xs flex justify-center items-center">
+            <button type="button" id="btn-pomo-reset" class="flex-1 btn-pill font-extrabold py-3.5 rounded-2xl text-xs flex justify-center items-center">
               Reiniciar
             </button>
-            <button type="button" id="btn-pomo-ok" class="flex-[2] grow btn-primary font-extrabold py-3.5 rounded-2xl shadow-md text-sm flex justify-center items-center">
+            <button type="button" id="btn-pomo-ok" class="flex-[2] grow btn-primary font-extrabold py-3.5 rounded-2xl text-sm flex justify-center items-center">
               Pausar
             </button>
-            <button type="button" id="btn-pomo-next" aria-label="Tornar al menú" class="flex-1 btn-secondary font-bold py-3.5 rounded-2xl text-lg flex justify-center items-center">
+            <button type="button" id="btn-pomo-next" aria-label="Tornar al menú" class="flex-1 btn-pill font-extrabold py-3.5 rounded-2xl text-lg flex justify-center items-center">
               &#8250;
             </button>
           </div>
 
-          <details id="pomo-config-details" class="w-full bg-card border border-theme rounded-2xl p-3 text-left">
-            <summary class="text-xs font-bold cursor-pointer select-none flex justify-between items-center">
+          <details id="pomo-config-details" class="w-full tactile-card rounded-2xl p-3.5 text-left">
+            <summary class="text-xs font-extrabold cursor-pointer select-none flex justify-between items-center">
               <span>Personalitzar temps de Focus i Descansos</span>
               <span class="text-[10px] opacity-60">desplegar</span>
             </summary>
             <div class="mt-3 pt-3 border-t border-theme grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <div>
-                <label for="pomo-cfg-focus" class="text-[10px] opacity-75 block mb-1">Focus (min)</label>
+                <label for="pomo-cfg-focus" class="text-[10px] font-bold block mb-1">Focus (min)</label>
                 <input type="number" id="pomo-cfg-focus" min="1" max="120" value="25" class="w-full bg-subtle border border-theme rounded-lg px-2.5 py-1.5 text-xs" />
               </div>
               <div>
-                <label for="pomo-cfg-short" class="text-[10px] opacity-75 block mb-1">Descans curt</label>
+                <label for="pomo-cfg-short" class="text-[10px] font-bold block mb-1">Descans curt</label>
                 <input type="number" id="pomo-cfg-short" min="1" max="60" value="5" class="w-full bg-subtle border border-theme rounded-lg px-2.5 py-1.5 text-xs" />
               </div>
               <div>
-                <label for="pomo-cfg-long" class="text-[10px] opacity-75 block mb-1">Descans llarg</label>
+                <label for="pomo-cfg-long" class="text-[10px] font-bold block mb-1">Descans llarg</label>
                 <input type="number" id="pomo-cfg-long" min="1" max="90" value="15" class="w-full bg-subtle border border-theme rounded-lg px-2.5 py-1.5 text-xs" />
               </div>
               <div>
-                <label for="pomo-cfg-cycles" class="text-[10px] opacity-75 block mb-1">Cicle llarg</label>
+                <label for="pomo-cfg-cycles" class="text-[10px] font-bold block mb-1">Cicle llarg</label>
                 <input type="number" id="pomo-cfg-cycles" min="1" max="12" value="5" class="w-full bg-subtle border border-theme rounded-lg px-2.5 py-1.5 text-xs" />
               </div>
             </div>
-            <button type="button" id="btn-save-pomo-inline" class="mt-3 w-full btn-primary font-bold py-2 rounded-xl text-xs">
+            <button type="button" id="btn-save-pomo-inline" class="mt-3 w-full btn-accent font-extrabold py-2 rounded-xl text-xs">
               Aplicar i Reiniciar Temporitzador
             </button>
           </details>
         </div>
       </div>
 
-      <button type="button" id="btn-pomo-back-menu" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
+      <button type="button" id="btn-pomo-back-menu" onclick="switchView('view-menu')" class="btn-pill px-4 py-2 rounded-full text-xs font-extrabold">
         &#8249; Tornar al menú principal
       </button>
     </section>
@@ -415,50 +422,43 @@
     <!-- ==========================================
          PANTALLA 6: RUTINA GUIADA DE PASSOS
          ========================================== -->
-    <section id="view-routine" class="w-full flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-3 text-center block w-full">Rutina Guiada de Passos</span>
+    <section id="view-routine" class="view-panel w-full flex flex-col items-center hidden">
+      <span class="text-xs tracking-widest text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase mb-3 text-center block w-full">Rutina Guiada de Passos</span>
 
-      <!-- Graella d'hàbits en forma de càpsula arrodonida (selecció múltiple) -->
-      <div id="routine-habits-grid" class="w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[250px] overflow-y-auto pr-1 mb-4 text-left">
-        <!-- Wake up, Make bed, Drink water, Brush teeth, Breakfast, etc. -->
-      </div>
+      <div id="routine-habits-grid" class="w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[250px] overflow-y-auto pr-1 mb-4 text-left"></div>
 
-      <!-- Indicador breu del pas actual que s'està fent -->
-      <p id="routine-step-display" class="text-xs font-extrabold text-[#5C8ED6] mb-3 text-center"></p>
+      <p id="routine-step-display" class="text-xs font-extrabold text-[#3D67C4] dark:text-[#F7E671] mb-3 text-center"></p>
 
-      <!-- Controls de navegació (<, OK, >) -->
       <div class="flex gap-4 w-full mb-4">
-        <button type="button" id="btn-routine-prev" aria-label="Pas anterior de la rutina" class="flex-1 btn-secondary font-extrabold py-3.5 rounded-2xl text-lg flex justify-center items-center">
+        <button type="button" id="btn-routine-prev" aria-label="Pas anterior de la rutina" class="flex-1 btn-pill font-extrabold py-3.5 rounded-2xl text-lg flex justify-center items-center">
           &lt;
         </button>
-        <button type="button" id="btn-routine-ok" class="flex-[2] grow btn-primary font-extrabold py-3.5 rounded-2xl shadow-md text-lg flex justify-center items-center">
+        <button type="button" id="btn-routine-ok" class="flex-[2] grow btn-primary font-extrabold py-3.5 rounded-2xl text-lg flex justify-center items-center">
           OK
         </button>
-        <button type="button" id="btn-routine-next" aria-label="Pas següent de la rutina" class="flex-1 btn-secondary font-extrabold py-3.5 rounded-2xl text-lg flex justify-center items-center">
+        <button type="button" id="btn-routine-next" aria-label="Pas següent de la rutina" class="flex-1 btn-pill font-extrabold py-3.5 rounded-2xl text-lg flex justify-center items-center">
           &gt;
         </button>
       </div>
 
-      <!-- Afegir nous passos -->
       <div class="w-full flex gap-2 mb-2.5">
         <input 
           type="text" 
           id="routine-input-new" 
           placeholder="Escriu un pas per a la teva rutina..." 
           aria-label="Nou pas per a la rutina"
-          class="w-full bg-card border border-theme rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#5C8ED6]"
+          class="w-full tactile-input rounded-2xl px-4 py-2.5 text-xs"
         />
-        <button type="button" id="btn-routine-add" class="btn-secondary font-extrabold px-4 py-2.5 rounded-2xl text-xs shrink-0">
+        <button type="button" id="btn-routine-add" class="btn-accent font-extrabold px-5 py-2.5 rounded-2xl text-xs shrink-0">
           Afegir
         </button>
       </div>
 
-      <!-- Gestió i navegació -->
-      <button type="button" id="btn-routine-reset" class="w-full btn-secondary text-xs font-semibold py-2.5 rounded-2xl mb-4">
+      <button type="button" id="btn-routine-reset" class="w-full btn-pill text-xs font-bold py-2.5 rounded-2xl mb-4">
         Buidar tota la rutina
       </button>
 
-      <button type="button" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
+      <button type="button" onclick="switchView('view-menu')" class="btn-pill px-4 py-2 rounded-full text-xs font-extrabold">
         &#8249; Tornar al menú principal
       </button>
     </section>
@@ -466,33 +466,31 @@
     <!-- ==========================================
          PANTALLA 7: HOBBIES DE DESCANS
          ========================================== -->
-    <section id="view-hobbies" class="w-full flex flex-col items-center hidden">
-      <span class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-3 text-center block w-full">Hobbies de Descans</span>
+    <section id="view-hobbies" class="view-panel w-full flex flex-col items-center hidden">
+      <span class="text-xs tracking-widest text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase mb-3 text-center block w-full">Hobbies de Descans</span>
 
-      <!-- Graella vertical de càpsules arrodonides amb fons de color en seleccionar -->
       <div id="hobbies-capsules-grid" class="w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[250px] overflow-y-auto pr-1 mb-5 text-left"></div>
 
-      <!-- Formulari "PERSONALITZAR HOBBIES" -->
-      <div class="w-full bg-card border border-theme rounded-3xl p-4 mb-5 text-left shadow-sm">
-        <span class="text-xs font-extrabold text-[#5C8ED6] block mb-2.5 uppercase tracking-widest">PERSONALITZAR HOBBIES</span>
+      <div class="w-full tactile-card rounded-3xl p-4 mb-5 text-left">
+        <span class="text-xs font-extrabold text-[#3D67C4] dark:text-[#F7E671] block mb-2.5 uppercase tracking-widest">PERSONALITZAR HOBBIES</span>
         <div class="flex gap-2 mb-2.5">
           <input 
             type="text" 
             id="hobby-input-new" 
             placeholder="Nou hobby o activitat..." 
             aria-label="Nou hobby o activitat"
-            class="w-full bg-subtle border border-theme rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[#5C8ED6]"
+            class="w-full bg-subtle border border-theme rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[#3D67C4]"
           />
           <button type="button" id="btn-hobby-add" class="btn-primary font-extrabold px-4 py-2.5 rounded-xl text-xs shrink-0">
             Afegir
           </button>
         </div>
-        <button type="button" id="btn-hobby-reset" class="text-[11px] font-semibold opacity-70 hover:opacity-100 underline transition">
+        <button type="button" id="btn-hobby-reset" class="text-[11px] font-bold opacity-75 hover:opacity-100 underline transition">
           Buidar llista de hobbies
         </button>
       </div>
 
-      <button type="button" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
+      <button type="button" onclick="switchView('view-menu')" class="btn-pill px-4 py-2 rounded-full text-xs font-extrabold">
         &#8249; Tornar al menú principal
       </button>
     </section>
@@ -500,46 +498,43 @@
     <!-- ==========================================
          PANTALLA 8: TO-DO LIST RÀPIDA
          ========================================== -->
-    <section id="view-quick-todo" class="w-full flex flex-col items-center hidden">
-      <!-- Capçalera superior -->
-      <h2 class="text-base md:text-lg font-extrabold text-[#5C8ED6] mb-3 text-center">To-Do List Ràpida</h2>
+    <section id="view-quick-todo" class="view-panel w-full flex flex-col items-center hidden">
+      <h2 class="text-base md:text-lg font-extrabold text-[#3D67C4] dark:text-[#F7E671] mb-3 text-center">To-Do List Ràpida</h2>
 
-      <!-- Secció de tasques ("To Do") -->
       <div class="flex gap-2 w-full mb-3.5">
         <input 
           type="text" 
           id="quick-todo-input" 
           placeholder="Apunta una tasca ràpida..." 
           aria-label="Nova tasca ràpida"
-          class="w-full bg-card border border-theme rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#5C8ED6]"
+          class="w-full tactile-input rounded-2xl px-4 py-2.5 text-xs"
         />
-        <button type="button" id="btn-add-quick-todo" class="btn-primary font-extrabold px-5 py-2.5 rounded-2xl text-xs shadow-sm shrink-0">
+        <button type="button" id="btn-add-quick-todo" class="btn-primary font-extrabold px-5 py-2.5 rounded-2xl text-xs shrink-0">
           Afegir
         </button>
       </div>
 
-      <!-- Contenidor de llista amb scroll vertical -->
-      <div id="quick-todo-list" class="w-full bg-card border border-theme rounded-3xl p-4 min-h-[150px] max-h-[210px] overflow-y-auto space-y-2 text-left mb-3 shadow-sm">
+      <div id="quick-todo-list" class="w-full tactile-card rounded-3xl p-4 min-h-[150px] max-h-[210px] overflow-y-auto space-y-2 text-left mb-3">
         <p class="text-xs opacity-60 text-center py-6">No hi ha tasques ràpides pendents.</p>
       </div>
 
       <div class="flex justify-between items-center w-full mb-4 px-1">
-        <button type="button" id="btn-clear-quick-todos" class="text-xs font-semibold opacity-70 hover:opacity-100 underline transition">
+        <button type="button" id="btn-clear-quick-todos" class="text-xs font-bold opacity-75 hover:opacity-100 underline transition">
           Esborrar totes les tasques ràpides
         </button>
-        <button type="button" id="btn-todo-back-menu" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
+        <button type="button" id="btn-todo-back-menu" onclick="switchView('view-menu')" class="btn-pill px-3.5 py-1.5 rounded-full text-xs font-extrabold">
           &#8249; Tornar al menú principal
         </button>
       </div>
 
       <!-- Il·lustració inferior decorativa del robot simpàtic amb paisatge de fons -->
-      <div id="todo-landscape-illustration" class="w-full rounded-3xl overflow-hidden border border-theme shadow-sm bg-gradient-to-b from-[#6B9EE8]/25 via-[#EFEFF4] to-[#F7E671]/30 p-3 flex flex-col items-center justify-center">
+      <div id="todo-landscape-illustration" class="w-full rounded-3xl overflow-hidden border-2 border-[#2B4380] bg-gradient-to-b from-[#6B9EE8]/35 via-[#F5F5F7] to-[#F7E671]/45 p-3 flex flex-col items-center justify-center shadow-sm">
         <svg class="w-full max-w-sm h-32" viewBox="0 0 400 135" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Robot Buddy en un paisatge relaxant">
           <circle cx="330" cy="32" r="20" fill="#F7E671" stroke="#2B4380" stroke-width="2.5"/>
           <path d="M55 38 Q65 26 80 33 Q92 23 106 34 Q116 36 112 46 L50 46 Q44 40 55 38 Z" fill="#FFFFFF" stroke="#2B4380" stroke-width="2"/>
-          <path d="M-10 130 Q70 65 160 130 Z" fill="#6B9EE8" fill-opacity="0.4" stroke="#2B4380" stroke-width="2"/>
-          <path d="M120 130 Q230 55 340 130 Z" fill="#5C8ED6" fill-opacity="0.5" stroke="#2B4380" stroke-width="2"/>
-          <path d="M260 130 Q340 80 415 130 Z" fill="#2B4380" fill-opacity="0.25" stroke="#2B4380" stroke-width="2"/>
+          <path d="M-10 130 Q70 65 160 130 Z" fill="#6B9EE8" fill-opacity="0.45" stroke="#2B4380" stroke-width="2"/>
+          <path d="M120 130 Q230 55 340 130 Z" fill="#5C8ED6" fill-opacity="0.55" stroke="#2B4380" stroke-width="2"/>
+          <path d="M260 130 Q340 80 415 130 Z" fill="#2B4380" fill-opacity="0.3" stroke="#2B4380" stroke-width="2"/>
           <line x1="0" y1="130" x2="400" y2="130" stroke="#2B4380" stroke-width="3"/>
           <g transform="translate(172, 38)">
             <line x1="28" y1="0" x2="28" y2="10" stroke="#2B4380" stroke-width="3"/>
@@ -548,7 +543,7 @@
             <path d="M16 25 Q20 20 24 25" stroke="#2B4380" stroke-width="2.5" stroke-linecap="round"/>
             <path d="M32 25 Q36 20 40 25" stroke="#2B4380" stroke-width="2.5" stroke-linecap="round"/>
             <path d="M21 33 Q28 38 35 33" stroke="#2B4380" stroke-width="2.5" stroke-linecap="round"/>
-            <rect x="12" y="47" width="32" height="28" rx="8" fill="#5C8ED6" stroke="#2B4380" stroke-width="3"/>
+            <rect x="12" y="47" width="32" height="28" rx="8" fill="#3D67C4" stroke="#2B4380" stroke-width="3"/>
             <rect x="19" y="54" width="18" height="12" rx="4" fill="#F7E671" stroke="#2B4380" stroke-width="2"/>
             <path d="M12 53 Q-2 42 4 32" stroke="#2B4380" stroke-width="3" stroke-linecap="round"/>
             <path d="M44 53 Q56 60 52 70" stroke="#2B4380" stroke-width="3" stroke-linecap="round"/>
@@ -562,33 +557,33 @@
     <!-- ==========================================
          PANTALLA 9: CONFIGURACIÓ
          ========================================== -->
-    <section id="view-settings" class="w-full flex flex-col items-center hidden text-left">
-      <span class="text-xs tracking-widest text-[#5C8ED6] font-extrabold uppercase mb-4 text-center block w-full">Configuració, Pomodoro i Sincronització</span>
+    <section id="view-settings" class="view-panel w-full flex flex-col items-center hidden text-left">
+      <span class="text-xs tracking-widest text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase mb-4 text-center block w-full">Configuració, Pomodoro i Sincronització</span>
 
       <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-5 mb-6 items-start">
-        <div class="w-full bg-card border border-theme rounded-3xl p-5 space-y-4 shadow-sm">
-          <div id="ai-info-box" class="bg-[#5C8ED6]/15 border border-[#5C8ED6]/40 rounded-2xl p-3">
-            <p class="text-[11px] text-[#5C8ED6] font-extrabold">✨ Motor Heurístic Local Actiu (100% Privat)</p>
-            <p class="text-[10px] opacity-80 mt-0.5 leading-relaxed">El desglossament de tasques funciona al teu dispositiu sense enviar dades a cap IA externa.</p>
+        <div class="w-full tactile-card rounded-3xl p-5 space-y-4">
+          <div id="ai-info-box" class="bg-[#3D67C4]/15 border-2 border-[#3D67C4]/40 rounded-2xl p-3">
+            <p class="text-[11px] text-[#3D67C4] dark:text-[#F7E671] font-extrabold">✨ Motor Heurístic Local Actiu (100% Privat)</p>
+            <p class="text-[10px] opacity-85 mt-0.5 leading-relaxed">El desglossament de tasques funciona al teu dispositiu sense enviar dades a cap IA externa.</p>
           </div>
 
           <div class="space-y-3">
             <div>
-              <label for="cfg-sync-id" class="text-xs font-bold block mb-1">1. Nom d'Usuari</label>
+              <label for="cfg-sync-id" class="text-xs font-extrabold block mb-1">1. Nom d'Usuari</label>
               <input type="text" id="cfg-sync-id" placeholder="convidat" class="w-full bg-subtle border border-theme rounded-xl px-3 py-2 text-xs" />
             </div>
 
             <div>
-              <label for="cfg-sync-pass" class="text-xs font-bold block mb-1">2. Contrasenya <span class="text-[10px] opacity-70 font-normal">(buit si ets convidat)</span></label>
+              <label for="cfg-sync-pass" class="text-xs font-extrabold block mb-1">2. Contrasenya <span class="text-[10px] opacity-70 font-normal">(buit si ets convidat)</span></label>
               <div class="flex gap-2 items-center">
                 <input type="password" id="cfg-sync-pass" placeholder="Contrasenya..." class="w-full bg-subtle border border-theme rounded-xl px-3 py-2 text-xs" />
-                <button type="button" id="btn-toggle-pass" onclick="togglePassVisibility()" class="btn-secondary px-3 py-2 rounded-xl text-sm shrink-0">👁️</button>
+                <button type="button" id="btn-toggle-pass" onclick="togglePassVisibility()" class="btn-pill px-3 py-2 rounded-xl text-sm shrink-0">👁️</button>
               </div>
             </div>
 
             <label for="chk-rgpd-consent" class="flex items-start gap-2 cursor-pointer select-none pt-1">
-              <input type="checkbox" id="chk-rgpd-consent" class="mt-0.5 w-4 h-4 accent-[#5C8ED6] rounded shrink-0" />
-              <span class="text-[10px] opacity-80 leading-snug">
+              <input type="checkbox" id="chk-rgpd-consent" class="mt-0.5 w-4 h-4 accent-[#3D67C4] rounded shrink-0" />
+              <span class="text-[10px] opacity-85 leading-snug">
                 Accepto la Política de Privadesa i consenteixo que les dades es desin amb hash SHA-256 a Supabase per sincronitzar els meus dispositius.
               </span>
             </label>
@@ -596,13 +591,13 @@
 
           <div class="space-y-2 pt-1">
             <button type="button" id="btn-save-settings" class="w-full btn-primary font-extrabold py-2.5 rounded-xl text-xs">Desar i Sincronitzar</button>
-            <button type="button" id="btn-logout-guest" class="w-full btn-secondary font-bold py-2 rounded-xl text-xs">Tornar a mode Convidat</button>
+            <button type="button" id="btn-logout-guest" class="w-full btn-pill font-extrabold py-2 rounded-xl text-xs">Tornar a mode Convidat</button>
           </div>
         </div>
 
-        <div class="w-full bg-card border border-theme rounded-3xl p-5 space-y-4 shadow-sm">
+        <div class="w-full tactile-card rounded-3xl p-5 space-y-4">
           <div>
-            <span class="text-xs text-[#5C8ED6] font-extrabold uppercase block mb-2">🍅 Configuració del Pomodoro</span>
+            <span class="text-xs text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase block mb-2">🍅 Configuració del Pomodoro</span>
             <div class="grid grid-cols-2 gap-2.5 mb-3">
               <div>
                 <label for="settings-pomo-focus" class="text-[11px] font-bold block mb-1">Focus (min)</label>
@@ -626,30 +621,30 @@
 
           <div class="pt-3 border-t border-theme space-y-2">
             <span class="text-[10px] opacity-70 uppercase tracking-widest font-extrabold block">Drets RGPD</span>
-            <button type="button" id="btn-export-data" class="w-full btn-secondary font-bold py-2 px-3 rounded-xl text-[11px]">📥 Descarregar dades (.JSON)</button>
-            <button type="button" id="btn-delete-account" class="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 font-bold py-2 px-3 rounded-xl text-[11px] border border-rose-500/30">🗑️ Eliminar compte i dades</button>
+            <button type="button" id="btn-export-data" class="w-full btn-pill font-bold py-2 px-3 rounded-xl text-[11px]">📥 Descarregar dades (.JSON)</button>
+            <button type="button" id="btn-delete-account" class="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 font-bold py-2 px-3 rounded-xl text-[11px] border border-rose-500/30">🗑️ Eliminar compte i dades</button>
           </div>
         </div>
       </div>
 
-      <button type="button" onclick="switchView('view-menu')" class="text-xs font-bold opacity-75 hover:opacity-100 transition">
+      <button type="button" onclick="switchView('view-menu')" class="btn-pill px-4 py-2 rounded-full text-xs font-extrabold">
         &#8249; Tornar al menú principal
       </button>
     </section>
 
   </main>
 
-  <!-- SECCIÓ INFERIOR CONSTANT: Aparcar pensament + Dividir tasca en micro-passos -->
-  <footer id="main-footer" class="w-full max-w-2xl grid grid-cols-1 md:grid-cols-12 gap-2.5 pt-3 mt-2 border-t border-theme">
+  <!-- SECCIÓ INFERIOR CONSTANT -->
+  <footer id="main-footer" class="w-full max-w-2xl grid grid-cols-1 md:grid-cols-12 gap-2.5 pt-3 mt-2 border-t-2 border-theme">
     <div id="footer-park-box" class="flex gap-2 md:col-span-5">
       <input 
         type="text" 
         id="thought-input" 
         placeholder="Aparcar pensament..." 
         aria-label="Escriu un pensament per aparcar"
-        class="w-full bg-card border border-theme rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[#5C8ED6] shadow-sm"
+        class="w-full tactile-input rounded-xl px-3.5 py-2.5 text-xs"
       />
-      <button type="button" id="btn-park" class="btn-secondary font-extrabold px-3.5 py-2.5 rounded-xl text-xs shrink-0">
+      <button type="button" id="btn-park" class="btn-accent font-extrabold px-4 py-2.5 rounded-xl text-xs shrink-0">
         Aparcar
       </button>
     </div>
@@ -660,17 +655,14 @@
         id="task-input" 
         placeholder="Escriu una tasca per dividir en micro-passos" 
         aria-label="Escriu una tasca per dividir en micro-passos"
-        class="w-full bg-card border border-theme rounded-xl px-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#5C8ED6] shadow-sm"
+        class="w-full tactile-input rounded-xl px-3.5 py-2.5 text-xs sm:text-sm"
       />
-      <button type="button" id="btn-send" class="btn-primary font-extrabold px-5 py-2.5 rounded-xl text-xs sm:text-sm shadow-sm shrink-0">
+      <button type="button" id="btn-send" class="btn-primary font-extrabold px-5 py-2.5 rounded-xl text-xs sm:text-sm shrink-0">
         Processar
       </button>
     </div>
   </footer>
 
-  <script src="app.js"></script>
-</body>
-</html>
   <script src="app.js"></script>
 </body>
 </html>
