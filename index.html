@@ -107,143 +107,59 @@
   <main class="w-full max-w-md md:max-w-3xl lg:max-w-4xl my-auto flex flex-col items-center text-center py-6">
 
     <!-- VISTA 1: MENU PRINCIPAL -->
-    <section id="view-menu" class="w-full flex flex-col gap-4">
-      <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-1 text-center block w-full">MENÚ PRINCIPAL</span>
-
-      <div class="flex justify-between items-center mb-1">
-        <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase">Tauler de Control (Widgets)</span>
-        <span class="text-xs text-stone-500">Zero sobrecàrrega</span>
+<section id="view-menu" class="w-full flex flex-col gap-4">
+  <span class="text-xs tracking-widest text-sky-400 font-semibold uppercase mb-1 text-center block w-full">MENÚ PRINCIPAL</span>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 w-full">
+    <button type="button" onclick="switchView('view-tasks')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
+      <div class="text-left">
+        <span class="block font-semibold">Tasques i Micro-passos</span>
+        <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Desglossa tasques pas a pas</span>
       </div>
+      <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
+    </button>
 
-      <!-- Graella de Widgets Interactius -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
-
-        <!-- 1. WIDGET: POMODORO & PENSAMENTS APARCATS -->
-        <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4 flex flex-col gap-3 shadow-xl">
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-semibold text-sky-400 uppercase tracking-widest">🎯 Focus & Pensaments</span>
-            <button type="button" onclick="switchView('view-pomodoro'); startPomodoro();" class="text-[10px] bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-2.5 py-1 rounded-xl transition">Obrir Pomo</button>
-          </div>
-          
-          <div class="flex gap-2">
-            <input 
-              type="text" 
-              id="widget-thought-input" 
-              placeholder="Aparca un pensament..." 
-              class="flex-1 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-200 focus:outline-none focus:border-sky-500 placeholder-stone-500"
-            />
-            <button type="button" id="widget-btn-park" class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-2 rounded-xl text-xs font-medium transition">
-              Aparcar
-            </button>
-          </div>
-          
-          <div id="widget-thoughts-list" class="space-y-1.5 max-h-[100px] overflow-y-auto pr-1 text-xs text-stone-400">
-            <p class="text-[11px] text-stone-600 text-center py-2">Cap pensament aparcat recentment.</p>
-          </div>
-        </div>
-
-        <!-- 2. WIDGET: TO-DO LIST RÀPIDA -->
-        <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4 flex flex-col gap-3 shadow-xl">
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-semibold text-sky-400 uppercase tracking-widest">⚡ To-Do Ràpida</span>
-            <button type="button" id="widget-btn-clear-todos" class="text-[10px] text-stone-500 hover:text-stone-300 transition">Netejar</button>
-          </div>
-
-          <div class="flex gap-2">
-            <input 
-              type="text" 
-              id="widget-quick-todo-input" 
-              placeholder="Nova tasca ràpida..." 
-              class="flex-1 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-200 focus:outline-none focus:border-sky-500 placeholder-stone-500"
-            />
-            <button type="button" id="widget-btn-add-todo" class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-2 rounded-xl text-xs font-medium transition">
-              Afegir
-            </button>
-          </div>
-
-          <div id="widget-quick-todo-list" class="space-y-1.5 max-h-[120px] overflow-y-auto pr-1 text-xs">
-            <p class="text-[11px] text-stone-600 text-center py-2">No hi ha tasques ràpides.</p>
-          </div>
-        </div>
-
-        <!-- 3. WIDGET: RUTINA DE MATÍ GUIADA -->
-        <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4 flex flex-col gap-3 shadow-xl">
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-semibold text-sky-400 uppercase tracking-widest">🌅 Rutina de Matí</span>
-            <button type="button" onclick="switchView('view-routine')" class="text-[10px] text-stone-400 hover:text-stone-200 transition">Editar ⚙️</button>
-          </div>
-
-          <div class="bg-stone-950 border border-stone-800 p-3 rounded-xl min-h-[50px] flex items-center justify-center text-center">
-            <p id="widget-routine-display" class="text-xs text-stone-200 font-medium">
-              Carregant pas de rutina...
-            </p>
-          </div>
-
-          <div class="flex gap-1.5">
-            <button type="button" id="widget-routine-prev" class="bg-stone-800 hover:bg-stone-700 text-stone-300 px-3 py-2 rounded-xl text-xs transition">
-              ‹ Enrere
-            </button>
-            <button type="button" id="widget-routine-ok" class="flex-grow bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold py-2 px-3 rounded-xl text-xs transition">
-              Fet / Següent ›
-            </button>
-            <button type="button" id="widget-routine-next" class="bg-stone-800 hover:bg-stone-700 text-stone-300 px-3 py-2 rounded-xl text-xs transition">
-              Endavant ›
-            </button>
-          </div>
-        </div>
-
+    <button type="button" onclick="switchView('view-thoughts')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
+      <div class="text-left">
+        <span class="block font-semibold">Pensaments Aparcats</span>
+        <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Allibera la ment de distraccions</span>
       </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 w-full">
-        <button type="button" onclick="switchView('view-tasks')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
-          <div class="text-left">
-            <span class="block font-semibold">Tasques i Micro-passos</span>
-            <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Desglossa tasques pas a pas</span>
-          </div>
-          <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
-        </button>
+      <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
+    </button>
 
-        <button type="button" onclick="switchView('view-thoughts')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
-          <div class="text-left">
-            <span class="block font-semibold">Pensaments Aparcats</span>
-            <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Allibera la ment de distraccions</span>
-          </div>
-          <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
-        </button>
-
-        <button type="button" onclick="openPomodoroView()" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
-          <div class="text-left">
-            <span class="block font-semibold">Pomodoro Sensorial</span>
-            <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Focus i descansos automàtics</span>
-          </div>
-          <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
-        </button>
-
-        <button type="button" onclick="switchView('view-routine')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
-          <div class="text-left">
-            <span class="block font-semibold">Rutina de Matí Guiada</span>
-            <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Segueix la teva seqüència diària</span>
-          </div>
-          <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
-        </button>
-
-        <button type="button" onclick="switchView('view-hobbies')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
-          <div class="text-left">
-            <span class="block font-semibold">Hobbies de Descans</span>
-            <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Idees per recarregar energia</span>
-          </div>
-          <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
-        </button>
-
-        <button type="button" onclick="switchView('view-quick-todo')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
-          <div class="text-left">
-            <span class="block font-semibold">To-Do List Ràpida</span>
-            <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Llista directa d'encàrrecs</span>
-          </div>
-          <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
-        </button>
+    <button type="button" onclick="openPomodoroView()" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
+      <div class="text-left">
+        <span class="block font-semibold">Pomodoro Sensorial</span>
+        <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Focus i descansos automàtics</span>
       </div>
-    </section>
+      <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
+    </button>
+
+    <button type="button" onclick="switchView('view-routine')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
+      <div class="text-left">
+        <span class="block font-semibold">Rutina de Matí Guiada</span>
+        <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Segueix la teva seqüència diària</span>
+      </div>
+      <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
+    </button>
+
+    <button type="button" onclick="switchView('view-hobbies')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
+      <div class="text-left">
+        <span class="block font-semibold">Hobbies de Descans</span>
+        <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Idees per recarregar energia</span>
+      </div>
+      <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
+    </button>
+
+    <button type="button" onclick="switchView('view-quick-todo')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
+      <div class="text-left">
+        <span class="block font-semibold">To-Do List Ràpida</span>
+        <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Llista directa d'encàrrecs</span>
+      </div>
+      <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
+    </button>
+  </div>
+</section>
 
     <!-- VISTA 2: TASQUES I MICRO-PASSOS -->
     <section id="view-tasks" class="w-full flex flex-col items-center hidden">
