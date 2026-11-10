@@ -1037,11 +1037,11 @@ function updatePomodoroVisuals() {
 
   if (pomoModeBadge) {
     if (pomoPhase === "focus") {
-      pomoModeBadge.textContent = `🎯 Bloc de Focus (${state.pomoConfig.focusMin} min)`;
+      pomoModeBadge.textContent = `Bloc de Focus (${state.pomoConfig.focusMin} min)`;
     } else if (pomoPhase === "shortBreak") {
-      pomoModeBadge.textContent = `☕ Descans Curt (${state.pomoConfig.shortBreakMin} min)`;
+      pomoModeBadge.textContent = `Descans Curt (${state.pomoConfig.shortBreakMin} min)`;
     } else {
-      pomoModeBadge.textContent = `🌴 Descans Llarg (${state.pomoConfig.longBreakMin} min)`;
+      pomoModeBadge.textContent = `Descans Llarg (${state.pomoConfig.longBreakMin} min)`;
     }
   }
 
@@ -1074,7 +1074,7 @@ if (btnPomoOk) {
 if (btnPomoReset) {
   btnPomoReset.addEventListener("click", () => {
     setupPomodoroPhase(pomoPhase, true);
-    showToast("⏱️ Fase actual reiniciada");
+    showToast("Fase actual reiniciada");
   });
 }
 
