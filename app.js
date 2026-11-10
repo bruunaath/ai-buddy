@@ -222,6 +222,21 @@ const btnExportData = document.getElementById("btn-export-data");
 const btnDeleteAccount = document.getElementById("btn-delete-account");
 const onboardingModal = document.getElementById("onboarding-modal");
 
+// --- ELEMENTS DOM DELS WIDGETS ---
+const widgetThoughtInput = document.getElementById("widget-thought-input");
+const widgetBtnPark = document.getElementById("widget-btn-park");
+const widgetThoughtsList = document.getElementById("widget-thoughts-list");
+
+const widgetQuickTodoInput = document.getElementById("widget-quick-todo-input");
+const widgetBtnAddTodo = document.getElementById("widget-btn-add-todo");
+const widgetQuickTodoList = document.getElementById("widget-quick-todo-list");
+const widgetBtnClearTodos = document.getElementById("widget-btn-clear-todos");
+
+const widgetRoutineDisplay = document.getElementById("widget-routine-display");
+const widgetRoutinePrev = document.getElementById("widget-routine-prev");
+const widgetRoutineOk = document.getElementById("widget-routine-ok");
+const widgetRoutineNext = document.getElementById("widget-routine-next");
+
 // --- MODAL D'INTRODUCCIÓ (ONBOARDING CONVIDAT DE 0) ---
 function checkInitialOnboarding() {
   const seenOnboarding = localStorage.getItem("aibuddy_guest_onboarding_seen");
@@ -662,6 +677,162 @@ if (btnSend && taskInput) {
   taskInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") btnSend.click();
   });
+}
+
+// --- RENDERITZAT I LÒGICA DELS WIDGETS ---
+function renderWidgetThoughts() {
+  if (!widgetThoughtsList) return;
+  widgetThoughtsList.innerHTML = "";
+  
+  if (!state.parkedThoughts || state.parkedThoughts.length === 0) {
+    widgetThoughtsList.innerHTML = '<p class="text-[11px] text-stone-600 text-center py-2">Cap pensament aparcat recentment.</p>';
+    return;
+  }
+
+  // Mostrem els darrers 3 pensaments per tal de no saturar el widget
+  const recentThoughts = state.parkedThoughts.slice(-3).reverse();
+  recentThoughts.forEach((item) => {
+    const div = document.createElement("div");
+    div.className = "bg-stone-950 border border-stone-800 p-2 rounded-xl flex justify-between items-center text-xs text-stone-300";
+    div.innerHTML = `<span class="truncate">${item.text}</span><span class="text-[10px] text-stone-500">${item.time}</span>`;
+    widgetThoughtsList.appendChild(div);
+  });
+}
+
+function renderWidgetQuickTodos() {
+  if (!widgetQuickTodoList) return;
+  widgetQuickTodoList.innerHTML = "";
+
+  if (!state.quickTodoList || state.quickTodoList.length === 0) {
+    widgetQuickTodoList.innerHTML = '<p class="text-[11px] text-stone-600 text-center py-2">No hi ha tasques ràpides.</p>';
+    return;
+  }
+
+  state.quickTodoList.forEach((item, idx) => {
+    const div = document.createElement("div");
+    div.className = "bg-stone-950 border border-stone-800 p-2 rounded-xl flex justify-between items-center text-xs gap-2";
+    div.innerHTML = `
+      <label class="flex items-center gap-2 cursor-pointer flex-1 overflow-hidden">
+        <input type="checkbox" data-idx="${idx}" class="accent-sky-500 w-3.5 h-3.5 rounded shrink-0" ${item.completed ? "checked" : ""}>
+        <span class="text-stone-200 truncate ${item.completed ? "line-through text-stone-500" : ""}">${item.text}</span>
+      </label>
+      <button type="button" data-idx="${idx}" class="text-stone-600 hover:text-stone-300 text-xs px-1 shrink-0">✕</button>
+    `;
+
+    // Marcar com a completat
+    div.querySelector("input[type=checkbox]").addEventListener("change", (e) => {
+      state.quickTodoList[idx].completed = e.target.checked;
+      saveState();
+      renderWidgetQuickTodos();
+    });
+
+    // Eliminar tasca ràpida individual
+    div.querySelector("button").addEventListener("click", () => {
+      state.quickTodoList.splice(idx, 1);
+      saveState();
+      renderWidgetQuickTodos();
+    });
+
+    widgetQuickTodoList.appendChild(div);
+  });
+}
+
+function renderWidgetRoutine() {
+  if (!widgetRoutineDisplay) return;
+  if (!state.routineSteps || state.routineSteps.length === 0) {
+    widgetRoutineDisplay.textContent = "No hi ha passos de rutina configurats.";
+    return;
+  }
+
+  if (state.routineIndex < state.routineSteps.length) {
+    widgetRoutineDisplay.textContent = `Pas ${state.routineIndex + 1}/${state.routineSteps.length}: ${state.routineSteps[state.routineIndex]}`;
+  } else {
+    widgetRoutineDisplay.textContent = "✨ Rutina de matí completada!";
+  }
+}
+
+// --- ESDEVENIMENTS DELS WIDGETS ---
+if (widgetBtnPark && widgetThoughtInput) {
+  widgetBtnPark.addEventListener("click", () => {
+    const text = widgetThoughtInput.value.trim();
+    if (text) {
+      if (!state.parkedThoughts) state.parkedThoughts = [];
+      state.parkedThoughts.push({
+        text: text,
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      });
+      widgetThoughtInput.value = "";
+      saveState();
+      renderWidgetThoughts();
+    }
+  });
+  widgetThoughtInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") widgetBtnPark.click();
+  });
+}
+
+if (widgetBtnAddTodo && widgetQuickTodoInput) {
+  widgetBtnAddTodo.addEventListener("click", () => {
+    const text = widgetQuickTodoInput.value.trim();
+    if (text) {
+      if (!state.quickTodoList) state.quickTodoList = [];
+      state.quickTodoList.push({ text: text, completed: false });
+      widgetQuickTodoInput.value = "";
+      saveState();
+      renderWidgetQuickTodos();
+    }
+  });
+  widgetQuickTodoInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") widgetBtnAddTodo.click();
+  });
+}
+
+if (widgetBtnClearTodos) {
+  widgetBtnClearTodos.addEventListener("click", () => {
+    if (state.quickTodoList) {
+      state.quickTodoList = state.quickTodoList.filter(item => !item.completed);
+      saveState();
+      renderWidgetQuickTodos();
+    }
+  });
+}
+
+if (widgetRoutineNext) {
+  widgetRoutineNext.addEventListener("click", () => {
+    if (state.routineSteps && state.routineIndex < state.routineSteps.length - 1) {
+      state.routineIndex++;
+      saveState();
+      renderWidgetRoutine();
+    }
+  });
+}
+
+if (widgetRoutinePrev) {
+  widgetRoutinePrev.addEventListener("click", () => {
+    if (state.routineIndex > 0) {
+      state.routineIndex--;
+      saveState();
+      renderWidgetRoutine();
+    }
+  });
+}
+
+if (widgetRoutineOk) {
+  widgetRoutineOk.addEventListener("click", () => {
+    if (state.routineSteps && state.routineIndex < state.routineSteps.length) {
+      state.routineIndex++;
+      saveState();
+      renderWidgetRoutine();
+    }
+  });
+}
+
+// --- INTEGRAR A LA FUNCIÓ GLOBAL D'ACTUALITZACIÓ ---
+// Assegura't d'afegir aquestes funcions de renderitzat dins del teu updateAllDisplays() existent:
+function updateAllWidgets() {
+  renderWidgetThoughts();
+  renderWidgetQuickTodos();
+  renderWidgetRoutine();
 }
 
 // --- LÒGICA DE RUTINA DE MATÍ ---
@@ -1393,6 +1564,7 @@ pomoTotalSeconds = getPhaseDurationSeconds("focus");
 pomoCurrentSeconds = pomoTotalSeconds;
 updatePomodoroVisuals();
 updateAllDisplays();
+updateAllWidgets();
 
 if (statusBadge) {
   statusBadge.textContent = isGuestMode() ? "⚪ Convidat" : `🟢 ${config.syncUser}`;
