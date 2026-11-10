@@ -59,7 +59,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
         <div class="bg-stone-950 border border-stone-800 p-4 rounded-xl space-y-1.5">
           <div class="text-sky-400 font-bold text-xs md:text-sm flex items-center gap-2">
-            <span>🧩</span> <span>1. Desglossament en Micro-passos</span>
+            <span>Desglossament en Micro-passos</span>
           </div>
           <p class="text-[11px] md:text-xs text-stone-400 leading-relaxed">
             Escriu qualsevol tasca que et costi començar a la barra inferior (o tria una plantilla) i prem <b>Processar</b>. L'app la dividirà en passos petits i et mostrarà <b>només un pas a la vegada</b> perquè avancis sense pressió.
@@ -68,7 +68,7 @@
 
         <div class="bg-stone-950 border border-stone-800 p-4 rounded-xl space-y-1.5">
           <div class="text-sky-400 font-bold text-xs md:text-sm flex items-center gap-2">
-            <span>🍅</span> <span>2. Pomodoro i Descansos Automàtics</span>
+            <span>Pomodoro i Descansos Automàtics</span>
           </div>
           <p class="text-[11px] md:text-xs text-stone-400 leading-relaxed">
             Treballa amb una barra visual tranquil·la (per defecte 25 min). En acabar cada bloc, s'activarà automàticament un <b>descans curt de 5 min</b>, i després de <b>5 pomodoros</b> tindràs un <b>descans llarg de 15 min</b> (tot personalitzable!).
@@ -77,7 +77,7 @@
 
         <div class="bg-stone-950 border border-stone-800 p-4 rounded-xl space-y-1.5">
           <div class="text-sky-400 font-bold text-xs md:text-sm flex items-center gap-2">
-            <span>💭</span> <span>3. Aparcament de Pensaments</span>
+            <span>Aparcament de Pensaments</span>
           </div>
           <p class="text-[11px] md:text-xs text-stone-400 leading-relaxed">
             Et ve una idea o distracció mentre intentes concentrar-te? Escriu-la a <i>"Aparcar pensament..."</i>. Quedarà desada en lloc segur per revisar-la més tard sense perdre el fil actual.
@@ -86,7 +86,7 @@
 
         <div class="bg-stone-950 border border-stone-800 p-4 rounded-xl space-y-1.5">
           <div class="text-sky-400 font-bold text-xs md:text-sm flex items-center gap-2">
-            <span>☀️</span> <span>4. Rutines, Hobbies i Sincronització</span>
+            <span>Rutines, Hobbies i Sincronització</span>
           </div>
           <p class="text-[11px] md:text-xs text-stone-400 leading-relaxed">
             Crea la teva rutina de matí pas a pas, guarda idees de descans o fes servir la To-Do ràpida. Si mai vols sincronitzar entre mòbil i ordinador, pots crear un usuari xifrat a <b>Configuració (⚙️)</b>.
@@ -97,7 +97,7 @@
       <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2 border-t border-stone-800">
         <span class="text-[11px] text-stone-400">Pots tornar a obrir aquesta guia sempre que vulguis amb el botó <b>❓ Guia</b> de dalt a l'esquerra.</span>
         <button type="button" onclick="closeOnboarding()" class="w-full sm:w-auto bg-sky-500 hover:bg-sky-400 text-stone-950 font-bold px-6 py-3 rounded-xl text-xs md:text-sm transition shadow-lg shrink-0">
-          Començar ara ✨
+          Començar ara
         </button>
       </div>
     </div>
@@ -113,7 +113,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 w-full">
         <button type="button" onclick="switchView('view-tasks')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
           <div class="text-left">
-            <span class="block font-semibold">🧩 Tasques i Micro-passos</span>
+            <span class="block font-semibold">Tasques i Micro-passos</span>
             <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Desglossa tasques pas a pas</span>
           </div>
           <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
@@ -121,7 +121,7 @@
 
         <button type="button" onclick="switchView('view-thoughts')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
           <div class="text-left">
-            <span class="block font-semibold">💭 Pensaments Aparcats</span>
+            <span class="block font-semibold">Pensaments Aparcats</span>
             <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Allibera la ment de distraccions</span>
           </div>
           <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
@@ -129,7 +129,7 @@
 
         <button type="button" onclick="openPomodoroView()" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
           <div class="text-left">
-            <span class="block font-semibold">🍅 Pomodoro Sensorial</span>
+            <span class="block font-semibold">Pomodoro Sensorial</span>
             <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Focus i descansos automàtics</span>
           </div>
           <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
@@ -137,7 +137,7 @@
 
         <button type="button" onclick="switchView('view-routine')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
           <div class="text-left">
-            <span class="block font-semibold">☀️ Rutina de Matí Guiada</span>
+            <span class="block font-semibold">Rutina de Matí Guiada</span>
             <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Segueix la teva seqüència diària</span>
           </div>
           <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
@@ -145,7 +145,7 @@
 
         <button type="button" onclick="switchView('view-hobbies')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
           <div class="text-left">
-            <span class="block font-semibold">🔋 Hobbies de Descans</span>
+            <span class="block font-semibold">Hobbies de Descans</span>
             <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Idees per recarregar energia</span>
           </div>
           <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
@@ -153,7 +153,7 @@
 
         <button type="button" onclick="switchView('view-quick-todo')" class="w-full bg-stone-900 hover:bg-stone-800 text-stone-200 p-4 md:p-5 rounded-xl border border-stone-800 text-sm font-medium flex justify-between items-center transition shadow-sm">
           <div class="text-left">
-            <span class="block font-semibold">⚡ To-Do List Ràpida</span>
+            <span class="block font-semibold">To-Do List Ràpida</span>
             <span class="text-[11px] text-stone-400 font-normal hidden md:block mt-1">Llista directa d'encàrrecs</span>
           </div>
           <span class="text-stone-500 text-lg" aria-hidden="true">&#8250;</span>
@@ -169,28 +169,28 @@
           <span class="text-[10px] tracking-widest text-stone-400 uppercase mb-2 block w-full text-center lg:text-left">Plantilles ràpides anti-bloqueig</span>
           <div class="w-full grid grid-cols-2 gap-2 max-h-[145px] lg:max-h-none overflow-y-auto pr-1">
             <button type="button" onclick="loadTemplate('planificar_dia')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              📅 Planificar el dia
+              Planificar el dia
             </button>
             <button type="button" onclick="loadTemplate('estudiar_temari')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              📚 Començar temari
+              Començar temari
             </button>
             <button type="button" onclick="loadTemplate('respondre_correus')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              ✉️ Respondre correus
+              Respondre correus
             </button>
             <button type="button" onclick="loadTemplate('motxilla_uni')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              🎒 Motxilla Universitat
+              Motxilla Universitat
             </button>
             <button type="button" onclick="loadTemplate('ordenar_escriptori')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              🖥️ Ordenar escriptori
+              Ordenar escriptori
             </button>
             <button type="button" onclick="loadTemplate('netejar_cuina')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              🍽️ Netejar cuina
+              Netejar cuina
             </button>
             <button type="button" onclick="loadTemplate('posar_rentadora')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              🧺 Posar rentadora
+              Posar rentadora
             </button>
             <button type="button" onclick="loadTemplate('tramits_administratius')" class="bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs py-2.5 px-3 rounded-xl border border-stone-800 transition truncate text-left">
-              📄 Tràmits i papers
+              Tràmits i papers
             </button>
           </div>
         </div>
@@ -327,7 +327,7 @@
           <!-- Personalització ràpida de temps dins de la vista Pomodoro -->
           <details class="w-full bg-stone-900 border border-stone-800 rounded-xl p-3 text-left">
             <summary class="text-xs text-stone-300 font-semibold cursor-pointer select-none flex justify-between items-center">
-              <span>⏱️ Personalitzar temps de Focus i Descansos</span>
+              <span>Personalitzar temps de Focus i Descansos</span>
               <span class="text-[10px] text-stone-500"> desplegar</span>
             </summary>
             <div class="mt-3 pt-3 border-t border-stone-800 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
