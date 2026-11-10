@@ -12,7 +12,6 @@ localStorage.removeItem("aibuddy_sync_pass");
 const catalegTasquesTDAH = {
   planificar_dia: {
     titol: "Planificar el dia",
-    icona: "📅",
     descripcio: "Organitza les prioritats d'avui en 5 micro-passos clars sense saturar l'agenda.",
     paraules_clau: ["planificar", "organitzar", "agenda", "llista", "dia", "horari", "calendari", "setmana"],
     passos: [
@@ -25,7 +24,6 @@ const catalegTasquesTDAH = {
   },
   estudiar_temari: {
     titol: "Començar un temari dens",
-    icona: "📚",
     descripcio: "Trenca el bloqueig inicial d'estudiar o llegir un document llarg pas a pas.",
     paraules_clau: ["estudiar", "temari", "examen", "apunts", "universitat", "uni", "llegir", "deures", "resum"],
     passos: [
@@ -38,7 +36,6 @@ const catalegTasquesTDAH = {
   },
   respondre_correus: {
     titol: "Respondre correus pendents",
-    icona: "✉️",
     descripcio: "Buidatge ràpid de missatges i correus acumulats sense caure en el perfeccionisme.",
     paraules_clau: ["correu", "correus", "mail", "email", "safata", "respondre", "professor", "redactar"],
     passos: [
@@ -51,7 +48,6 @@ const catalegTasquesTDAH = {
   },
   motxilla_uni: {
     titol: "Preparar la motxilla",
-    icona: "🎒",
     descripcio: "Llista verificable perquè no et deixis el carregador, les claus ni l'ordinador.",
     paraules_clau: ["motxilla", "uni", "universitat", "clase", "apunts", "ordinador", "carregador", "claus"],
     passos: [
@@ -65,7 +61,6 @@ const catalegTasquesTDAH = {
   },
   ordenar_escriptori: {
     titol: "Ordenar l'escriptori",
-    icona: "🖥️",
     descripcio: "Recupera un espai de treball net i lliure d'estímuls visuals en pocs minuts.",
     paraules_clau: ["escriptori", "taula", "ordenar", "endreçar", "habitació", "netejar", "recollir"],
     passos: [
@@ -78,7 +73,6 @@ const catalegTasquesTDAH = {
   },
   netejar_cuina: {
     titol: "Netejar la cuina",
-    icona: "🍽️",
     descripcio: "Seqüència guiada per recollir plats i marbre amb música i sense atabalar-se.",
     paraules_clau: ["cuina", "plats", "fregadera", "marbre", "escurar", "aiguera", "rentaplats"],
     passos: [
@@ -91,7 +85,6 @@ const catalegTasquesTDAH = {
   },
   posar_rentadora: {
     titol: "Posar una rentadora",
-    icona: "🧺",
     descripcio: "Passos directes per separar una tanda de roba i engegar el rentat.",
     paraules_clau: ["rentadora", "bugada", "rentar roba", "cistell"],
     passos: [
@@ -102,7 +95,6 @@ const catalegTasquesTDAH = {
   },
   tramits_administratius: {
     titol: "Tràmits i gestions",
-    icona: "📄",
     descripcio: "Supera la burocràcia i els formularis pas a pas amb tota la documentació a mà.",
     paraules_clau: ["tràmit", "tramit", "paperassa", "factura", "banc", "cita", "formulari", "pagar", "dni"],
     passos: [
@@ -117,24 +109,24 @@ const catalegTasquesTDAH = {
 
 // --- HÀBITS DE MATÍ PREDETERMINATS (GRAELLA SELECCIONABLE) ---
 const defaultRoutineCatalog = [
-  { id: "wake_up", text: "Wake up / Despertar-se", icon: "⏰", selected: true },
-  { id: "drink_water", text: "Drink water / Beure aigua", icon: "💧", selected: true },
-  { id: "make_bed", text: "Make bed / Fer el llit", icon: "🛏️", selected: true },
-  { id: "brush_teeth", text: "Brush teeth / Rentar dents", icon: "🪥", selected: true },
-  { id: "skincare", text: "Skincare i cara fresca", icon: "🧼", selected: false },
-  { id: "breakfast", text: "Breakfast / Esmorzar complet", icon: "🥣", selected: true },
-  { id: "medication", text: "Cafè, vitamines o medicació", icon: "💊", selected: false },
-  { id: "stretch", text: "Estiraments suaus (3 min)", icon: "🧘", selected: false }
+  { id: "wake_up", text: "Wake up / Despertar-se", selected: true },
+  { id: "drink_water", text: "Drink water / Beure aigua", selected: true },
+  { id: "make_bed", text: "Make bed / Fer el llit", selected: true },
+  { id: "brush_teeth", text: "Brush teeth / Rentar dents", selected: true },
+  { id: "skincare", text: "Skincare i cara fresca",  selected: false },
+  { id: "breakfast", text: "Breakfast / Esmorzar complet",selected: true },
+  { id: "medication", text: "Cafè, vitamines o medicació",selected: false },
+  { id: "stretch", text: "Estiraments suaus (3 min)", selected: false }
 ];
 
 // --- HOBBIES DE DESCANS PREDETERMINATS (GRAELLA SELECCIONABLE) ---
 const defaultHobbiesCatalog = [
-  { id: "read", text: "Llegir un capítol d'un llibre", icon: "📖", selected: true },
-  { id: "music", text: "Escoltar música relaxant", icon: "🎧", selected: true },
-  { id: "draw", text: "Pintar o dibuixar lliurement", icon: "🎨", selected: false },
-  { id: "gaming", text: "Jugar a la consola (sense mòbil)", icon: "🎮", selected: true },
-  { id: "walk", text: "Passejar 10 minuts a l'aire lliure", icon: "🌿", selected: false },
-  { id: "tea", text: "Preparar una infusió calenta", icon: "🍵", selected: false }
+  { id: "read", text: "Llegir un capítol d'un llibre",  selected: true },
+  { id: "music", text: "Escoltar música relaxant",  selected: true },
+  { id: "draw", text: "Pintar o dibuixar lliurement", selected: false },
+  { id: "gaming", text: "Jugar a la consola (sense mòbil)",selected: true },
+  { id: "walk", text: "Passejar 10 minuts a l'aire lliure", selected: false },
+  { id: "tea", text: "Preparar una infusió calenta",  selected: false }
 ];
 
 const defaultPomoConfig = {
@@ -371,7 +363,7 @@ function renderDashboard() {
   const hour = now.getHours();
   const greetingPrefix = hour < 13 ? "Bon dia" : hour < 20 ? "Bona tarda" : "Bona nit";
   const userName = isGuestMode() ? "Convidat" : config.syncUser;
-  if (greetEl) greetEl.textContent = `${greetingPrefix}, ${userName}! 👋`;
+  if (greetEl) greetEl.textContent = `${greetingPrefix}, ${userName}!`;
 
   if (dtEl) {
     const formattedDate = now.toLocaleDateString("ca-ES", { weekday: "short", day: "numeric", month: "short" });
