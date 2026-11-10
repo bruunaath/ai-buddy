@@ -6,6 +6,22 @@
   "background_color": "#0a0a0a",
   "theme_color": "#0a0a0a",
   "orientation": "any",
+  "shortcuts": [
+    {
+      "name": "To-Do Ràpida",
+      "short_name": "To-Do",
+      "description": "Obrir la llista ràpida de tasques",
+      "url": "./index.html?view=quick-todo",
+      "icons": [{ "src": "icon-192.jpg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Pomodoro",
+      "short_name": "Pomodoro",
+      "description": "Iniciar temporitzador de focus",
+      "url": "./index.html?view=pomodoro",
+      "icons": [{ "src": "icon-192.jpg", "sizes": "192x192" }]
+    }
+  ],
   "icons": [
     {
       "src": "icon-192.jpg",
