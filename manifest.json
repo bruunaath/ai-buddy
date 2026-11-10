@@ -3,7 +3,6 @@
   "short_name": "AI Buddy",
   "start_url": "./index.html",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone"],
   "background_color": "#EFEFF4",
   "theme_color": "#2B4380",
   "orientation": "any",
@@ -12,16 +11,16 @@
   },
   "shortcuts": [
     {
-      "name": "Widget To-Do Ràpida",
+      "name": "To-Do Ràpida",
       "short_name": "To-Do",
-      "description": "Obrir la finestra compacta de tasques ràpides",
+      "description": "Finestra petita de tasques ràpides",
       "url": "./index.html?widget=todo&view=view-quick-todo",
       "icons": [{ "src": "icon-192.jpg", "sizes": "192x192", "type": "image/jpeg" }]
     },
     {
-      "name": "Widget Pomodoro",
+      "name": "Pomodoro",
       "short_name": "Pomodoro",
-      "description": "Obrir el temporitzador compacte i aparcar pensaments",
+      "description": "Finestra petita de Pomodoro i aparcar pensaments",
       "url": "./index.html?widget=pomodoro&view=view-pomodoro",
       "icons": [{ "src": "icon-192.jpg", "sizes": "192x192", "type": "image/jpeg" }]
     }
