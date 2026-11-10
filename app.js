@@ -9,7 +9,7 @@ const IMAGES = {
 // Neteja preventiva de qualsevol contrasenya antiga en text pla al navegador (Compliment RGPD)
 localStorage.removeItem("aibuddy_sync_pass");
 
-// --- DICCIONARI DE CATEGORIES HABITUALS AuDHD ---
+// --- DICCIONARI DE CATEGORIES HABITUALS ---
 const catalegTasquesTDAH = {
   netejar_cuina: {
     titol: "Netejar la cuina",
@@ -100,26 +100,9 @@ const catalegTasquesTDAH = {
   }
 };
 
-// --- VALORS PREDETERMINATS (Adaptats per evitar dades mèdiques per defecte - Art. 9 RGPD / MDR) ---
-const defaultRoutineSteps = [
-  "Posar música animada",
-  "Obrir els llençols per ventilar el llit",
-  "Rentar-me les dents",
-  "Skincare bàsic",
-  "Fer el llit",
-  "Cafè o infusió i suplementació/hidratació",
-  "Preparar l'esmorzar"
-];
-
-const defaultHobbies = [
-  "Llegir un llibre",
-  "Escoltar música relaxant",
-  "Pintar lliurement",
-  "Fer Diamond Painting",
-  "Jugar a la Switch sense mirar el mòbil",
-  "Veure Gilmore Girls",
-  "Mirar Pinterest per motivar-me"
-];
+// --- VALORS PREDETERMINATS BUITS (Perquè cada usuari personalitzi la seva rutina i hobbies) ---
+const defaultRoutineSteps = [];
+const defaultHobbies = [];
 
 function getInitialState() {
   return {
@@ -141,14 +124,12 @@ function getInitialState() {
 // --- ESTAT CENTRALITZAT ---
 let state = getInitialState();
 
-// Configuració de Supabase i Sessió Autenticada amb JWT (Sense contrasenyes en text pla)
+// Configuració de Supabase i Identificador Criptogràfic (SHA-256) sense desar mai la contrasenya en clar
 let config = {
   supaUrl: "https://qstjwfqrkemyfzudtoxb.supabase.co",
   supaKey: "sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq",
   syncUser: localStorage.getItem("aibuddy_sync_user") || "convidat",
-  userId: localStorage.getItem("aibuddy_user_id") || "",
-  accessToken: localStorage.getItem("aibuddy_access_token") || "",
-  refreshToken: localStorage.getItem("aibuddy_refresh_token") || "",
+  syncHash: localStorage.getItem("aibuddy_sync_hash") || "",
   rgpdConsent: localStorage.getItem("aibuddy_rgpd_consent") === "true"
 };
 
@@ -229,15 +210,15 @@ window.togglePassVisibility = function() {
   }
 };
 
-// --- GESTIÓ D'USUARI AUTENTICAT vs MODE CONVIDAT (100% LOCAL) ---
+// --- GESTIÓ D'USUARI XIFRAT vs MODE CONVIDAT (100% LOCAL) ---
 function isGuestMode() {
   const user = (config.syncUser || "").trim().toLowerCase();
-  return !user || user === "convidat" || !config.userId || !config.accessToken;
+  return !user || user === "convidat" || !config.syncHash;
 }
 
 function getLocalStorageKey() {
   if (isGuestMode()) return "aibuddy_state_convidat";
-  return `aibuddy_state_${config.userId}`;
+  return `aibuddy_state_${config.syncHash}`;
 }
 
 function cleanSupaUrl(rawUrl) {
@@ -248,105 +229,16 @@ function cleanSupaUrl(rawUrl) {
     .replace(/\/+$/, "");
 }
 
-// Converteix un nom d'usuari senzill en un email sintètic vàlid per a Supabase Auth
-function toSyntheticEmail(rawUsername) {
-  const clean = rawUsername.trim().toLowerCase();
-  if (clean.includes("@")) return clean;
-  const safeUser = clean
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9._-]/g, "");
-  return `${safeUser || "usuari"}@aibuddy.local`;
-}
-
-// --- AUTENTICACIÓ XIFRADA AMB SUPABASE AUTH (/auth/v1/) ---
-async function authenticateSupabaseUser(username, password) {
-  const baseUrl = cleanSupaUrl(config.supaUrl);
-  const email = toSyntheticEmail(username);
-
-  // 1. Intentem iniciar sessió amb el compte existent
-  const loginRes = await fetch(`${baseUrl}/auth/v1/token?grant_type=password`, {
-    method: "POST",
-    headers: {
-      "apikey": config.supaKey,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email, password })
-  });
-
-  if (loginRes.ok) {
-    const data = await loginRes.json();
-    if (data.access_token && data.user && data.user.id) {
-      return {
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token || "",
-        userId: data.user.id
-      };
-    }
-  }
-
-  // 2. Si no existeix el compte, el registrem automàticament a Supabase Auth
-  const signupRes = await fetch(`${baseUrl}/auth/v1/signup`, {
-    method: "POST",
-    headers: {
-      "apikey": config.supaKey,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      email,
-      password,
-      data: { display_name: username.trim() }
-    })
-  });
-
-  if (signupRes.ok) {
-    const signupData = await signupRes.json();
-    const token = signupData.access_token || (signupData.session && signupData.session.access_token);
-    const refresh = signupData.refresh_token || (signupData.session && signupData.session.refresh_token) || "";
-    const uid = (signupData.user && signupData.user.id) || signupData.id;
-
-    if (token && uid) {
-      return {
-        accessToken: token,
-        refreshToken: refresh,
-        userId: uid
-      };
-    }
-  }
-
-  throw new Error("Credencials incorrectes o error d'autenticació.");
-}
-
-// Renovació silenciosa del token JWT si caduca
-async function refreshAccessToken() {
-  if (!config.refreshToken) return false;
-  const baseUrl = cleanSupaUrl(config.supaUrl);
-
-  try {
-    const res = await fetch(`${baseUrl}/auth/v1/token?grant_type=refresh_token`, {
-      method: "POST",
-      headers: {
-        "apikey": config.supaKey,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ refresh_token: config.refreshToken })
-    });
-
-    if (!res.ok) return false;
-    const data = await res.json();
-    if (data.access_token && data.user && data.user.id) {
-      config.accessToken = data.access_token;
-      config.refreshToken = data.refresh_token || config.refreshToken;
-      config.userId = data.user.id;
-      localStorage.setItem("aibuddy_access_token", config.accessToken);
-      localStorage.setItem("aibuddy_refresh_token", config.refreshToken);
-      localStorage.setItem("aibuddy_user_id", config.userId);
-      return true;
-    }
-    return false;
-  } catch (e) {
-    return false;
-  }
+// Genera un identificador criptogràfic irreversible (SHA-256) perquè la contrasenya mai surti del dispositiu
+async function computeSecureSyncHash(username, password) {
+  const normalizedUser = username.trim().toLowerCase();
+  const cleanPass = password.trim();
+  const rawPayload = `aibuddy_v1_salt::${normalizedUser}::${cleanPass}`;
+  const msgBuffer = new TextEncoder().encode(rawPayload);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  return `u_${hashHex.slice(0, 40)}`;
 }
 
 function loadLocalState() {
@@ -373,41 +265,24 @@ async function saveState() {
   }
 
   const baseUrl = cleanSupaUrl(config.supaUrl);
-  if (!baseUrl || !config.supaKey || !config.userId || !config.accessToken) return;
+  if (!baseUrl || !config.supaKey || !config.syncHash) return;
 
   try {
     if (statusBadge) statusBadge.textContent = "🔄 Sincr...";
-    let res = await fetch(`${baseUrl}/rest/v1/user_state`, {
+    const res = await fetch(`${baseUrl}/rest/v1/user_state`, {
       method: "POST",
       headers: {
         "apikey": config.supaKey,
-        "Authorization": `Bearer ${config.accessToken}`,
+        "Authorization": `Bearer ${config.supaKey}`,
         "Content-Type": "application/json",
         "Prefer": "resolution=merge-duplicates"
       },
       body: JSON.stringify({
-        id: config.userId,
+        id: config.syncHash,
         data: state,
         updated_at: new Date().toISOString()
       })
     });
-
-    if (res.status === 401 && await refreshAccessToken()) {
-      res = await fetch(`${baseUrl}/rest/v1/user_state`, {
-        method: "POST",
-        headers: {
-          "apikey": config.supaKey,
-          "Authorization": `Bearer ${config.accessToken}`,
-          "Content-Type": "application/json",
-          "Prefer": "resolution=merge-duplicates"
-        },
-        body: JSON.stringify({
-          id: config.userId,
-          data: state,
-          updated_at: new Date().toISOString()
-        })
-      });
-    }
 
     if (res.ok) {
       if (statusBadge) statusBadge.textContent = `🟢 ${config.syncUser}`;
@@ -426,28 +301,19 @@ async function pullRemoteState() {
   }
 
   const baseUrl = cleanSupaUrl(config.supaUrl);
-  if (!baseUrl || !config.supaKey || !config.userId || !config.accessToken) {
+  if (!baseUrl || !config.supaKey || !config.syncHash) {
     if (statusBadge) statusBadge.textContent = "⚪ Local";
     return false;
   }
 
   try {
-    const url = `${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(config.userId)}&select=data`;
-    let res = await fetch(url, {
+    const url = `${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(config.syncHash)}&select=data`;
+    const res = await fetch(url, {
       headers: {
         "apikey": config.supaKey,
-        "Authorization": `Bearer ${config.accessToken}`
+        "Authorization": `Bearer ${config.supaKey}`
       }
     });
-
-    if (res.status === 401 && await refreshAccessToken()) {
-      res = await fetch(url, {
-        headers: {
-          "apikey": config.supaKey,
-          "Authorization": `Bearer ${config.accessToken}`
-        }
-      });
-    }
 
     if (res.ok) {
       const rows = await res.json();
@@ -537,7 +403,18 @@ function updateTaskDisplay() {
 function updateRoutineDisplay() {
   if (!routineStepDisplay) return;
 
-  if (Array.isArray(state.routineSteps) && state.routineSteps.length > 0 && state.routineIndex < state.routineSteps.length) {
+  // Si la rutina és buida, mostrem el missatge perquè l'usuari l'ompli al seu gust
+  if (!Array.isArray(state.routineSteps) || state.routineSteps.length === 0) {
+    if (routineCompletionBadge) {
+      routineCompletionBadge.classList.add("hidden");
+      routineCompletionBadge.classList.remove("flex");
+    }
+    routineStepDisplay.classList.remove("hidden");
+    routineStepDisplay.textContent = "La teva rutina està buida. Afegeix el teu primer pas a sota per personalitzar-la.";
+    return;
+  }
+
+  if (state.routineIndex < state.routineSteps.length) {
     if (routineCompletionBadge) {
       routineCompletionBadge.classList.add("hidden");
       routineCompletionBadge.classList.remove("flex");
@@ -560,7 +437,7 @@ function updateHobbyDisplay() {
     if (state.hobbyIndex >= state.hobbySteps.length) state.hobbyIndex = 0;
     hobbyStepDisplay.textContent = state.hobbySteps[state.hobbyIndex];
   } else {
-    hobbyStepDisplay.textContent = "Afegeix algun hobby a la llista.";
+    hobbyStepDisplay.textContent = "La teva llista de hobbies està buida. Afegeix les teves activitats de descans a sota.";
   }
 }
 
@@ -608,7 +485,7 @@ function loadTemplate(categoriaId) {
 }
 window.loadTemplate = loadTemplate;
 
-// --- MOTOR INTEL·LIGENT LOCAL DE MICRO-PASSOS (AuDHD) ---
+// --- MOTOR HEURÍSTIC LOCAL DE MICRO-PASSOS ---
 function normalitzarText(str) {
   return str
     .toLowerCase()
@@ -720,9 +597,13 @@ if (btnSend && taskInput) {
   });
 }
 
-// --- LÒGICA DE RUTINA DE MATÍ ---
+// --- LÒGICA DE RUTINA DE MATÍ (Comença buida i personalitzable) ---
 if (btnRoutineOk) {
   btnRoutineOk.addEventListener("click", () => {
+    if (!Array.isArray(state.routineSteps) || state.routineSteps.length === 0) {
+      if (routineInputNew) routineInputNew.focus();
+      return;
+    }
     if (state.routineIndex < state.routineSteps.length) {
       state.routineIndex++;
       saveState();
@@ -735,7 +616,7 @@ if (btnRoutineOk) {
 
 if (btnRoutineNext) {
   btnRoutineNext.addEventListener("click", () => {
-    if (state.routineIndex < state.routineSteps.length - 1) {
+    if (Array.isArray(state.routineSteps) && state.routineIndex < state.routineSteps.length - 1) {
       state.routineIndex++;
       saveState();
     }
@@ -755,9 +636,11 @@ if (btnRoutineAdd && routineInputNew) {
   btnRoutineAdd.addEventListener("click", () => {
     const newStep = routineInputNew.value.trim();
     if (newStep) {
+      if (!Array.isArray(state.routineSteps)) state.routineSteps = [];
       state.routineSteps.push(newStep);
       routineInputNew.value = "";
       saveState();
+      showToast("✓ Pas afegit a la rutina");
     }
   });
 
@@ -768,9 +651,10 @@ if (btnRoutineAdd && routineInputNew) {
 
 if (btnRoutineReset) {
   btnRoutineReset.addEventListener("click", () => {
-    state.routineSteps = [...defaultRoutineSteps];
+    state.routineSteps = [];
     state.routineIndex = 0;
     saveState();
+    showToast("Rutina buidada");
   });
 }
 
@@ -847,19 +731,21 @@ if (btnClearQuickTodos) {
   });
 }
 
-// --- LÒGICA DE HOBBIES ---
+// --- LÒGICA DE HOBBIES (Comença buida i personalitzable) ---
 if (btnHobbyNext) {
   btnHobbyNext.addEventListener("click", () => {
-    if (state.hobbySteps.length > 0) {
+    if (Array.isArray(state.hobbySteps) && state.hobbySteps.length > 0) {
       state.hobbyIndex = (state.hobbyIndex + 1) % state.hobbySteps.length;
       saveState();
+    } else if (hobbyInputNew) {
+      hobbyInputNew.focus();
     }
   });
 }
 
 if (btnHobbyPrev) {
   btnHobbyPrev.addEventListener("click", () => {
-    if (state.hobbySteps.length > 0) {
+    if (Array.isArray(state.hobbySteps) && state.hobbySteps.length > 0) {
       state.hobbyIndex = (state.hobbyIndex - 1 + state.hobbySteps.length) % state.hobbySteps.length;
       saveState();
     }
@@ -870,9 +756,12 @@ if (btnHobbyAdd && hobbyInputNew) {
   btnHobbyAdd.addEventListener("click", () => {
     const newHobby = hobbyInputNew.value.trim();
     if (newHobby) {
+      if (!Array.isArray(state.hobbySteps)) state.hobbySteps = [];
       state.hobbySteps.push(newHobby);
+      state.hobbyIndex = state.hobbySteps.length - 1;
       hobbyInputNew.value = "";
       saveState();
+      showToast("✓ Hobby afegit");
     }
   });
 
@@ -883,9 +772,10 @@ if (btnHobbyAdd && hobbyInputNew) {
 
 if (btnHobbyReset) {
   btnHobbyReset.addEventListener("click", () => {
-    state.hobbySteps = [...defaultHobbies];
+    state.hobbySteps = [];
     state.hobbyIndex = 0;
     saveState();
+    showToast("Llista de hobbies buidada");
   });
 }
 
@@ -1035,7 +925,7 @@ if (btnPomoNext) {
   });
 }
 
-// --- INICI DE SESSIÓ I SINCRONITZACIÓ AMB CONSENTIMENT RGPD ---
+// --- INICI DE SESSIÓ XIFRADA (SHA-256) I SINCRONITZACIÓ AMB CONSENTIMENT RGPD ---
 if (btnSaveSettings) {
   btnSaveSettings.addEventListener("click", async () => {
     const enteredUser = (cfgSyncId ? cfgSyncId.value.trim() : "") || "convidat";
@@ -1054,28 +944,24 @@ if (btnSaveSettings) {
       return;
     }
 
-    if (!enteredPass || enteredPass.length < 6) {
-      showToast("⚠️ La contrasenya ha de tenir almenys 6 caràcters");
+    if (!enteredPass) {
+      showToast("⚠️ Escriu una contrasenya per protegir el teu usuari");
       if (cfgSyncPass) cfgSyncPass.focus();
       return;
     }
 
     btnSaveSettings.disabled = true;
-    btnSaveSettings.textContent = "Autenticant...";
+    btnSaveSettings.textContent = "Xifrant i connectant...";
 
     try {
-      const authData = await authenticateSupabaseUser(enteredUser, enteredPass);
+      const secureHash = await computeSecureSyncHash(enteredUser, enteredPass);
 
       config.syncUser = enteredUser;
-      config.userId = authData.userId;
-      config.accessToken = authData.accessToken;
-      config.refreshToken = authData.refreshToken;
+      config.syncHash = secureHash;
       config.rgpdConsent = true;
 
       localStorage.setItem("aibuddy_sync_user", config.syncUser);
-      localStorage.setItem("aibuddy_user_id", config.userId);
-      localStorage.setItem("aibuddy_access_token", config.accessToken);
-      localStorage.setItem("aibuddy_refresh_token", config.refreshToken);
+      localStorage.setItem("aibuddy_sync_hash", config.syncHash);
       localStorage.setItem("aibuddy_rgpd_consent", "true");
       localStorage.removeItem("aibuddy_sync_pass");
 
@@ -1084,14 +970,13 @@ if (btnSaveSettings) {
       loadLocalState();
       updateAllDisplays();
 
-      btnSaveSettings.textContent = "Sincronitzant...";
       await pullRemoteState();
       await saveState();
 
       showToast(`✓ Sessió xifrada activa: ${config.syncUser}`);
       switchView("view-menu");
     } catch (err) {
-      showToast("⚠️ Usuari o contrasenya incorrectes");
+      showToast("⚠️ Error en iniciar la sessió");
     } finally {
       btnSaveSettings.disabled = false;
       btnSaveSettings.textContent = "Desar i Sincronitzar";
@@ -1102,14 +987,10 @@ if (btnSaveSettings) {
 // --- TANCAR SESSIÓ I TORNAR A MODE CONVIDAT ---
 function logoutToGuestMode(toastMsg = "Has tornat a mode Convidat") {
   config.syncUser = "convidat";
-  config.userId = "";
-  config.accessToken = "";
-  config.refreshToken = "";
+  config.syncHash = "";
 
   localStorage.setItem("aibuddy_sync_user", "convidat");
-  localStorage.removeItem("aibuddy_user_id");
-  localStorage.removeItem("aibuddy_access_token");
-  localStorage.removeItem("aibuddy_refresh_token");
+  localStorage.removeItem("aibuddy_sync_hash");
   localStorage.removeItem("aibuddy_sync_pass");
 
   if (cfgSyncId) cfgSyncId.value = "convidat";
@@ -1170,24 +1051,15 @@ async function deleteMyCloudData() {
   if (!confirm(confirmMsg)) return;
 
   const baseUrl = cleanSupaUrl(config.supaUrl);
-  const currentUserId = config.userId;
-  const currentToken = config.accessToken;
+  const currentHash = config.syncHash;
 
-  if (!isGuestMode() && baseUrl && config.supaKey && currentUserId && currentToken) {
+  if (!isGuestMode() && baseUrl && config.supaKey && currentHash) {
     try {
-      await fetch(`${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(currentUserId)}`, {
+      await fetch(`${baseUrl}/rest/v1/user_state?id=eq.${encodeURIComponent(currentHash)}`, {
         method: "DELETE",
         headers: {
           "apikey": config.supaKey,
-          "Authorization": `Bearer ${currentToken}`
-        }
-      });
-
-      await fetch(`${baseUrl}/auth/v1/logout`, {
-        method: "POST",
-        headers: {
-          "apikey": config.supaKey,
-          "Authorization": `Bearer ${currentToken}`
+          "Authorization": `Bearer ${config.supaKey}`
         }
       });
     } catch (e) {
@@ -1195,7 +1067,6 @@ async function deleteMyCloudData() {
     }
   }
 
-  // Netegem totes les claus d'usuari i d'estat de localStorage
   const savedTheme = localStorage.getItem("aibuddy_theme");
   const savedVersion = localStorage.getItem("aibuddy_app_version");
   localStorage.clear();
@@ -1203,9 +1074,7 @@ async function deleteMyCloudData() {
   if (savedVersion) localStorage.setItem("aibuddy_app_version", savedVersion);
 
   config.syncUser = "convidat";
-  config.userId = "";
-  config.accessToken = "";
-  config.refreshToken = "";
+  config.syncHash = "";
   config.rgpdConsent = false;
 
   if (chkRgpdConsent) chkRgpdConsent.checked = false;
