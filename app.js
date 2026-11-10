@@ -3,7 +3,7 @@ const IMAGES = {
   focus: "focus_normal.jpg",   // 1. Quan el Pomodoro està en marxa
   pausa: "focus_pausa.jpg",    // 2. Quan el Pomodoro es pausa o és en descans
   completat: "completat.jpg",  // 3. Quan s'acaba el Pomodoro o qualsevol tasca
-  avis: "avis.jpg"             // 4. Quan falten 5 minuts o menys de Pomodoro
+  avis: "avisos.jpg"             // 4. Quan falten 5 minuts o menys de Pomodoro
 };
 
 // Neteja preventiva de qualsevol contrasenya antiga en text pla al navegador (Compliment RGPD)
