@@ -115,7 +115,7 @@ const catalegTasquesTDAH = {
   }
 };
 
-// --- GRAELLA D'HÀBITS MATUTINS PREDETERMINATS ---
+// --- GRAELLA D'HÀBITS MATUTINS PREDETERMINATS (NOMÉS DINS LA PANTALLA DE RUTINA) ---
 const defaultRoutineCatalog = [
   { id: "wake_up", text: "Wake up", icon: "⏰", selected: true },
   { id: "make_bed", text: "Make bed", icon: "🛏️", selected: true },
@@ -164,7 +164,7 @@ function getInitialState() {
 }
 
 let state = getInitialState();
-let currentDashFilter = "all";
+let currentDashFilter = "all"; // 'all' | 'pending' (Només per a la To-Do List)
 
 let config = {
   supaUrl: "https://qstjwfqrkemyfzudtoxb.supabase.co",
@@ -250,7 +250,7 @@ const btnExportData = document.getElementById("btn-export-data");
 const btnDeleteAccount = document.getElementById("btn-delete-account");
 const onboardingModal = document.getElementById("onboarding-modal");
 
-// --- SINCRONITZACIÓ EN TEMPS REAL ENTRE FINESTRA PRINCIPAL I WIDGETS ---
+// --- SINCRONITZACIÓ EN TEMPS REAL ENTRE FINESTRES ---
 window.addEventListener("storage", (e) => {
   if (e.key === getLocalStorageKey()) {
     loadLocalState();
@@ -296,12 +296,12 @@ function calculateStreak() {
 
 function setDashFilter(filter) {
   currentDashFilter = filter;
-  ["all", "pending", "routine"].forEach(tab => {
+  ["all", "pending"].forEach(tab => {
     const btn = document.getElementById(`dash-tab-${tab}`);
     if (!btn) return;
     btn.className = tab === filter
-      ? "px-2.5 py-0.5 rounded-lg bg-[#5C8ED6] text-white"
-      : "px-2.5 py-0.5 rounded-lg opacity-70";
+      ? "px-3 py-1 rounded-lg bg-[#3D67C4] text-white transition"
+      : "px-3 py-1 rounded-lg opacity-75 hover:opacity-100 transition";
   });
   renderDashboard();
 }
@@ -327,7 +327,7 @@ function renderDashboard() {
   const streakCount = calculateStreak();
   if (streakBadge) streakBadge.textContent = `🔥 ${streakCount} ${streakCount === 1 ? "dia" : "dies"}`;
 
-  // KPIs
+  // Percentatges i barres (ubicats dins de la pestanya d'Historial #view-history)
   const todos = state.quickTodoList || [];
   const totalTodos = todos.length;
   const doneTodos = todos.filter(t => t.completed).length;
@@ -339,7 +339,7 @@ function renderDashboard() {
   const cntTodoEl = document.getElementById("kpi-count-todo");
   if (barTodo) barTodo.style.width = `${pctTodo}%`;
   if (pctTodoEl) pctTodoEl.textContent = `${pctTodo}%`;
-  if (cntTodoEl) cntTodoEl.textContent = `${pendingTodos} pendents`;
+  if (cntTodoEl) cntTodoEl.textContent = `${pendingTodos} pendents de ${totalTodos}`;
 
   const selectedHabits = getSelectedRoutineHabits();
   const totalHabits = selectedHabits.length;
@@ -353,52 +353,46 @@ function renderDashboard() {
   if (pctRoutineEl) pctRoutineEl.textContent = `${pctRoutine}%`;
   if (cntRoutineEl) cntRoutineEl.textContent = `${doneHabits}/${totalHabits} completats`;
 
-  // Llista d'activitat del dia
+  // Widget d'Activitat del Dia (EXCLUSIVAMENT TO-DO LIST, sense rutina)
   const activeListEl = document.getElementById("dash-active-list");
   if (activeListEl) {
     activeListEl.innerHTML = "";
-    const items = [];
+    const filteredTodos = [];
 
-    if (currentDashFilter === "all" || currentDashFilter === "pending") {
-      todos.forEach((t, idx) => {
-        if (currentDashFilter === "pending" && t.completed) return;
-        items.push({ kind: "todo", idx, text: t.text, completed: t.completed });
-      });
-    }
+    todos.forEach((t, idx) => {
+      if (currentDashFilter === "pending" && t.completed) return;
+      filteredTodos.push({ idx, text: t.text, completed: t.completed });
+    });
 
-    if (currentDashFilter === "all" || currentDashFilter === "routine") {
-      selectedHabits.forEach((h, hIdx) => {
-        const isDone = hIdx < (state.routineIndex || 0);
-        if (currentDashFilter === "pending" && isDone) return;
-        items.push({ kind: "routine", idx: hIdx, text: `${h.icon} ${h.text}`, completed: isDone });
-      });
-    }
-
-    if (items.length === 0) {
+    if (filteredTodos.length === 0) {
       activeListEl.innerHTML = `
-        <div class="bg-subtle rounded-2xl p-4 text-center space-y-2">
-          <p class="text-xs font-bold opacity-80">No hi ha cap tasca activa en aquesta vista.</p>
-          <button type="button" onclick="switchView('view-quick-todo')" class="btn-primary text-xs font-bold px-3.5 py-1.5 rounded-xl">+ Afegir primera tasca</button>
+        <div class="bg-subtle border border-theme rounded-2xl p-4 text-center space-y-2">
+          <p class="text-xs font-extrabold opacity-80">
+            ${currentDashFilter === "pending" ? "No tens cap tasca ràpida pendent!" : "La teva To-Do List està buida."}
+          </p>
+          <button type="button" onclick="switchView('view-quick-todo')" class="btn-accent text-xs font-extrabold px-4 py-1.5 rounded-xl">
+            + Afegir tasca a la To-Do
+          </button>
         </div>
       `;
     } else {
-      items.forEach(item => {
+      filteredTodos.forEach(item => {
         const row = document.createElement("div");
-        row.className = "bg-subtle px-3 py-2 rounded-xl flex justify-between items-center text-xs gap-2";
+        row.className = "bg-subtle border border-theme px-3.5 py-2.5 rounded-xl flex justify-between items-center text-xs gap-2";
         row.innerHTML = `
           <label class="flex items-center gap-2.5 cursor-pointer flex-1 overflow-hidden">
-            <input type="checkbox" class="w-4 h-4 accent-[#5C8ED6] rounded cursor-pointer shrink-0" ${item.completed ? "checked" : ""} />
-            <span class="font-semibold truncate ${item.completed ? "line-through opacity-50" : ""}">${item.text}</span>
+            <input type="checkbox" class="w-4 h-4 accent-[#3D67C4] rounded cursor-pointer shrink-0" ${item.completed ? "checked" : ""} />
+            <span class="font-bold truncate ${item.completed ? "line-through opacity-50" : ""}">${item.text}</span>
           </label>
+          <button type="button" class="opacity-60 hover:opacity-100 font-extrabold px-1.5" title="Esborrar tasca">✕</button>
         `;
         row.querySelector("input").addEventListener("change", (e) => {
-          if (item.kind === "todo") {
-            state.quickTodoList[item.idx].completed = e.target.checked;
-            if (e.target.checked) logActivity("todo", `Completada: ${state.quickTodoList[item.idx].text}`);
-          } else {
-            state.routineIndex = e.target.checked ? item.idx + 1 : item.idx;
-            if (e.target.checked) logActivity("routine", `Rutina: ${item.text}`);
-          }
+          state.quickTodoList[item.idx].completed = e.target.checked;
+          if (e.target.checked) logActivity("todo", `Completada: ${state.quickTodoList[item.idx].text}`);
+          saveState();
+        });
+        row.querySelector("button").addEventListener("click", () => {
+          state.quickTodoList.splice(item.idx, 1);
           saveState();
         });
         activeListEl.appendChild(row);
@@ -417,7 +411,7 @@ function renderDashboard() {
       const iso = d.toISOString().slice(0, 10);
       const active = (state.activeDays || []).includes(iso) || i === 0;
       const cell = document.createElement("div");
-      cell.className = `p-2 rounded-xl flex flex-col items-center gap-1 border ${active ? "bg-[#F7E671] text-[#1A1A1A] border-[#2B4380] font-extrabold" : "bg-subtle opacity-50 border-transparent"}`;
+      cell.className = `p-2 rounded-xl flex flex-col items-center gap-1 border-2 ${active ? "bg-[#F7E671] text-[#1A1A1A] border-[#1E3264] font-extrabold" : "bg-subtle opacity-55 border-transparent"}`;
       cell.innerHTML = `<span class="text-[10px]">${diesSetmana[d.getDay()]}</span><span class="text-xs">${active ? "🔥" : "·"}</span>`;
       streakDaysEl.appendChild(cell);
     }
@@ -447,8 +441,8 @@ function renderHistoryList() {
 
   logs.forEach(entry => {
     const div = document.createElement("div");
-    div.className = "bg-subtle px-3.5 py-2.5 rounded-xl flex justify-between items-center gap-2";
-    div.innerHTML = `<span class="truncate font-semibold">${entry.text}</span><span class="text-[10px] opacity-60 shrink-0">${entry.time}</span>`;
+    div.className = "bg-subtle border border-theme px-3.5 py-2.5 rounded-xl flex justify-between items-center gap-2";
+    div.innerHTML = `<span class="truncate font-bold">${entry.text}</span><span class="text-[10px] opacity-65 shrink-0">${entry.time}</span>`;
     histContainer.appendChild(div);
   });
 }
@@ -465,15 +459,15 @@ function renderTemplatesView() {
   Object.keys(catalegTasquesTDAH).forEach(key => {
     const item = catalegTasquesTDAH[key];
     const card = document.createElement("div");
-    card.className = "bg-card border border-theme hover:border-[#5C8ED6] rounded-3xl p-4 flex items-center gap-4 shadow-sm transition";
+    card.className = "tactile-card rounded-3xl p-4 flex items-center gap-4 transition";
     card.innerHTML = `
-      <div class="w-16 h-16 rounded-2xl bg-[#5C8ED6]/15 border border-[#5C8ED6]/40 flex items-center justify-center text-2xl shrink-0">
+      <div class="w-16 h-16 rounded-2xl bg-[#F7E671] border-2 border-[#1E3264] flex items-center justify-center text-2xl shrink-0">
         ${item.icona}
       </div>
       <div class="flex-1 min-w-0">
         <h3 class="text-sm font-extrabold truncate">${item.titol}</h3>
-        <p class="text-xs opacity-75 mt-0.5 leading-relaxed">${item.descripcio}</p>
-        <button type="button" class="mt-2 btn-accent text-xs font-extrabold px-3.5 py-1.5 rounded-xl">
+        <p class="text-xs opacity-80 mt-0.5 leading-relaxed">${item.descripcio}</p>
+        <button type="button" class="mt-2.5 btn-primary text-xs font-extrabold px-4 py-1.5 rounded-xl">
           Read Details
         </button>
       </div>
@@ -511,7 +505,7 @@ function updateRoutineDisplay() {
   state.routineCatalog.forEach((habit, idx) => {
     const capsule = document.createElement("div");
     const isCurrentActive = habit.selected && selected[state.routineIndex]?.id === habit.id;
-    capsule.className = `habit-capsule ${habit.selected ? "selected" : ""} ${isCurrentActive ? "ring-2 ring-[#5C8ED6]" : ""}`;
+    capsule.className = `habit-capsule ${habit.selected ? "selected" : ""} ${isCurrentActive ? "ring-4 ring-[#3D67C4]" : ""}`;
     capsule.innerHTML = `
       <div class="flex items-center gap-2.5 overflow-hidden">
         <span class="text-lg shrink-0">${habit.icon || "🌅"}</span>
@@ -707,7 +701,7 @@ async function pullRemoteState() {
   return false;
 }
 
-// --- GESTIÓ DE PANTALLES INDIVIDUALS ---
+// --- CANVI DE PANTALLA AMB TRANSICIONS DINÀMIQUES FLUIDES ---
 function switchView(viewId) {
   const views = [
     "view-menu",
@@ -721,21 +715,36 @@ function switchView(viewId) {
     "view-settings",
     "view-quick-todo"
   ];
-  views.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.add("hidden");
-  });
 
-  const target = document.getElementById(viewId);
-  if (target) target.classList.remove("hidden");
+  const performSwitch = () => {
+    views.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add("hidden");
+    });
 
-  if (viewId === "view-settings") {
-    if (cfgSyncId) cfgSyncId.value = config.syncUser || "convidat";
-    if (cfgSyncPass) cfgSyncPass.value = "";
-    if (chkRgpdConsent) chkRgpdConsent.checked = config.rgpdConsent || !isGuestMode();
-    syncPomoInputsFromState();
+    const target = document.getElementById(viewId);
+    if (target) {
+      target.classList.remove("hidden");
+      // Reiniciem l'animació CSS suau perquè sigui dinàmica cada cop que s'entra
+      target.style.animation = "none";
+      void target.offsetWidth;
+      target.style.animation = "";
+    }
+
+    if (viewId === "view-settings") {
+      if (cfgSyncId) cfgSyncId.value = config.syncUser || "convidat";
+      if (cfgSyncPass) cfgSyncPass.value = "";
+      if (chkRgpdConsent) chkRgpdConsent.checked = config.rgpdConsent || !isGuestMode();
+      syncPomoInputsFromState();
+    }
+    updateAllDisplays();
+  };
+
+  if (document.startViewTransition) {
+    document.startViewTransition(performSwitch);
+  } else {
+    performSwitch();
   }
-  updateAllDisplays();
 }
 window.switchView = switchView;
 
@@ -949,7 +958,7 @@ function renderQuickTodoList() {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = item.completed || false;
-    checkbox.className = "w-4 h-4 accent-[#5C8ED6] rounded cursor-pointer shrink-0";
+    checkbox.className = "w-4 h-4 accent-[#3D67C4] rounded cursor-pointer shrink-0";
     checkbox.addEventListener("change", () => {
       state.quickTodoList[idx].completed = checkbox.checked;
       if (checkbox.checked) logActivity("todo", `Fet: ${item.text}`);
@@ -957,7 +966,7 @@ function renderQuickTodoList() {
     });
 
     const textSpan = document.createElement("span");
-    textSpan.className = `font-semibold break-words ${item.completed ? "line-through opacity-50" : ""}`;
+    textSpan.className = `font-bold break-words ${item.completed ? "line-through opacity-50" : ""}`;
     textSpan.textContent = item.text;
 
     leftDiv.appendChild(checkbox);
@@ -965,7 +974,7 @@ function renderQuickTodoList() {
 
     const delBtn = document.createElement("button");
     delBtn.type = "button";
-    delBtn.className = "opacity-60 hover:opacity-100 font-bold text-xs px-2 py-1 shrink-0";
+    delBtn.className = "opacity-60 hover:opacity-100 font-extrabold text-xs px-2 py-1 shrink-0";
     delBtn.textContent = "✕";
     delBtn.addEventListener("click", () => {
       state.quickTodoList.splice(idx, 1);
@@ -1042,10 +1051,10 @@ function renderParkedThoughts() {
     const thoughtItem = document.createElement("div");
     thoughtItem.className = "bg-subtle border border-theme p-3 rounded-2xl flex justify-between items-center text-xs gap-2";
     thoughtItem.innerHTML = `
-      <span class="font-semibold break-words">${item.text}</span>
+      <span class="font-bold break-words">${item.text}</span>
       <div class="flex items-center gap-2 shrink-0">
         <span class="text-[10px] opacity-60">${item.time}</span>
-        <button type="button" class="opacity-60 hover:opacity-100 font-bold px-1">✕</button>
+        <button type="button" class="opacity-60 hover:opacity-100 font-extrabold px-1">✕</button>
       </div>
     `;
     thoughtItem.querySelector("button").addEventListener("click", () => {
@@ -1312,7 +1321,7 @@ function toggleTheme() {
 }
 window.toggleTheme = toggleTheme;
 
-// --- INICIALITZACIÓ I OBERTURA DE WIDGETS FLOTANTS COMPACTES ---
+// --- INICIALITZACIÓ ---
 initTheme();
 loadLocalState();
 pomoTotalSeconds = getPhaseDurationSeconds("focus");
@@ -1325,7 +1334,6 @@ updateAllDisplays();
   const widgetType = params.get("widget");
   const viewParam = params.get("view");
 
-  // Si s'obre la drecera "To-Do Ràpida" des de la icona de l'app (PC o Mòbil)
   if (widgetType === "todo" || viewParam === "quick-todo" || viewParam === "view-quick-todo") {
     document.body.classList.add("widget-todo-mode");
     switchView("view-quick-todo");
@@ -1333,7 +1341,6 @@ updateAllDisplays();
     return;
   }
 
-  // Si s'obre la drecera "Pomodoro" des de la icona de l'app (PC o Mòbil)
   if (widgetType === "pomodoro" || viewParam === "pomodoro" || viewParam === "view-pomodoro") {
     document.body.classList.add("widget-pomo-mode");
     openPomodoroView();
