@@ -1,4 +1,40 @@
-/* --- RESET I PROTECCIÓ SENSORIAL --- */
+/* =========================================================
+   PALETA DE COLORS SOL·LICITADA I VARIABLES DE TEMA
+   - Blau mitjà / Blau cel: #5C8ED6 / #6B9EE8
+   - Groc mantega / Groc pastel: #F7E671 / #FAEA87
+   - Blau fosc / Blau marí: #2B4380 / #1E3264
+   - Gris clar / Blanc trencat: #EFEFF4 / #F5F5F7
+   - Negre / Gris molt fosc: #1A1A1A
+   ========================================================= */
+
+:root {
+  --blue-mid: #5C8ED6;
+  --blue-sky: #6B9EE8;
+  --yellow-butter: #F7E671;
+  --yellow-pastel: #FAEA87;
+  --blue-navy: #2B4380;
+  --blue-deep: #1E3264;
+  --gray-light: #EFEFF4;
+  --off-white: #F5F5F7;
+  --dark-ink: #1A1A1A;
+
+  /* Tema Clar per defecte basat en la paleta (#EFEFF4 / #F5F5F7) */
+  --bg-main: #EFEFF4;
+  --bg-card: #F5F5F7;
+  --bg-subtle: #E5E6F0;
+  --text-main: #1A1A1A;
+  --border-color: #CBD5E1;
+}
+
+body.dark-mode {
+  /* Tema Fosc basat en Blau Marí Profund i Gris Molt Fosc (#1A1A1A / #1E3264) */
+  --bg-main: #1A1A1A;
+  --bg-card: #1E3264;
+  --bg-subtle: #152347;
+  --text-main: #F5F5F7;
+  --border-color: #2B4380;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,22 +42,102 @@
 }
 
 body {
-  background-color: #0a0a0a;
-  color: #f5f5f4;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: none;
   user-select: none;
 }
 
-/* Evitar zoom automàtic en focus d'input a iOS Safari i permetre selecció dins d'inputs */
-input {
+.bg-card {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+}
+
+.bg-subtle {
+  background-color: var(--bg-subtle);
+  color: var(--text-main);
+}
+
+.border-theme {
+  border-color: var(--border-color);
+}
+
+/* Botons de la paleta */
+.btn-primary {
+  background-color: var(--blue-mid);
+  color: #FFFFFF;
+  border: 2px solid var(--blue-navy);
+}
+.btn-primary:hover {
+  background-color: var(--blue-sky);
+}
+
+.btn-accent {
+  background-color: var(--yellow-butter);
+  color: var(--dark-ink);
+  border: 2px solid var(--blue-navy);
+}
+.btn-accent:hover {
+  background-color: var(--yellow-pastel);
+}
+
+.btn-secondary {
+  background-color: var(--bg-subtle);
+  color: var(--text-main);
+  border: 1.5px solid var(--border-color);
+}
+.btn-secondary:hover {
+  border-color: var(--blue-mid);
+}
+
+/* Càpsules seleccionables (Rutina i Hobbies) */
+.habit-capsule {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border: 2px solid var(--border-color);
+  border-radius: 9999px;
+  padding: 0.75rem 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.habit-capsule:hover {
+  border-color: var(--blue-mid);
+  transform: translateY(-1px);
+}
+
+.habit-capsule.selected {
+  background-color: var(--yellow-butter);
+  color: var(--dark-ink);
+  border-color: var(--blue-navy);
+  font-weight: 700;
+  box-shadow: 0 3px 0 var(--blue-navy);
+}
+
+/* Animació suau del robot penjant de la segona 'd' */
+@keyframes robot-swing {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(5deg); }
+}
+
+.animate-robot-swing {
+  animation: robot-swing 3.2s ease-in-out infinite;
+}
+
+/* Evitar zoom en inputs iOS i permetre selecció */
+input, select {
   font-size: 16px !important;
   user-select: text;
   -webkit-user-select: text;
+  color: var(--text-main);
 }
 
-/* Feedbacks tàctils suaus */
 button {
   touch-action: manipulation;
   transition: transform 0.1s ease, background-color 0.15s ease, border-color 0.15s ease;
@@ -31,111 +147,51 @@ button:active {
   transform: scale(0.97);
 }
 
-/* Accessibilitat Europea (EAA / WCAG 2.1 AA): Focus visible per a navegació amb teclat */
+/* Accessibilitat Europea WCAG 2.1 AA */
 button:focus-visible,
 input:focus-visible,
-summary:focus-visible,
-[tabindex]:focus-visible {
-  outline: 2px solid #38bdf8 !important;
+select:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--blue-mid) !important;
   outline-offset: 2px !important;
 }
 
-/* Scrollbar subtil */
+/* Scrollbar personalitzada */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #44403c;
+  background: var(--blue-mid);
   border-radius: 9999px;
 }
 
-/* Indicador de càrrega suau */
-@keyframes subtle-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.45; }
-}
-
-.animate-subtle-pulse {
-  animation: subtle-pulse 1.6s ease-in-out infinite;
-}
-
 /* =========================================================
-   CONFIGURACIÓ DE TEMA CLAR (LIGHT MODE COMPLET I VERSÀTIL)
+   MODE COMPACTE FLOTANT (MINI-WIDGET PER A PC / PORTÀTIL I MÒBIL)
+   S'activa automàticament quan s'obre amb ?widget=todo o ?widget=pomodoro
    ========================================================= */
-body.light-mode {
-  background-color: #f4f4f0 !important;
-  color: #1c1917 !important;
+body.widget-floating-mode {
+  padding: 0.5rem !important;
+  justify-content: flex-start !important;
 }
 
-body.light-mode .bg-stone-950,
-body.light-mode .bg-stone-950\/50,
-body.light-mode .bg-stone-900,
-body.light-mode .bg-stone-900\/90,
-body.light-mode .bg-stone-900\/50 {
-  background-color: #ffffff !important;
-  border-color: #d6d3d1 !important;
-  color: #1c1917 !important;
+body.widget-floating-mode #app-window-bar,
+body.widget-floating-mode #main-header,
+body.widget-floating-mode #main-footer,
+body.widget-floating-mode #todo-landscape-illustration,
+body.widget-floating-mode #pomo-config-details,
+body.widget-floating-mode #btn-popout-todo,
+body.widget-floating-mode #btn-popout-pomo,
+body.widget-floating-mode #btn-todo-back-menu,
+body.widget-floating-mode #btn-pomo-back-menu {
+  display: none !important;
 }
 
-body.light-mode #onboarding-modal > div {
-  background-color: #f4f4f0 !important;
-  border-color: #d6d3d1 !important;
-  color: #1c1917 !important;
-}
-
-body.light-mode .bg-stone-800 {
-  background-color: #e7e5e4 !important;
-  border-color: #d6d3d1 !important;
-  color: #1c1917 !important;
-}
-
-body.light-mode .bg-stone-800:hover,
-body.light-mode .hover\:bg-stone-800:hover,
-body.light-mode .hover\:bg-stone-700:hover {
-  background-color: #d6d3d1 !important;
-}
-
-body.light-mode .border-stone-800,
-body.light-mode .border-stone-800\/60,
-body.light-mode .border-stone-700 {
-  border-color: #d6d3d1 !important;
-}
-
-body.light-mode .text-stone-100,
-body.light-mode .text-stone-200,
-body.light-mode .text-stone-300 {
-  color: #1c1917 !important;
-}
-
-body.light-mode .text-stone-400,
-body.light-mode .text-stone-500 {
-  color: #57534e !important;
-}
-
-body.light-mode .text-sky-400 {
-  color: #0284c7 !important;
-}
-
-body.light-mode #ai-info-box {
-  background-color: #e0f2fe !important;
-  border-color: #7dd3fc !important;
-}
-
-body.light-mode input {
-  background-color: #ffffff !important;
-  color: #1c1917 !important;
-  border-color: #d6d3d1 !important;
-}
-
-body.light-mode input::placeholder {
-  color: #78716c !important;
-}
-
-body.light-mode input[readonly] {
-  background-color: #f5f5f4 !important;
-  color: #78716c !important;
+body.widget-floating-mode main {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
 }
