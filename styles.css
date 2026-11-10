@@ -1,38 +1,38 @@
 /* =========================================================
-   PALETA DE COLORS I PROTECCIÓ SENSORIAL
-   - Blau mitjà / Blau cel: #5C8ED6 / #6B9EE8
-   - Groc mantega / Groc pastel: #F7E671 / #FAEA87
-   - Blau fosc / Blau marí: #2B4380 / #1E3264
-   - Gris clar / Blanc trencat: #EFEFF4 / #F5F5F7
-   - Negre / Gris molt fosc: #1A1A1A
+   NOVA ESTÈTICA DE COLORS VIVA I CÀLIDA (INSPIRADA EN "SO MATCHA" + PALETA BUDDY)
+   - Fons principal càlid crema/matcha suau (#EAE8D7) perquè les targetes i els blaus ressaltin
+   - Blau Cobalt ("so matcha"): #3D67C4 / Blau cel: #6B9EE8
+   - Blau Marí per a vores i profunditat: #1E3264 / #2B4380
+   - Groc Mantega per a accents vius: #F7E671 / #FAEA87
    ========================================================= */
 
 :root {
+  --blue-cobalt: #3D67C4;
   --blue-mid: #5C8ED6;
   --blue-sky: #6B9EE8;
   --yellow-butter: #F7E671;
   --yellow-pastel: #FAEA87;
   --blue-navy: #2B4380;
   --blue-deep: #1E3264;
-  --gray-light: #EFEFF4;
-  --off-white: #F5F5F7;
   --dark-ink: #1A1A1A;
 
-  /* Mode Clar per defecte (Blanc trencat suau) */
-  --bg-main: #EFEFF4;
-  --bg-card: #F5F5F7;
-  --bg-subtle: #E4E5F0;
-  --text-main: #1A1A1A;
-  --border-color: #CBD5E1;
+  /* Tema Clar amb personalitat càlida i contrast viu */
+  --bg-main: #EAE8D7;
+  --bg-card: #FAF9F2;
+  --bg-subtle: #DFDEC9;
+  --text-main: #1E3264;
+  --border-color: #2B4380;
+  --card-shadow: #C7C5B0;
 }
 
 body.dark-mode {
-  /* Mode Nocturn (Negre / Gris molt fosc i Blau marí) */
-  --bg-main: #1A1A1A;
+  /* Tema Nocturn profund en Blau Marí i Groc Mantega */
+  --bg-main: #121C36;
   --bg-card: #1E3264;
-  --bg-subtle: #142246;
+  --bg-subtle: #16254C;
   --text-main: #F5F5F7;
-  --border-color: #2B4380;
+  --border-color: #5C8ED6;
+  --card-shadow: #0B1224;
 }
 
 * {
@@ -50,9 +50,74 @@ body {
   user-select: none;
 }
 
-.bg-card {
+/* =========================================================
+   TIPOGRAFIA "AI BUDDY" ESTIL "SO MATCHA" (IMAGE_67C163.PNG)
+   Lletres ultra-inflades en blau cobalt amb contorn del color del fons per encavalcar-se
+   ========================================================= */
+.matcha-letter {
+  font-family: 'Rubik Bubbles', cursive;
+  font-size: 62px;
+  fill: var(--blue-cobalt);
+  stroke: var(--bg-main);
+  stroke-width: 5px;
+  paint-order: stroke fill;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+body.dark-mode .matcha-letter {
+  fill: var(--blue-sky);
+  stroke: var(--bg-main);
+}
+
+/* =========================================================
+   TRANSICIONS DINÀMIQUES PERÒ CALMADES ENTRE PANTALLES
+   ========================================================= */
+@keyframes viewSlideFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.view-panel:not(.hidden) {
+  animation: viewSlideFadeIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* =========================================================
+   TARGETES, BOTONS I CONTROLS AMB PERSONALITAT (NEO-TACTILE)
+   ========================================================= */
+.tactile-card {
   background-color: var(--bg-card);
   color: var(--text-main);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 0 var(--card-shadow);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.highlight-banner {
+  background: linear-gradient(135deg, var(--bg-card) 55%, rgba(247, 230, 113, 0.38) 100%);
+}
+
+body.dark-mode .highlight-banner {
+  background: linear-gradient(135deg, #1E3264 55%, #2B4380 100%);
+}
+
+.tactile-input {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border: 2px solid var(--border-color);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.tactile-input:focus {
+  outline: none;
+  border-color: var(--blue-cobalt);
 }
 
 .bg-subtle {
@@ -64,31 +129,77 @@ body {
   border-color: var(--border-color);
 }
 
+/* Botons del menú principal amb accents de color vius */
+.menu-nav-card {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 3px 0 var(--border-color);
+  transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.menu-nav-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 var(--border-color);
+}
+
+.nav-accent-yellow:hover {
+  background-color: var(--yellow-pastel);
+  color: var(--dark-ink);
+}
+
+.nav-accent-blue:hover {
+  background-color: #DDE8FA;
+  color: var(--blue-deep);
+}
+
+.nav-accent-sky:hover {
+  background-color: #E3EFFD;
+  color: var(--blue-deep);
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  border: 1.5px solid var(--blue-deep);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Botons d'acció */
 .btn-primary {
-  background-color: var(--blue-mid);
+  background-color: var(--blue-cobalt);
   color: #FFFFFF;
-  border: 1.5px solid var(--blue-navy);
+  border: 2px solid var(--blue-deep);
+  box-shadow: 0 3px 0 var(--blue-deep);
 }
 .btn-primary:hover {
-  background-color: var(--blue-sky);
+  background-color: var(--blue-mid);
+  transform: translateY(-1px);
 }
 
 .btn-accent {
   background-color: var(--yellow-butter);
   color: var(--dark-ink);
-  border: 1.5px solid var(--blue-navy);
+  border: 2px solid var(--blue-deep);
+  box-shadow: 0 3px 0 var(--blue-deep);
 }
 .btn-accent:hover {
   background-color: var(--yellow-pastel);
+  transform: translateY(-1px);
 }
 
-.btn-secondary {
-  background-color: var(--bg-subtle);
+.btn-pill {
+  background-color: var(--bg-card);
   color: var(--text-main);
-  border: 1.5px solid var(--border-color);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 2px 0 var(--card-shadow);
 }
-.btn-secondary:hover {
-  border-color: var(--blue-mid);
+.btn-pill:hover {
+  background-color: var(--yellow-pastel);
+  color: var(--dark-ink);
+  border-color: var(--blue-deep);
 }
 
 /* Càpsules d'hàbits i hobbies seleccionables */
@@ -97,24 +208,27 @@ body {
   color: var(--text-main);
   border: 2px solid var(--border-color);
   border-radius: 9999px;
-  padding: 0.7rem 1.1rem;
+  padding: 0.7rem 1.15rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
   cursor: pointer;
-  transition: all 0.15s ease;
+  box-shadow: 0 2px 0 var(--card-shadow);
+  transition: all 0.16s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .habit-capsule:hover {
-  border-color: var(--blue-mid);
+  transform: translateY(-1px);
+  border-color: var(--blue-cobalt);
 }
 
 .habit-capsule.selected {
   background-color: var(--yellow-butter);
   color: var(--dark-ink);
-  border-color: var(--blue-navy);
-  font-weight: 700;
+  border-color: var(--blue-deep);
+  box-shadow: 0 3px 0 var(--blue-deep);
+  font-weight: 800;
 }
 
 @keyframes robot-swing {
@@ -130,42 +244,39 @@ input, select {
   font-size: 16px !important;
   user-select: text;
   -webkit-user-select: text;
-  color: var(--text-main);
 }
 
 button {
   touch-action: manipulation;
-  transition: transform 0.1s ease, background-color 0.15s ease;
+  transition: transform 0.12s ease, background-color 0.15s ease, box-shadow 0.12s ease;
 }
 
 button:active {
-  transform: scale(0.97);
+  transform: translateY(1px) scale(0.98) !important;
 }
 
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 summary:focus-visible {
-  outline: 2px solid var(--blue-mid) !important;
+  outline: 3px solid var(--blue-cobalt) !important;
   outline-offset: 2px !important;
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--blue-mid);
+  background: var(--blue-cobalt);
   border-radius: 9999px;
 }
 
 /* =========================================================
    MODE FINESTRA FLOTANT DE WIDGET (DES DE LA ICONA DE L'APP)
-   - En ?widget=todo mostra només la llista To-Do ràpida.
-   - En ?widget=pomodoro mostra només la barra, la imatge, pausar/reprendre i la caixeta d'aparcar pensaments.
    ========================================================= */
 body.widget-todo-mode #app-window-title,
 body.widget-todo-mode #main-header,
