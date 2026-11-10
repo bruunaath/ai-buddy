@@ -24,7 +24,7 @@ input {
 /* Feedbacks tàctils suaus */
 button {
   touch-action: manipulation;
-  transition: transform 0.1s ease, background-color 0.15s ease;
+  transition: transform 0.1s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
 button:active {
@@ -43,6 +43,7 @@ summary:focus-visible,
 /* Scrollbar subtil */
 ::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -76,6 +77,12 @@ body.light-mode .bg-stone-900,
 body.light-mode .bg-stone-900\/90,
 body.light-mode .bg-stone-900\/50 {
   background-color: #ffffff !important;
+  border-color: #d6d3d1 !important;
+  color: #1c1917 !important;
+}
+
+body.light-mode #onboarding-modal > div {
+  background-color: #f4f4f0 !important;
   border-color: #d6d3d1 !important;
   color: #1c1917 !important;
 }
