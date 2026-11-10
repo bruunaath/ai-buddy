@@ -1,7 +1,7 @@
 // --- RUTES DE LES IMATGES D'ESTAT ---
 const IMAGES = {
   focus: "focus_normal.jpg",   // 1. Quan el Pomodoro està en marxa
-  pausa: "focus_pausa.jpg",    // 2. Quan el Pomodoro es pausa
+  pausa: "focus_pausa.jpg",    // 2. Quan el Pomodoro es pausa o és en descans
   completat: "completat.jpg",  // 3. Quan s'acaba el Pomodoro o qualsevol tasca
   avis: "avis.jpg"             // 4. Quan falten 5 minuts o menys de Pomodoro
 };
@@ -100,9 +100,16 @@ const catalegTasquesTDAH = {
   }
 };
 
-// --- VALORS PREDETERMINATS BUITS (Perquè cada usuari personalitzi la seva rutina i hobbies) ---
+// --- VALORS PREDETERMINATS BUITS ---
 const defaultRoutineSteps = [];
 const defaultHobbies = [];
+
+const defaultPomoConfig = {
+  focusMin: 25,
+  shortBreakMin: 5,
+  longBreakMin: 15,
+  cyclesBeforeLong: 5
+};
 
 function getInitialState() {
   return {
@@ -117,6 +124,8 @@ function getInitialState() {
     routineIndex: 0,
     hobbySteps: [...defaultHobbies],
     hobbyIndex: 0,
+    pomoConfig: { ...defaultPomoConfig },
+    completedPomodoros: 0,
     updatedAt: 0
   };
 }
@@ -124,7 +133,7 @@ function getInitialState() {
 // --- ESTAT CENTRALITZAT ---
 let state = getInitialState();
 
-// Configuració de Supabase i Identificador Criptogràfic (SHA-256) sense desar mai la contrasenya en clar
+// Configuració de Supabase i Identificador Criptogràfic (SHA-256)
 let config = {
   supaUrl: "https://qstjwfqrkemyfzudtoxb.supabase.co",
   supaKey: "sb_publishable_RoRpRRP4I1p3PYzIrbRsqA_9YJSZZfq",
@@ -133,11 +142,12 @@ let config = {
   rgpdConsent: localStorage.getItem("aibuddy_rgpd_consent") === "true"
 };
 
-// Variables del Pomodoro Sensorial
+// Variables del Pomodoro Sensorial amb Gestió de Descansos
 let pomoTimer = null;
-let pomoTotalSeconds = 1500; // 25 minuts
+let pomoPhase = "focus"; // 'focus' | 'shortBreak' | 'longBreak'
+let pomoTotalSeconds = 1500;
 let pomoCurrentSeconds = 1500;
-let isPomoPaused = false;
+let isPomoPaused = true;
 let pendingServerVersion = null;
 
 // --- ELEMENTS DOM ---
@@ -177,9 +187,25 @@ const btnClearThoughts = document.getElementById("btn-clear-thoughts");
 const pomoBar = document.getElementById("pomo-bar");
 const pomoImg = document.getElementById("pomo-img");
 const pomoStatusLabel = document.getElementById("pomo-status-label");
+const pomoModeBadge = document.getElementById("pomo-mode-badge");
+const pomoTimeDisplay = document.getElementById("pomo-time-display");
+const pomoCycleCounter = document.getElementById("pomo-cycle-counter");
 const btnPomoOk = document.getElementById("btn-pomo-ok");
 const btnPomoNext = document.getElementById("btn-pomo-next");
 const btnPomoReset = document.getElementById("btn-pomo-reset");
+const btnPomoSkipPhase = document.getElementById("btn-pomo-skip-phase");
+
+const pomoCfgFocus = document.getElementById("pomo-cfg-focus");
+const pomoCfgShort = document.getElementById("pomo-cfg-short");
+const pomoCfgLong = document.getElementById("pomo-cfg-long");
+const pomoCfgCycles = document.getElementById("pomo-cfg-cycles");
+const btnSavePomoInline = document.getElementById("btn-save-pomo-inline");
+
+const settingsPomoFocus = document.getElementById("settings-pomo-focus");
+const settingsPomoShort = document.getElementById("settings-pomo-short");
+const settingsPomoLong = document.getElementById("settings-pomo-long");
+const settingsPomoCycles = document.getElementById("settings-pomo-cycles");
+const btnSavePomoSettings = document.getElementById("btn-save-pomo-settings");
 
 const quickTodoInput = document.getElementById("quick-todo-input");
 const btnAddQuickTodo = document.getElementById("btn-add-quick-todo");
@@ -194,6 +220,30 @@ const btnSaveSettings = document.getElementById("btn-save-settings");
 const btnLogoutGuest = document.getElementById("btn-logout-guest");
 const btnExportData = document.getElementById("btn-export-data");
 const btnDeleteAccount = document.getElementById("btn-delete-account");
+const onboardingModal = document.getElementById("onboarding-modal");
+
+// --- MODAL D'INTRODUCCIÓ (ONBOARDING CONVIDAT DE 0) ---
+function checkInitialOnboarding() {
+  const seenOnboarding = localStorage.getItem("aibuddy_guest_onboarding_seen");
+  if (isGuestMode() && !seenOnboarding) {
+    openOnboarding();
+  }
+}
+
+function openOnboarding() {
+  if (onboardingModal) {
+    onboardingModal.classList.remove("hidden");
+  }
+}
+window.openOnboarding = openOnboarding;
+
+function closeOnboarding() {
+  if (onboardingModal) {
+    onboardingModal.classList.add("hidden");
+  }
+  localStorage.setItem("aibuddy_guest_onboarding_seen", "true");
+}
+window.closeOnboarding = closeOnboarding;
 
 // --- MOSTRAR / OCULTAR CONTRASENYA ---
 window.togglePassVisibility = function() {
@@ -229,7 +279,6 @@ function cleanSupaUrl(rawUrl) {
     .replace(/\/+$/, "");
 }
 
-// Genera un identificador criptogràfic irreversible (SHA-256) perquè la contrasenya mai surti del dispositiu
 async function computeSecureSyncHash(username, password) {
   const normalizedUser = username.trim().toLowerCase();
   const cleanPass = password.trim();
@@ -239,6 +288,22 @@ async function computeSecureSyncHash(username, password) {
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
   return `u_${hashHex.slice(0, 40)}`;
+}
+
+function ensurePomoConfigIntegrity() {
+  if (!state.pomoConfig || typeof state.pomoConfig !== "object") {
+    state.pomoConfig = { ...defaultPomoConfig };
+  } else {
+    state.pomoConfig = {
+      focusMin: Math.max(1, parseInt(state.pomoConfig.focusMin, 10) || 25),
+      shortBreakMin: Math.max(1, parseInt(state.pomoConfig.shortBreakMin, 10) || 5),
+      longBreakMin: Math.max(1, parseInt(state.pomoConfig.longBreakMin, 10) || 15),
+      cyclesBeforeLong: Math.max(1, parseInt(state.pomoConfig.cyclesBeforeLong, 10) || 5)
+    };
+  }
+  if (typeof state.completedPomodoros !== "number" || state.completedPomodoros < 0) {
+    state.completedPomodoros = 0;
+  }
 }
 
 function loadLocalState() {
@@ -252,9 +317,12 @@ function loadLocalState() {
       console.error("Error carregant estat local:", e);
     }
   }
+  ensurePomoConfigIntegrity();
+  syncPomoInputsFromState();
 }
 
 async function saveState() {
+  ensurePomoConfigIntegrity();
   state.updatedAt = Date.now();
   localStorage.setItem(getLocalStorageKey(), JSON.stringify(state));
   updateAllDisplays();
@@ -321,7 +389,9 @@ async function pullRemoteState() {
         const remoteState = rows[0].data;
         if ((remoteState.updatedAt || 0) > (state.updatedAt || 0)) {
           state = { ...state, ...remoteState };
+          ensurePomoConfigIntegrity();
           localStorage.setItem(getLocalStorageKey(), JSON.stringify(state));
+          syncPomoInputsFromState();
           updateAllDisplays();
         }
         if (statusBadge) statusBadge.textContent = `🟢 ${config.syncUser}`;
@@ -351,10 +421,6 @@ function switchView(viewId) {
     if (el) el.classList.add("hidden");
   });
 
-  if (viewId !== "view-pomodoro" && pomoTimer) {
-    clearInterval(pomoTimer);
-  }
-
   const target = document.getElementById(viewId);
   if (target) target.classList.remove("hidden");
 
@@ -368,6 +434,7 @@ function switchView(viewId) {
       chkRgpdConsent.checked = config.rgpdConsent || !isGuestMode();
     }
     if (btnTogglePass) btnTogglePass.textContent = "👁️";
+    syncPomoInputsFromState();
   }
   updateAllDisplays();
 }
@@ -380,6 +447,7 @@ function updateAllDisplays() {
   updateHobbyDisplay();
   renderParkedThoughts();
   renderQuickTodoList();
+  updatePomodoroCycleText();
 }
 
 function updateTaskDisplay() {
@@ -403,7 +471,6 @@ function updateTaskDisplay() {
 function updateRoutineDisplay() {
   if (!routineStepDisplay) return;
 
-  // Si la rutina és buida, mostrem el missatge perquè l'usuari l'ompli al seu gust
   if (!Array.isArray(state.routineSteps) || state.routineSteps.length === 0) {
     if (routineCompletionBadge) {
       routineCompletionBadge.classList.add("hidden");
@@ -597,7 +664,7 @@ if (btnSend && taskInput) {
   });
 }
 
-// --- LÒGICA DE RUTINA DE MATÍ (Comença buida i personalitzable) ---
+// --- LÒGICA DE RUTINA DE MATÍ ---
 if (btnRoutineOk) {
   btnRoutineOk.addEventListener("click", () => {
     if (!Array.isArray(state.routineSteps) || state.routineSteps.length === 0) {
@@ -664,7 +731,7 @@ function renderQuickTodoList() {
   quickTodoListContainer.innerHTML = "";
   
   if (!state.quickTodoList || state.quickTodoList.length === 0) {
-    quickTodoListContainer.innerHTML = '<p class="text-xs text-stone-500 text-center py-6">No hi ha tasques ràpides pendents.</p>';
+    quickTodoListContainer.innerHTML = '<p class="text-xs text-stone-500 text-center py-6 md:col-span-2">No hi ha tasques ràpides pendents.</p>';
     return;
   }
 
@@ -678,7 +745,7 @@ function renderQuickTodoList() {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = item.completed || false;
-    checkbox.className = "w-4 h-4 accent-sky-500 rounded cursor-pointer";
+    checkbox.className = "w-4 h-4 accent-sky-500 rounded cursor-pointer shrink-0";
     checkbox.setAttribute("aria-label", `Marcar tasca: ${item.text}`);
     checkbox.addEventListener("change", () => {
       state.quickTodoList[idx].completed = checkbox.checked;
@@ -731,7 +798,7 @@ if (btnClearQuickTodos) {
   });
 }
 
-// --- LÒGICA DE HOBBIES (Comença buida i personalitzable) ---
+// --- LÒGICA DE HOBBIES ---
 if (btnHobbyNext) {
   btnHobbyNext.addEventListener("click", () => {
     if (Array.isArray(state.hobbySteps) && state.hobbySteps.length > 0) {
@@ -815,7 +882,7 @@ function renderParkedThoughts() {
   if (!thoughtsListContainer) return;
   thoughtsListContainer.innerHTML = "";
   if (!state.parkedThoughts || state.parkedThoughts.length === 0) {
-    thoughtsListContainer.innerHTML = '<p class="text-xs text-stone-500 text-center py-8">No hi ha pensaments aparcats encara.</p>';
+    thoughtsListContainer.innerHTML = '<p class="text-xs text-stone-500 text-center py-8 md:col-span-2">No hi ha pensaments aparcats encara.</p>';
     return;
   }
 
@@ -859,35 +926,124 @@ if (btnClearThoughts) {
   });
 }
 
-// --- LÒGICA DEL POMODORO SENSORIAL AMB IMATGES ---
-function startPomodoro() {
-  switchView("view-pomodoro");
+// --- LÒGICA DEL POMODORO SENSORIAL AMB TEMPS PERSONALITZABLE I DESCANSOS AUTOMÀTICS ---
+function syncPomoInputsFromState() {
+  ensurePomoConfigIntegrity();
+  const cfg = state.pomoConfig;
+  if (pomoCfgFocus) pomoCfgFocus.value = cfg.focusMin;
+  if (pomoCfgShort) pomoCfgShort.value = cfg.shortBreakMin;
+  if (pomoCfgLong) pomoCfgLong.value = cfg.longBreakMin;
+  if (pomoCfgCycles) pomoCfgCycles.value = cfg.cyclesBeforeLong;
+
+  if (settingsPomoFocus) settingsPomoFocus.value = cfg.focusMin;
+  if (settingsPomoShort) settingsPomoShort.value = cfg.shortBreakMin;
+  if (settingsPomoLong) settingsPomoLong.value = cfg.longBreakMin;
+  if (settingsPomoCycles) settingsPomoCycles.value = cfg.cyclesBeforeLong;
+}
+
+function formatSeconds(sec) {
+  const safeSec = Math.max(0, Math.floor(sec));
+  const m = String(Math.floor(safeSec / 60)).padStart(2, "0");
+  const s = String(safeSec % 60).padStart(2, "0");
+  return `${m}:${s}`;
+}
+
+function getPhaseDurationSeconds(phase) {
+  ensurePomoConfigIntegrity();
+  const cfg = state.pomoConfig;
+  if (phase === "shortBreak") return cfg.shortBreakMin * 60;
+  if (phase === "longBreak") return cfg.longBreakMin * 60;
+  return cfg.focusMin * 60;
+}
+
+function updatePomodoroCycleText() {
+  ensurePomoConfigIntegrity();
+  if (pomoCycleCounter) {
+    const target = state.pomoConfig.cyclesBeforeLong;
+    const currentInCycle = state.completedPomodoros % target;
+    pomoCycleCounter.textContent = `Pomodoros completats: ${currentInCycle} / ${target} (Total: ${state.completedPomodoros})`;
+  }
+}
+
+function setupPomodoroPhase(phase, autoStart = true) {
+  pomoPhase = phase;
+  pomoTotalSeconds = getPhaseDurationSeconds(phase);
   pomoCurrentSeconds = pomoTotalSeconds;
-  isPomoPaused = false;
-  if (btnPomoOk) btnPomoOk.textContent = "Pausar";
+  isPomoPaused = !autoStart;
+
+  if (btnPomoOk) btnPomoOk.textContent = isPomoPaused ? "Iniciar" : "Pausar";
   if (pomoBar) pomoBar.style.width = "100%";
+
+  updatePomodoroCycleText();
   updatePomodoroVisuals();
 
   if (pomoTimer) clearInterval(pomoTimer);
-
-  pomoTimer = setInterval(() => {
-    if (!isPomoPaused) {
-      pomoCurrentSeconds--;
-      const percentage = Math.max(0, (pomoCurrentSeconds / pomoTotalSeconds) * 100);
-      if (pomoBar) pomoBar.style.width = `${percentage}%`;
-      updatePomodoroVisuals();
-
-      if (pomoCurrentSeconds <= 0) {
-        clearInterval(pomoTimer);
-        if (pomoBar) pomoBar.style.width = "0%";
-      }
-    }
-  }, 1000);
+  pomoTimer = setInterval(tickPomodoro, 1000);
 }
-window.startPomodoro = startPomodoro;
+
+function tickPomodoro() {
+  if (isPomoPaused) return;
+
+  pomoCurrentSeconds--;
+  const percentage = Math.max(0, (pomoCurrentSeconds / pomoTotalSeconds) * 100);
+  if (pomoBar) pomoBar.style.width = `${percentage}%`;
+  updatePomodoroVisuals();
+
+  if (pomoCurrentSeconds <= 0) {
+    handlePhaseCompletion();
+  }
+}
+
+function handlePhaseCompletion() {
+  if (pomoTimer) clearInterval(pomoTimer);
+  if (pomoBar) pomoBar.style.width = "0%";
+
+  ensurePomoConfigIntegrity();
+  const cfg = state.pomoConfig;
+
+  if (pomoPhase === "focus") {
+    state.completedPomodoros = (state.completedPomodoros || 0) + 1;
+    saveState();
+
+    const isLongBreakDue = state.completedPomodoros % cfg.cyclesBeforeLong === 0;
+    if (isLongBreakDue) {
+      showToast(`🎉 ${cfg.cyclesBeforeLong} Pomodoros completats! Descans llarg (${cfg.longBreakMin} min)`);
+      setupPomodoroPhase("longBreak", true);
+    } else {
+      showToast(`✓ Pomodoro completat! Descans curt (${cfg.shortBreakMin} min)`);
+      setupPomodoroPhase("shortBreak", true);
+    }
+  } else {
+    showToast("🎯 Descans acabat! Tornem al bloc de Focus");
+    setupPomodoroPhase("focus", true);
+  }
+}
+
+function openPomodoroView() {
+  switchView("view-pomodoro");
+  if (!pomoTimer) {
+    setupPomodoroPhase("focus", true);
+  }
+}
+window.openPomodoroView = openPomodoroView;
+window.startPomodoro = openPomodoroView;
 
 function updatePomodoroVisuals() {
   if (!pomoImg || !pomoStatusLabel) return;
+
+  if (pomoTimeDisplay) {
+    pomoTimeDisplay.textContent = formatSeconds(pomoCurrentSeconds);
+  }
+
+  if (pomoModeBadge) {
+    if (pomoPhase === "focus") {
+      pomoModeBadge.textContent = `🎯 Bloc de Focus (${state.pomoConfig.focusMin} min)`;
+    } else if (pomoPhase === "shortBreak") {
+      pomoModeBadge.textContent = `☕ Descans Curt (${state.pomoConfig.shortBreakMin} min)`;
+    } else {
+      pomoModeBadge.textContent = `🌴 Descans Llarg (${state.pomoConfig.longBreakMin} min)`;
+    }
+  }
 
   if (pomoCurrentSeconds <= 0) {
     pomoImg.src = IMAGES.completat;
@@ -895,6 +1051,9 @@ function updatePomodoroVisuals() {
   } else if (isPomoPaused) {
     pomoImg.src = IMAGES.pausa;
     pomoStatusLabel.textContent = "En Pausa";
+  } else if (pomoPhase !== "focus") {
+    pomoImg.src = IMAGES.pausa;
+    pomoStatusLabel.textContent = pomoPhase === "longBreak" ? "Descans Llarg" : "Descans Curt";
   } else if (pomoCurrentSeconds <= 300) {
     pomoImg.src = IMAGES.avis;
     pomoStatusLabel.textContent = "Últims 5 minuts";
@@ -914,32 +1073,86 @@ if (btnPomoOk) {
 
 if (btnPomoReset) {
   btnPomoReset.addEventListener("click", () => {
-    startPomodoro();
+    setupPomodoroPhase(pomoPhase, true);
+    showToast("⏱️ Fase actual reiniciada");
+  });
+}
+
+if (btnPomoSkipPhase) {
+  btnPomoSkipPhase.addEventListener("click", () => {
+    handlePhaseCompletion();
   });
 }
 
 if (btnPomoNext) {
   btnPomoNext.addEventListener("click", () => {
     if (pomoTimer) clearInterval(pomoTimer);
+    pomoTimer = null;
     switchView("view-menu");
   });
 }
 
-// --- INICI DE SESSIÓ XIFRADA (SHA-256) I SINCRONITZACIÓ AMB CONSENTIMENT RGPD ---
-// --- DESAR CONFIGURACIÓ, XIFRAT AMB SHA-256 I VALIDACIÓ DE NOM ÚNIC AL NÚVOL ---
+function savePomoConfiguration(focusVal, shortVal, longVal, cyclesVal, restartNow = false) {
+  const focusMin = Math.min(120, Math.max(1, parseInt(focusVal, 10) || 25));
+  const shortBreakMin = Math.min(60, Math.max(1, parseInt(shortVal, 10) || 5));
+  const longBreakMin = Math.min(90, Math.max(1, parseInt(longVal, 10) || 15));
+  const cyclesBeforeLong = Math.min(12, Math.max(1, parseInt(cyclesVal, 10) || 5));
+
+  state.pomoConfig = {
+    focusMin,
+    shortBreakMin,
+    longBreakMin,
+    cyclesBeforeLong
+  };
+
+  syncPomoInputsFromState();
+  saveState();
+
+  if (restartNow) {
+    setupPomodoroPhase("focus", true);
+  } else {
+    pomoTotalSeconds = getPhaseDurationSeconds(pomoPhase);
+    pomoCurrentSeconds = pomoTotalSeconds;
+    updatePomodoroVisuals();
+  }
+  showToast("✓ Configuració del Pomodoro desada");
+}
+
+if (btnSavePomoInline) {
+  btnSavePomoInline.addEventListener("click", () => {
+    savePomoConfiguration(
+      pomoCfgFocus ? pomoCfgFocus.value : 25,
+      pomoCfgShort ? pomoCfgShort.value : 5,
+      pomoCfgLong ? pomoCfgLong.value : 15,
+      pomoCfgCycles ? pomoCfgCycles.value : 5,
+      true
+    );
+  });
+}
+
+if (btnSavePomoSettings) {
+  btnSavePomoSettings.addEventListener("click", () => {
+    savePomoConfiguration(
+      settingsPomoFocus ? settingsPomoFocus.value : 25,
+      settingsPomoShort ? settingsPomoShort.value : 5,
+      settingsPomoLong ? settingsPomoLong.value : 15,
+      settingsPomoCycles ? settingsPomoCycles.value : 5,
+      false
+    );
+  });
+}
+
 // --- INICI DE SESSIÓ XIFRAT (SHA-256) I VALIDACIÓ D'USUARI ÚNIC AL NÚVOL ---
 if (btnSaveSettings) {
   btnSaveSettings.addEventListener("click", async () => {
     const enteredUser = (cfgSyncId ? cfgSyncId.value.trim() : "") || "convidat";
     const enteredPass = cfgSyncPass ? cfgSyncPass.value.trim() : "";
 
-    // Si tria convidat, entra directament en local
     if (enteredUser.toLowerCase() === "convidat") {
       logoutToGuestMode("Mode Convidat actiu (100% Local)");
       return;
     }
 
-    // Verificació obligatòria del consentiment explícit RGPD
     if (chkRgpdConsent && !chkRgpdConsent.checked) {
       showToast("⚠️ Marca la casella de consentiment RGPD per sincronitzar");
       chkRgpdConsent.focus();
@@ -960,7 +1173,6 @@ if (btnSaveSettings) {
       const cleanUser = enteredUser.toLowerCase();
       const enteredHash = await computeSecureSyncHash(cleanUser, enteredPass);
 
-      // 1. Comprovem si el nom d'usuari ja existeix a la taula 'user_credentials'
       const checkRes = await fetch(`${baseUrl}/rest/v1/user_credentials?username=eq.${encodeURIComponent(cleanUser)}`, {
         headers: {
           "apikey": config.supaKey,
@@ -973,7 +1185,6 @@ if (btnSaveSettings) {
       const existingUsers = await checkRes.json();
 
       if (existingUsers.length > 0) {
-        // L'usuari ja existeix: comprovem si la contrasenya és correcta
         const storedHash = existingUsers[0].password_hash;
         if (storedHash !== enteredHash) {
           showToast("❌ Contrasenya incorrecta per a aquest usuari");
@@ -983,7 +1194,6 @@ if (btnSaveSettings) {
           return;
         }
       } else {
-        // L'usuari no existeix: el creem a la taula de credencials
         const insertRes = await fetch(`${baseUrl}/rest/v1/user_credentials`, {
           method: "POST",
           headers: {
@@ -1006,7 +1216,6 @@ if (btnSaveSettings) {
         }
       }
 
-      // Credencials correctes: establim la sessió
       config.syncUser = cleanUser;
       config.syncHash = enteredHash;
       config.rgpdConsent = true;
@@ -1035,6 +1244,7 @@ if (btnSaveSettings) {
     }
   });
 }
+
 // --- TANCAR SESSIÓ I TORNAR A MODE CONVIDAT ---
 function logoutToGuestMode(toastMsg = "Has tornat a mode Convidat") {
   config.syncUser = "convidat";
@@ -1132,6 +1342,7 @@ async function deleteMyCloudData() {
   state = getInitialState();
   localStorage.setItem("aibuddy_state_convidat", JSON.stringify(state));
 
+  syncPomoInputsFromState();
   updateAllDisplays();
   if (statusBadge) statusBadge.textContent = "⚪ Convidat";
   showToast("🗑️ Compte i dades eliminats correctament");
@@ -1178,10 +1389,16 @@ initTheme();
 
 // --- INICIALITZACIÓ ---
 loadLocalState();
+pomoTotalSeconds = getPhaseDurationSeconds("focus");
+pomoCurrentSeconds = pomoTotalSeconds;
+updatePomodoroVisuals();
 updateAllDisplays();
+
 if (statusBadge) {
   statusBadge.textContent = isGuestMode() ? "⚪ Convidat" : `🟢 ${config.syncUser}`;
 }
+
+checkInitialOnboarding();
 pullRemoteState();
 
 // --- SISTEMA D'ACTUALITZACIONS AUTOMÀTIQUES (BASAT EN VERSION.JSON) ---
