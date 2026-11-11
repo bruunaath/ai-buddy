@@ -88,32 +88,88 @@
     + Guardat correctament
   </div>
 
-  <!-- MODAL DE GUIA (ONBOARDING) -->
+  <!-- MODAL DE GUIA (ONBOARDING COMPLET) -->
   <div id="onboarding-modal" role="dialog" aria-modal="true" aria-labelledby="onboarding-title" class="fixed inset-0 bg-black/65 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-    <div class="tactile-card rounded-3xl max-w-lg w-full p-6 space-y-4 text-left">
+    <div class="tactile-card rounded-3xl max-w-2xl w-full p-6 md:p-8 space-y-5 text-left max-h-[90vh] overflow-y-auto">
+      
+      <!-- Capçalera del Modal -->
       <div class="flex justify-between items-start gap-4 border-b border-theme pb-3">
         <div>
-          <span class="text-[10px] tracking-widest text-[#3D67C4] font-extrabold uppercase block">Guia Ràpida</span>
-          <h2 id="onboarding-title" class="text-lg font-extrabold">Com funciona AI Buddy?</h2>
+          <span class="text-[10px] tracking-widest text-[#3D67C4] font-extrabold uppercase block">Guia Completa d'Ús • AuDHD & Focus</span>
+          <h2 id="onboarding-title" class="text-lg md:text-xl font-extrabold">Com funciona AI Buddy al detall?</h2>
         </div>
-        <button type="button" onclick="closeOnboarding()" class="btn-pill text-xs px-2.5 py-1 rounded-lg font-bold">✕</button>
+        <button type="button" onclick="closeOnboarding()" aria-label="Tancar la guia" class="btn-pill text-xs px-2.5 py-1 rounded-lg font-bold shrink-0">✕</button>
       </div>
+
+      <!-- Introducció general -->
       <p class="text-xs opacity-85 leading-relaxed">
-        Cada eina té la seva pròpia pantalla amb transicions suaus perquè puguis concentrar-te en una sola cosa a la vegada.
+        <b>AI Buddy</b> és el teu assistent d'organització personal dissenyat per eliminar la paràlisi per anàlisi, la sobrecàrrega sensorial i el bloqueig executiu. Cada eina té la seva pròpia pantalla amb transicions suaus perquè puguis concentrar-te en una sola cosa a la vegada.
       </p>
-      <ul class="text-xs space-y-2 opacity-90">
-        <li>• <b>Activitat del Dia (Inici):</b> Et mostra directament la teva <i>To-Do List Ràpida</i> per anar tatxant tasques.</li>
-        <li>• <b>Historial i Percentatges:</b> Prem el botó <b>🕒 Historial</b> per veure els percentatges de progrés, la ratxa de dies i el cercador.</li>
-        <li>• <b>Rutina i Micro-passos:</b> Accedeix-hi des dels seus botons dedicats a sota.</li>
-      </ul>
-      <div class="flex justify-end pt-2 border-t border-theme">
-        <button type="button" onclick="closeOnboarding()" class="btn-accent font-extrabold px-5 py-2.5 rounded-xl text-xs">
-          Entesos!
+
+      <!-- Seccions detallades de totes les funcions -->
+      <div class="space-y-4 text-xs opacity-95">
+
+        <!-- 1. Inici, To-Do Ràpida i Historial -->
+        <div class="p-3.5 rounded-2xl border border-theme space-y-1.5">
+          <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">1. Activitat del Dia, To-Do Ràpida i Historial</h3>
+          <ul class="space-y-1.5 leading-relaxed">
+            <li>• <b>Activitat del Dia (Inici / To-Do List Ràpida):</b> És la pantalla principal d'acció directa. Apunta-hi encàrrecs i tasques del dia a dia, marca'ls com a fets amb un sol toc per anar-los tatxant o neteja les tasques completades quan acabis.</li>
+            <li>• <b>Historial, Estadístiques i Ratxa:</b> Prem el botó <b>Historial</b> per consultar el teu percentatge d'èxit i progrés diari, mantenir la teva ratxa de dies actius i utilitzar el cercador integrat per localitzar qualsevol tasca o registre passat.</li>
+          </ul>
+        </div>
+
+        <!-- 2. Desglossament i Micro-passos -->
+        <div class="p-3.5 rounded-2xl border border-theme space-y-1.5">
+          <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">2. Desglossament en Micro-passos i Plantilles</h3>
+          <ul class="space-y-1.5 leading-relaxed">
+            <li>• <b>Tasques i Micro-passos (Motor Local):</b> Quan una tasca et sembli una muntanya, escriu-la a la barra inferior i prem <b>Processar</b>. El motor heurístic local la dividirà automàticament en passos minúsculs i t'ensenanyarà <b>només un pas a la vegada</b> perquè avancis sense aclaparar-te.</li>
+            <li>• <b>Plantilles Anti-bloqueig:</b> Si no saps ni per on començar, dins la vista de Micro-passos tens plantilles predefinides d'un sol clic (<i>Planificar el dia, Començar temari, Respondre correus, Motxilla Universitat, Ordenar escriptori, Netejar cuina, Posar rentadora, Tràmits i papers</i>).</li>
+            <li>• <b>Controls de pas:</b> Fes servir els botons <b>‹ Anterior</b>, <b>OK / Fet ✓</b> (per avançar celebrant el progrés) o <b>Següent ›</b> per saltar un pas si cal.</li>
+          </ul>
+        </div>
+
+        <!-- 3. Pomodoro Sensorial -->
+        <div class="p-3.5 rounded-2xl border border-theme space-y-1.5">
+          <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">3. Pomodoro Sensorial i Cicles Automàtics</h3>
+          <ul class="space-y-1.5 leading-relaxed">
+            <li>• <b>Focus Visual Sense Estrès:</b> Temporitzador visual amb barra de progrés suau i acompanyament de l'avatar <i>Buddy</i>, que canvia d'il·lustració segons el teu estat (en focus estudiant, en pausa reflexionant, descansant o completat).</li>
+            <li>• <b>Descansos i Cicles Automàtics:</b> Per defecte funciona amb blocs de <b>25 min de focus</b>, seguits automàticament de <b>5 min de descans curt</b>. Quan completes <b>5 pomodoros</b>, s'activa un <b>descans llarg de 15 min</b>.</li>
+            <li>• <b>100% Personalitzable:</b> Pots pausar, reiniciar, saltar de fase o desplegar el panell de configuració ràpida per adaptar els minuts de focus, descans curt, descans llarg i número de cicles al teu nivell d'energia d'avui.</li>
+          </ul>
+        </div>
+
+        <!-- 4. Aparcament de Pensaments, Rutines i Hobbies -->
+        <div class="p-3.5 rounded-2xl border border-theme space-y-1.5">
+          <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">4. Ment Clara, Rutines i Recàrrega d'Energia</h3>
+          <ul class="space-y-1.5 leading-relaxed">
+            <li>• <b>Aparcament de Pensaments (Brain Dump):</b> Si et ve una idea intrusiva, un recordatori o una distracció mentre intentes concentrar-te, escriu-la a la caixa <i>"Aparcar pensament..."</i> i prem <b>Aparcar</b>. Quedarà guardada a la seva llista perquè no perdis el fil actual.</li>
+            <li>• <b>Rutina de Matí Guiada:</b> Crea i personalitza la teva seqüència diària per arrencar el dia sense haver de prendre decisions. Avança pas a pas amb el botó <b>OK</b>, afegeix passos nous o restaura-la quan ho necessitis.</li>
+            <li>• <b>Hobbies i Recàrrega:</b> Una llista personalitzable amb les teves activitats preferides de descans sa. Quan estiguis esgotat/da i no sàpigues com desconnectar, prem <b>Següent opció ›</b> per rebre idees sense caure en l'ús passiu de pantalles.</li>
+          </ul>
+        </div>
+
+        <!-- 5. Barra Superior, Privadesa, Núvol i PWA -->
+        <div class="p-3.5 rounded-2xl border border-theme space-y-1.5">
+          <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">5. Privadesa, Sincronització al Núvol i Ajustos</h3>
+          <ul class="space-y-1.5 leading-relaxed">
+            <li>• <b>⚪ Mode Convidat vs. ☁️ Sincronització (⚙️):</b> Per defecte treballes en mode <b>Convidat / Local</b> (100% privat a la memòria del teu navegador). Si entres a <b>Configuració (⚙️)</b>, pots crear un <b>Nom d'Usuari i Contrasenya</b> (xifrada amb SHA-256) per sincronitzar les dades al núvol (Supabase) entre mòbil i ordinador.</li>
+            <li>• <b>☀️ / 🌙 Tema Visual i App Instal·lable (PWA):</b> Canvia entre mode clar i fosc des de la barra superior per protegir la vista. A més, pots instal·lar AI Buddy a la pantalla d'inici del mòbil o a l'escriptori del PC, i t'avisarà amb un bàner quan hi hagi actualitzacions noves.</li>
+            <li>• <b>⚖️ Control de Dades (RGPD):</b> Des de Configuració tens accés directe per descarregar totes les teves dades en un fitxer <code>.JSON</code> (portabilitat) o eliminar el teu compte i les dades del núvol de forma immediata.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Peu del Modal -->
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-3 border-t border-theme">
+        <span class="text-[11px] opacity-75">Pots tornar a obrir aquesta guia sempre que vulguis prement el botó <b>❓</b> de la capçalera.</span>
+        <button type="button" onclick="closeOnboarding()" class="btn-accent font-extrabold px-6 py-2.5 rounded-xl text-xs w-full sm:w-auto shrink-0">
+          Entesos, som-hi! 🚀
         </button>
       </div>
+
     </div>
   </div>
-
   <!-- =========================================================
        CONTENIDOR CENTRAL AMB TRANSICIONS DINÀMIQUES SUAUS
        ========================================================= -->
@@ -135,7 +191,7 @@
             🔥 1 dia
           </span>
           <button type="button" onclick="switchView('view-history')" class="btn-primary text-xs font-extrabold px-3.5 py-1.5 rounded-full flex items-center gap-1.5" title="Veure percentatges i historial">
-            <span>🕒</span> <span>Historial i %</span>
+            <span>Historial i %</span>
           </button>
         </div>
       </div>
@@ -160,7 +216,7 @@
 
         <div class="flex justify-between items-center mt-3 pt-2.5 border-t border-theme">
           <p id="dash-feedback-msg" class="text-[11px] font-bold text-[#3D67C4] dark:text-[#6B9EE8]">
-            ✨ Marca les teves tasques ràpides o afegeix-ne més.
+            Marca les teves tasques ràpides o afegeix-ne més.
           </p>
           <button type="button" onclick="switchView('view-quick-todo')" class="text-xs font-extrabold text-[#2B4380] dark:text-[#F7E671] hover:underline">
             Obrir To-Do &#8250;
@@ -207,7 +263,7 @@
          ========================================== -->
     <section id="view-history" class="view-panel w-full flex flex-col items-center hidden text-left">
       <span class="text-xs tracking-widest text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase mb-3 text-center block w-full">
-        🕒 Resum de Progrés i Historial
+        Resum de Progrés i Historial
       </span>
 
       <!-- PERCENTATGES (KPIs) MOGUTS DINS DE LA PESTANYA D'HISTORIAL -->
@@ -266,7 +322,7 @@
          ========================================== -->
     <section id="view-tasks" class="view-panel w-full flex flex-col items-center hidden">
       <button type="button" onclick="switchView('view-templates')" class="w-full btn-accent font-extrabold py-3.5 px-5 rounded-2xl flex justify-between items-center text-xs sm:text-sm mb-6">
-        <span>📋 Plantilles ràpides antibloqueig</span>
+        <span>Plantilles ràpides antibloqueig</span>
         <span>Obrir &#8250;</span>
       </button>
 
@@ -356,7 +412,7 @@
         <div class="md:col-span-7 flex flex-col items-center w-full">
           <div class="w-full tactile-card rounded-3xl p-5 flex flex-col items-center mb-3.5">
             <div class="w-full flex justify-between items-center mb-2">
-              <span id="pomo-mode-badge" class="text-xs font-extrabold text-[#3D67C4] dark:text-[#F7E671] uppercase tracking-wider">🎯 Bloc de Focus</span>
+              <span id="pomo-mode-badge" class="text-xs font-extrabold text-[#3D67C4] dark:text-[#F7E671] uppercase tracking-wider">Bloc de Focus</span>
               <span id="pomo-time-display" class="text-sm font-mono font-extrabold">25:00</span>
             </div>
 
