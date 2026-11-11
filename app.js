@@ -115,13 +115,9 @@ const catalegTasquesTDAH = {
   }
 };
 
-// --- GRAELLA D'HÀBITS MATUTINS PREDETERMINATS (NOMÉS DINS LA PANTALLA DE RUTINA) ---
-const defaultRoutineCatalog = [
-];
-
-// --- GRAELLA DE HOBBIES DE DESCANS PREDETERMINATS ---
-const defaultHobbiesCatalog = [
-];
+// --- LLISTES PREDETERMINADES BUIDES (COMENCEN DES DE ZERO) ---
+const defaultRoutineCatalog = [];
+const defaultHobbiesCatalog = [];
 
 const defaultPomoConfig = {
   focusMin: 25,
@@ -139,9 +135,11 @@ function getInitialState() {
     currentIndex: 0,
     quickTodoList: [],
     parkedThoughts: [],
-    routineCatalog: JSON.parse(JSON.stringify(defaultRoutineCatalog)),
+    routineCatalog: [],
+    routineSteps: [],
     routineIndex: 0,
-    hobbiesCatalog: JSON.parse(JSON.stringify(defaultHobbiesCatalog)),
+    hobbiesCatalog: [],
+    hobbySteps: [],
     hobbyIndex: 0,
     pomoConfig: { ...defaultPomoConfig },
     completedPomodoros: 0,
@@ -152,7 +150,7 @@ function getInitialState() {
 }
 
 let state = getInitialState();
-let currentDashFilter = "all"; // 'all' | 'pending' (Només per a la To-Do List)
+let currentDashFilter = "all"; // 'all' | 'pending'
 
 let config = {
   supaUrl: "https://qstjwfqrkemyfzudtoxb.supabase.co",
@@ -190,6 +188,7 @@ const btnRoutineNext = document.getElementById("btn-routine-next");
 const btnRoutinePrev = document.getElementById("btn-routine-prev");
 
 const hobbiesCapsulesGrid = document.getElementById("hobbies-capsules-grid");
+const hobbyStepDisplay = document.getElementById("hobby-step-display");
 const hobbyInputNew = document.getElementById("hobby-input-new");
 const btnHobbyAdd = document.getElementById("btn-hobby-add");
 const btnHobbyReset = document.getElementById("btn-hobby-reset");
@@ -296,26 +295,24 @@ function setDashFilter(filter) {
 window.setDashFilter = setDashFilter;
 
 function renderDashboard() {
-  const greetEl = document.getElementById("dash-greeting");
   const dtEl = document.getElementById("dash-datetime");
   const streakBadge = document.getElementById("dash-streak-badge");
+  const settingsStreakPill = document.getElementById("settings-streak-pill");
 
   const now = new Date();
-  const hour = now.getHours();
-  const greetingPrefix = hour < 13 ? "Bon dia" : hour < 20 ? "Bona tarda" : "Bona nit";
-  const userName = isGuestMode() ? "Convidat" : config.syncUser;
-  if (greetEl) greetEl.textContent = `${greetingPrefix}, ${userName} 👋`;
-
   if (dtEl) {
     const formattedDate = now.toLocaleDateString("ca-ES", { weekday: "long", day: "numeric", month: "short" });
     const formattedTime = now.toLocaleTimeString("ca-ES", { hour: "2-digit", minute: "2-digit" });
     dtEl.textContent = `${formattedDate} · ${formattedTime}`;
   }
 
+  // Actualitza la píndola gamificada de la capçalera i la de Configuració
   const streakCount = calculateStreak();
-  if (streakBadge) streakBadge.textContent = `🔥 ${streakCount} ${streakCount === 1 ? "dia" : "dies"}`;
+  const streakLabel = `${streakCount} ${streakCount === 1 ? "dia" : "dies"}`;
+  if (streakBadge) streakBadge.textContent = `🔥 ${streakLabel} EN RATXA`;
+  if (settingsStreakPill) settingsStreakPill.textContent = `🔥 ${streakLabel}`;
 
-  // Percentatges i barres (ubicats dins de la pestanya d'Historial #view-history)
+  // Percentatges i barres (ubicats dins de Configuració #view-settings)
   const todos = state.quickTodoList || [];
   const totalTodos = todos.length;
   const doneTodos = todos.filter(t => t.completed).length;
@@ -341,7 +338,7 @@ function renderDashboard() {
   if (pctRoutineEl) pctRoutineEl.textContent = `${pctRoutine}%`;
   if (cntRoutineEl) cntRoutineEl.textContent = `${doneHabits}/${totalHabits} completats`;
 
-  // Widget d'Activitat del Dia (EXCLUSIVAMENT TO-DO LIST, sense rutina)
+  // Llista d'Activitat del Dia (Inici: To-Do List directa)
   const activeListEl = document.getElementById("dash-active-list");
   if (activeListEl) {
     activeListEl.innerHTML = "";
@@ -388,7 +385,7 @@ function renderDashboard() {
     }
   }
 
-  // Streaks dels últims 7 dies (a la pantalla d'Historial)
+  // Graella dels últims 7 dies de ratxa (dins de Configuració)
   const streakDaysEl = document.getElementById("dash-streak-days");
   if (streakDaysEl) {
     streakDaysEl.innerHTML = "";
@@ -399,8 +396,8 @@ function renderDashboard() {
       const iso = d.toISOString().slice(0, 10);
       const active = (state.activeDays || []).includes(iso) || i === 0;
       const cell = document.createElement("div");
-      cell.className = `p-2 rounded-xl flex flex-col items-center gap-1 border-2 ${active ? "bg-[#F7E671] text-[#1A1A1A] border-[#1E3264] font-extrabold" : "bg-subtle opacity-55 border-transparent"}`;
-      cell.innerHTML = `<span class="text-[10px]">${diesSetmana[d.getDay()]}</span><span class="text-xs">${active ? "🔥" : "·"}</span>`;
+      cell.className = `px-2 py-1.5 rounded-xl flex flex-col items-center gap-0.5 border-2 ${active ? "bg-[#F7E671] text-[#1A1A1A] border-white font-extrabold shadow-sm" : "bg-white/10 text-white/60 border-transparent"}`;
+      cell.innerHTML = `<span class="text-[9px] uppercase">${diesSetmana[d.getDay()]}</span><span class="text-xs">${active ? "🔥" : "·"}</span>`;
       streakDaysEl.appendChild(cell);
     }
   }
@@ -468,13 +465,13 @@ function renderTemplatesView() {
   });
 }
 
-// --- GRAELLA DE RUTINA GUIADA DE PASSOS ---
+// --- GRAELLA DE RUTINA GUIADA DE PASSOS (100% BUIDA D'INICI) ---
 function ensureCatalogsIntegrity() {
-  if (!Array.isArray(state.routineCatalog) || state.routineCatalog.length === 0) {
-    state.routineCatalog = JSON.parse(JSON.stringify(defaultRoutineCatalog));
+  if (!Array.isArray(state.routineCatalog)) {
+    state.routineCatalog = [];
   }
-  if (!Array.isArray(state.hobbiesCatalog) || state.hobbiesCatalog.length === 0) {
-    state.hobbiesCatalog = JSON.parse(JSON.stringify(defaultHobbiesCatalog));
+  if (!Array.isArray(state.hobbiesCatalog)) {
+    state.hobbiesCatalog = [];
   }
 }
 
@@ -490,59 +487,78 @@ function updateRoutineDisplay() {
 
   const selected = getSelectedRoutineHabits();
 
-  state.routineCatalog.forEach((habit, idx) => {
-    const capsule = document.createElement("div");
-    const isCurrentActive = habit.selected && selected[state.routineIndex]?.id === habit.id;
-    capsule.className = `habit-capsule ${habit.selected ? "selected" : ""} ${isCurrentActive ? "ring-4 ring-[#3D67C4]" : ""}`;
-    capsule.innerHTML = `
-      <div class="flex items-center gap-2.5 overflow-hidden">
-        <span class="text-lg shrink-0">${habit.icon || ""}</span>
-        <span class="text-xs sm:text-sm truncate">${habit.text}</span>
-      </div>
-      <span class="text-xs font-extrabold">${habit.selected ? "✓" : "+"}</span>
-    `;
-    capsule.addEventListener("click", () => {
-      state.routineCatalog[idx].selected = !state.routineCatalog[idx].selected;
-      state.routineIndex = 0;
-      saveState();
+  if (state.routineCatalog.length === 0) {
+    routineHabitsGrid.innerHTML = `<p class="text-xs opacity-60 text-center py-4 col-span-full">La teva rutina està buida. Escriu i afegeix el teu primer hàbit a sota per començar des de zero.</p>`;
+  } else {
+    state.routineCatalog.forEach((habit, idx) => {
+      const capsule = document.createElement("div");
+      const isCurrentActive = habit.selected && selected[state.routineIndex]?.id === habit.id;
+      capsule.className = `habit-capsule ${habit.selected ? "selected" : ""} ${isCurrentActive ? "ring-4 ring-[#3D67C4]" : ""}`;
+      capsule.innerHTML = `
+        <div class="flex items-center gap-2.5 overflow-hidden">
+          <span class="text-lg shrink-0">${habit.icon || "✨"}</span>
+          <span class="text-xs sm:text-sm truncate">${habit.text}</span>
+        </div>
+        <span class="text-xs font-extrabold">${habit.selected ? "✓" : "+"}</span>
+      `;
+      capsule.addEventListener("click", () => {
+        state.routineCatalog[idx].selected = !state.routineCatalog[idx].selected;
+        state.routineIndex = 0;
+        saveState();
+      });
+      routineHabitsGrid.appendChild(capsule);
     });
-    routineHabitsGrid.appendChild(capsule);
-  });
+  }
 
   if (routineStepDisplay) {
-    if (selected.length === 0) {
+    if (state.routineCatalog.length === 0) {
+      routineStepDisplay.textContent = "Afegeix el teu primer pas per crear la teva rutina";
+    } else if (selected.length === 0) {
       routineStepDisplay.textContent = "Selecciona els hàbits que vulguis fer avui";
     } else if (state.routineIndex < selected.length) {
       const curr = selected[state.routineIndex];
-      routineStepDisplay.textContent = `Pas actual (${state.routineIndex + 1}/${selected.length}): ${curr.icon} ${curr.text}`;
+      routineStepDisplay.textContent = `Pas actual (${state.routineIndex + 1}/${selected.length}): ${curr.icon || ""} ${curr.text}`;
     } else {
       routineStepDisplay.textContent = "🎉 Has completat tota la teva rutina!";
     }
   }
 }
 
-// --- GRAELLA DE HOBBIES DE DESCANS ---
+// --- GRAELLA DE HOBBIES DE DESCANS (100% BUIDA D'INICI) ---
 function updateHobbyDisplay() {
   ensureCatalogsIntegrity();
-  if (!hobbiesCapsulesGrid) return;
-  hobbiesCapsulesGrid.innerHTML = "";
+  if (hobbiesCapsulesGrid) {
+    hobbiesCapsulesGrid.innerHTML = "";
+    if (state.hobbiesCatalog.length === 0) {
+      hobbiesCapsulesGrid.innerHTML = `<p class="text-xs opacity-60 text-center py-4 col-span-full">La teva llista de hobbies està buida. Afegeix les teves activitats de descans a sota.</p>`;
+    } else {
+      state.hobbiesCatalog.forEach((hobby, idx) => {
+        const capsule = document.createElement("div");
+        capsule.className = `habit-capsule ${hobby.selected ? "selected" : ""}`;
+        capsule.innerHTML = `
+          <div class="flex items-center gap-2.5 overflow-hidden">
+            <span class="text-lg shrink-0">${hobby.icon || "🌟"}</span>
+            <span class="text-xs sm:text-sm truncate">${hobby.text}</span>
+          </div>
+          <span class="text-xs font-extrabold">${hobby.selected ? "✓" : ""}</span>
+        `;
+        capsule.addEventListener("click", () => {
+          state.hobbiesCatalog[idx].selected = !state.hobbiesCatalog[idx].selected;
+          saveState();
+        });
+        hobbiesCapsulesGrid.appendChild(capsule);
+      });
+    }
+  }
 
-  state.hobbiesCatalog.forEach((hobby, idx) => {
-    const capsule = document.createElement("div");
-    capsule.className = `habit-capsule ${hobby.selected ? "selected" : ""}`;
-    capsule.innerHTML = `
-      <div class="flex items-center gap-2.5 overflow-hidden">
-        <span class="text-lg shrink-0">${hobby.icon || ""}</span>
-        <span class="text-xs sm:text-sm truncate">${hobby.text}</span>
-      </div>
-      <span class="text-xs font-extrabold">${hobby.selected ? "✓" : ""}</span>
-    `;
-    capsule.addEventListener("click", () => {
-      state.hobbiesCatalog[idx].selected = !state.hobbiesCatalog[idx].selected;
-      saveState();
-    });
-    hobbiesCapsulesGrid.appendChild(capsule);
-  });
+  if (hobbyStepDisplay) {
+    if (state.hobbiesCatalog.length === 0) {
+      hobbyStepDisplay.textContent = "La teva llista de hobbies està buida.";
+    } else {
+      if (state.hobbyIndex >= state.hobbiesCatalog.length) state.hobbyIndex = 0;
+      hobbyStepDisplay.textContent = state.hobbiesCatalog[state.hobbyIndex].text;
+    }
+  }
 }
 
 // --- FUNCIONS BASE DE SESSIÓ I ESTAT ---
@@ -614,7 +630,8 @@ function ensurePomoConfigIntegrity() {
 
 function loadLocalState() {
   state = getInitialState();
-  const saved = localStorage.getItem(getLocalStorageKey());
+  const storageKey = getLocalStorageKey();
+  const saved = localStorage.getItem(storageKey);
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
@@ -623,6 +640,20 @@ function loadLocalState() {
       console.error("Error carregant estat local:", e);
     }
   }
+
+  // Migració automàtica per esborrar qualsevol rutina o hobby predeterminat antic guardat al navegador
+  const migrationKey = `aibuddy_empty_defaults_v2_${storageKey}`;
+  if (!localStorage.getItem(migrationKey)) {
+    state.routineCatalog = [];
+    state.routineSteps = [];
+    state.routineIndex = 0;
+    state.hobbiesCatalog = [];
+    state.hobbySteps = [];
+    state.hobbyIndex = 0;
+    localStorage.setItem(migrationKey, "true");
+    localStorage.setItem(storageKey, JSON.stringify(state));
+  }
+
   ensurePomoConfigIntegrity();
   ensureCatalogsIntegrity();
   syncPomoInputsFromState();
@@ -713,7 +744,6 @@ function switchView(viewId) {
     const target = document.getElementById(viewId);
     if (target) {
       target.classList.remove("hidden");
-      // Reiniciem l'animació CSS suau perquè sigui dinàmica cada cop que s'entra
       target.style.animation = "none";
       void target.offsetWidth;
       target.style.animation = "";
@@ -847,7 +877,10 @@ if (btnSend && taskInput) {
 if (btnRoutineOk) {
   btnRoutineOk.addEventListener("click", () => {
     const selected = getSelectedRoutineHabits();
-    if (selected.length === 0) return;
+    if (selected.length === 0) {
+      if (routineInputNew) routineInputNew.focus();
+      return;
+    }
     if (state.routineIndex < selected.length) {
       logActivity("routine", `Rutina: ${selected[state.routineIndex].text}`);
       state.routineIndex++;
@@ -894,11 +927,11 @@ if (btnRoutineAdd && routineInputNew) {
 
 if (btnRoutineReset) {
   btnRoutineReset.addEventListener("click", () => {
-    ensureCatalogsIntegrity();
-    state.routineCatalog.forEach(h => { h.selected = false; });
+    state.routineCatalog = [];
+    state.routineSteps = [];
     state.routineIndex = 0;
     saveState();
-    showToast("Rutina buidada");
+    showToast("Rutina buidada completament");
   });
 }
 
@@ -921,6 +954,8 @@ if (btnHobbyAdd && hobbyInputNew) {
 if (btnHobbyReset) {
   btnHobbyReset.addEventListener("click", () => {
     state.hobbiesCatalog = [];
+    state.hobbySteps = [];
+    state.hobbyIndex = 0;
     saveState();
     showToast("Llista de hobbies buidada");
   });
