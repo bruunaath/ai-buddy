@@ -16,26 +16,27 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="min-h-screen flex flex-col items-center justify-between p-4 md:p-6 font-sans relative transition-colors duration-200">
+<body class="min-h-screen flex flex-col items-center justify-between p-4 md:p-6 font-sans relative transition-colors duration-200 overflow-x-hidden">
 
   <!-- Barra superior discreta amb el nom de l'aplicació -->
   <div id="app-window-title" class="w-full max-w-2xl text-center text-[11px] font-bold opacity-60 pb-1 select-none">
     AI Buddy - Assistent personal per al teu dia a dia
   </div>
 
-  <!-- Capçalera Principal -->
-  <header id="main-header" class="w-full max-w-2xl grid grid-cols-3 items-center py-2.5 border-b-2 border-theme mb-4">
-    <div class="flex items-center">
-      <button type="button" onclick="openOnboarding()" aria-label="Obrir guia d'introducció" class="btn-pill text-xs px-3.5 py-1.5 rounded-full font-bold flex items-center gap-1.5">
+  <!-- Capçalera Principal (Adaptada a mòbil sense solapaments) -->
+  <header id="main-header" class="w-full max-w-2xl flex justify-between items-center gap-2 py-2.5 border-b-2 border-theme mb-4">
+    <!-- Botó esquerre: Guia -->
+    <div class="flex items-center shrink-0">
+      <button type="button" onclick="openOnboarding()" aria-label="Obrir guia d'introducció" class="btn-pill text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1">
         <span>❓</span>
         <span class="hidden sm:inline">Guia</span>
       </button>
     </div>
 
-    <!-- TÍTOL CENTRAL "AI BUDDY" ESTIL "SO MATCHA" (LLETRES ULTRA-GRUIXUDES ENCAVALCADES EN BLAU COBALT) -->
-    <div class="flex justify-center items-center cursor-pointer select-none" onclick="switchView('view-menu')" title="Anar a l'inici">
-      <div class="relative inline-flex items-center justify-center py-1">
-        <svg class="h-14 sm:h-16 w-auto overflow-visible" viewBox="0 0 360 105" xmlns="http://www.w3.org/2000/svg" aria-label="AI Buddy">
+    <!-- TÍTOL CENTRAL "AI BUDDY" ESTIL "SO MATCHA" -->
+    <div class="flex justify-center items-center cursor-pointer select-none min-w-0 flex-1" onclick="switchView('view-menu')" title="Anar a l'inici">
+      <div class="relative inline-flex items-center justify-center py-0.5">
+        <svg class="h-11 sm:h-16 w-auto max-w-[165px] sm:max-w-none overflow-visible" viewBox="0 0 360 105" xmlns="http://www.w3.org/2000/svg" aria-label="AI Buddy">
           <g class="matcha-bubble-group">
             <!-- Lletres superposades d'esquerra a dreta amb contorn del color del fons com a la imatge "so matcha" -->
             <text x="15" y="64" class="matcha-letter" transform="rotate(-4 28 50)">a</text>
@@ -70,14 +71,15 @@
       </div>
     </div>
 
-    <div class="flex justify-end items-center gap-1.5">
-      <span id="status-badge" onclick="switchView('view-settings')" title="Usuari i sincronització" class="cursor-pointer text-xs btn-pill px-3 py-1.5 rounded-full flex items-center gap-1.5 truncate max-w-[120px] font-bold">
+    <!-- Botons drets: Estat, Tema i Configuració -->
+    <div class="flex justify-end items-center gap-1.5 shrink-0">
+      <span id="status-badge" onclick="switchView('view-settings')" title="Usuari i sincronització" class="cursor-pointer text-[11px] btn-pill px-2.5 py-1.5 rounded-full hidden sm:flex items-center gap-1 truncate max-w-[110px] font-bold">
         ⚪ Convidat
       </span>
-      <button type="button" onclick="toggleTheme()" id="btn-theme-toggle" aria-label="Canviar entre mode clar i fosc" class="btn-pill text-xs px-2.5 py-1.5 rounded-full" title="Mode clar / nocturn">
+      <button type="button" onclick="toggleTheme()" id="btn-theme-toggle" aria-label="Canviar entre mode clar i fosc" class="btn-pill text-xs w-8 h-8 rounded-full flex items-center justify-center shrink-0" title="Mode clar / nocturn">
         🌙
       </button>
-      <button type="button" onclick="switchView('view-settings')" class="btn-pill text-xs px-2.5 py-1.5 rounded-full" title="Configuració, Percentatges i Historial">
+      <button type="button" onclick="switchView('view-settings')" aria-label="Obrir configuració i historial" class="btn-pill text-xs w-8 h-8 rounded-full flex items-center justify-center shrink-0" title="Configuració, Percentatges i Historial">
         ⚙️
       </button>
     </div>
@@ -176,29 +178,28 @@
          ========================================== -->
     <section id="view-menu" class="view-panel w-full flex flex-col gap-4 text-left">
 
-      <!-- 1. NOU BÀNER DE RATXA ESTIL PUBLI / GAMIFICACIÓ (SENSE SALUTACIÓ) -->
-      <div onclick="switchView('view-settings')" class="cursor-pointer rounded-3xl p-4 sm:p-5 bg-gradient-to-r from-[#1E3264] via-[#2B4380] to-[#3D67C4] text-white border-2 border-[#1E3264] shadow-lg hover:scale-[1.01] transition-transform flex flex-wrap justify-between items-center gap-3">
-        <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-2xl bg-[#F7E671] border-2 border-white flex items-center justify-center text-2xl shadow-md shrink-0">
+      <!-- 1. BÀNER DE RATXA ESTIL PUBLI / GAMIFICACIÓ (Ben alineat en mòbil) -->
+      <div onclick="switchView('view-settings')" class="cursor-pointer rounded-3xl p-4 sm:p-5 bg-gradient-to-r from-[#1E3264] via-[#2B4380] to-[#3D67C4] text-white border-2 border-[#1E3264] shadow-lg hover:scale-[1.01] transition-transform flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <div class="w-11 h-11 rounded-2xl bg-[#F7E671] border-2 border-white flex items-center justify-center text-xl shadow-md shrink-0">
             🔥
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-[10px] uppercase tracking-widest font-extrabold text-[#F7E671]">Impuls Diari Actiu</span>
-              <span class="text-[10px] opacity-75 font-semibold">·</span>
-              <span id="dash-datetime" class="text-[10px] opacity-90 font-bold">Avui</span>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+              <span class="text-[10px] uppercase tracking-wider font-extrabold text-[#F7E671] whitespace-nowrap">Impuls Diari Actiu</span>
+              <span id="dash-datetime" class="text-[10px] text-white/80 font-semibold whitespace-nowrap">Avui</span>
             </div>
-            <p class="text-sm sm:text-base font-extrabold leading-tight mt-0.5">
+            <p class="text-xs sm:text-sm font-extrabold leading-snug mt-0.5">
               Suma un pas avui i mantén la teva ratxa imparable!
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2 ml-auto">
-          <span id="dash-streak-badge" class="bg-[#F7E671] text-[#1A1A1A] text-xs font-extrabold px-4 py-2 rounded-full border-2 border-white shadow-md">
+        <div class="flex items-center justify-end gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t border-white/15 sm:border-0">
+          <span id="dash-streak-badge" class="bg-[#F7E671] text-[#1A1A1A] text-xs font-extrabold px-3.5 py-1.5 rounded-full border-2 border-white shadow-md whitespace-nowrap">
             🔥 1 dia EN RATXA
           </span>
-          <span class="bg-white/15 hover:bg-white/25 text-white text-[11px] font-extrabold px-3 py-2 rounded-full border border-white/30 transition hidden sm:inline-block">
+          <span class="bg-white/15 hover:bg-white/25 text-white text-[11px] font-extrabold px-3 py-1.5 rounded-full border border-white/30 transition whitespace-nowrap">
             Estadístiques &#8250;
           </span>
         </div>
@@ -206,15 +207,15 @@
 
       <!-- 2. Widget d'Activitat del Dia (EXCLUSIVAMENT PER A LA TO-DO LIST) -->
       <div class="tactile-card rounded-3xl p-4 sm:p-5">
-        <div class="flex justify-between items-center mb-3">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#3D67C4]"></span>
-            <span class="text-xs font-extrabold uppercase tracking-wider text-[#2B4380] dark:text-[#F7E671]">Activitat del Dia · To-Do List</span>
+        <div class="flex justify-between items-center gap-2 mb-3">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#3D67C4] shrink-0"></span>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-[#2B4380] dark:text-[#F7E671] truncate">Activitat del Dia · To-Do</span>
           </div>
           <!-- Selector només per a la To-Do List (Totes vs Pendents) -->
-          <div class="flex gap-1 bg-subtle p-1 rounded-xl text-[11px] font-bold border border-theme">
-            <button type="button" onclick="setDashFilter('all')" id="dash-tab-all" class="px-3 py-1 rounded-lg bg-[#3D67C4] text-white transition">Totes</button>
-            <button type="button" onclick="setDashFilter('pending')" id="dash-tab-pending" class="px-3 py-1 rounded-lg opacity-75 hover:opacity-100 transition">Pendents</button>
+          <div class="flex gap-1 bg-subtle p-1 rounded-xl text-[11px] font-bold border border-theme shrink-0">
+            <button type="button" onclick="setDashFilter('all')" id="dash-tab-all" class="px-2.5 py-1 rounded-lg bg-[#3D67C4] text-white transition">Totes</button>
+            <button type="button" onclick="setDashFilter('pending')" id="dash-tab-pending" class="px-2.5 py-1 rounded-lg opacity-75 hover:opacity-100 transition">Pendents</button>
           </div>
         </div>
 
@@ -222,11 +223,11 @@
           <!-- Es mostren únicament les tasques de la To-Do List -->
         </div>
 
-        <div class="flex justify-between items-center mt-3 pt-2.5 border-t border-theme">
-          <p id="dash-feedback-msg" class="text-[11px] font-bold text-[#3D67C4] dark:text-[#6B9EE8]">
+        <div class="flex justify-between items-center gap-3 mt-3 pt-2.5 border-t border-theme">
+          <p id="dash-feedback-msg" class="text-[11px] font-bold text-[#3D67C4] dark:text-[#6B9EE8] leading-snug flex-1">
             Marca les teves tasques ràpides o afegeix-ne més.
           </p>
-          <button type="button" onclick="switchView('view-quick-todo')" class="text-xs font-extrabold text-[#2B4380] dark:text-[#F7E671] hover:underline">
+          <button type="button" onclick="switchView('view-quick-todo')" class="text-xs font-extrabold text-[#2B4380] dark:text-[#F7E671] hover:underline whitespace-nowrap shrink-0">
             Obrir To-Do &#8250;
           </button>
         </div>
@@ -603,10 +604,10 @@
         <!-- Mètrica de continuïtat (Streaks dels últims 7 dies) -->
         <div class="bg-subtle border border-theme rounded-2xl p-3.5">
           <span class="text-xs font-extrabold block mb-2.5">🔥 Continuïtat dels últims 7 dies</span>
-          <div id="dash-streak-days" class="grid grid-cols-7 gap-2 text-center"></div>
+          <div id="dash-streak-days" class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center"></div>
         </div>
 
-       <!-- Cercador i registre d'activitat (Adaptat a pantalles de mòbil / WhatsApp) -->
+        <!-- Cercador i registre d'activitat (Adaptat a pantalles de mòbil / WhatsApp) -->
         <div class="space-y-3 pt-1 w-full overflow-hidden">
           <div class="flex flex-col sm:flex-row gap-2 w-full">
             <input type="text" id="history-search-input" placeholder="🔍 Cerca tasques, pensaments..." class="w-full min-w-0 flex-1 bg-subtle border border-theme rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#3D67C4]" />
@@ -620,6 +621,7 @@
 
           <div id="dash-history-list" class="space-y-2 max-h-[180px] overflow-y-auto pr-1 text-xs"></div>
         </div>
+      </div>
 
       <!-- BLOC 2: COMPTE, SINCRONITZACIÓ I POMODORO -->
       <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-5 mb-6 items-start">
