@@ -12,7 +12,7 @@ localStorage.removeItem("aibuddy_sync_pass");
 const catalegTasquesTDAH = {
   planificar_dia: {
     titol: "Planificar el dia",
-    icona: "📅",
+    icona: "",
     descripcio: "Organitza les prioritats del dia en 5 passos clars sense saturar-te.",
     paraules_clau: ["planificar", "organitzar", "agenda", "llista", "dia", "horari", "calendari"],
     passos: [
@@ -25,7 +25,7 @@ const catalegTasquesTDAH = {
   },
   estudiar_temari: {
     titol: "Començar temari d'estudi",
-    icona: "📚",
+    icona: "",
     descripcio: "Trenca el bloqueig inicial d'estudiar o llegir un document dens pas a pas.",
     paraules_clau: ["estudiar", "temari", "examen", "apunts", "universitat", "uni", "llegir", "deures"],
     passos: [
@@ -38,7 +38,7 @@ const catalegTasquesTDAH = {
   },
   respondre_correus: {
     titol: "Respondre correus pendents",
-    icona: "✉️",
+    icona: "",
     descripcio: "Contesta missatges acumulats sense caure en el perfeccionisme.",
     paraules_clau: ["correu", "correus", "mail", "email", "safata", "respondre", "redactar"],
     passos: [
@@ -51,7 +51,7 @@ const catalegTasquesTDAH = {
   },
   motxilla_uni: {
     titol: "Motxilla Universitat",
-    icona: "🎒",
+    icona: "",
     descripcio: "Revisa i prepara el material bàsic per sortir de casa amb tranquil·litat.",
     paraules_clau: ["motxilla", "uni", "universitat", "clase", "ordinador", "carregador", "claus"],
     passos: [
@@ -65,7 +65,7 @@ const catalegTasquesTDAH = {
   },
   ordenar_escriptori: {
     titol: "Ordenar escriptori",
-    icona: "🖥️",
+    icona: "",
     descripcio: "Recupera un espai de treball net i lliure de soroll visual en pocs minuts.",
     paraules_clau: ["escriptori", "taula", "ordenar", "endreçar", "habitació", "recollir"],
     passos: [
@@ -78,7 +78,7 @@ const catalegTasquesTDAH = {
   },
   netejar_cuina: {
     titol: "Netejar cuina",
-    icona: "🍽️",
+    icona: "",
     descripcio: "Seqüència guiada per recollir plats i netejar el marbre sense atabalar-se.",
     paraules_clau: ["cuina", "plats", "fregadera", "marbre", "escurar", "aiguera", "rentaplats"],
     passos: [
@@ -91,7 +91,7 @@ const catalegTasquesTDAH = {
   },
   posar_rentadora: {
     titol: "Posar rentadora",
-    icona: "🧺",
+    icona: "",
     descripcio: "Passos concrets per separar una tanda de roba i posar-la en marxa.",
     paraules_clau: ["rentadora", "bugada", "rentar roba", "cistell"],
     passos: [
@@ -102,7 +102,7 @@ const catalegTasquesTDAH = {
   },
   tramits_administratius: {
     titol: "Tràmits i papers",
-    icona: "📄",
+    icona: "",
     descripcio: "Completa formularis o gestions pas a pas amb tota la documentació a mà.",
     paraules_clau: ["tràmit", "tramit", "paperassa", "factura", "banc", "cita", "formulari", "dni"],
     passos: [
@@ -117,22 +117,10 @@ const catalegTasquesTDAH = {
 
 // --- GRAELLA D'HÀBITS MATUTINS PREDETERMINATS (NOMÉS DINS LA PANTALLA DE RUTINA) ---
 const defaultRoutineCatalog = [
-  { id: "wake_up", text: "Wake up", icon: "⏰", selected: true },
-  { id: "make_bed", text: "Make bed", icon: "🛏️", selected: true },
-  { id: "drink_water", text: "Drink water", icon: "💧", selected: true },
-  { id: "brush_teeth", text: "Brush teeth", icon: "🪥", selected: true },
-  { id: "breakfast", text: "Breakfast", icon: "🥣", selected: true },
-  { id: "stretch", text: "Stretch 3 min", icon: "🧘", selected: false }
 ];
 
 // --- GRAELLA DE HOBBIES DE DESCANS PREDETERMINATS ---
 const defaultHobbiesCatalog = [
-  { id: "read", text: "Llegir un capítol", icon: "📖", selected: true },
-  { id: "music", text: "Escoltar música", icon: "🎧", selected: true },
-  { id: "draw", text: "Dibuixar o pintar", icon: "🎨", selected: false },
-  { id: "gaming", text: "Jugar una partida curta", icon: "🎮", selected: true },
-  { id: "walk", text: "Prendre l'aire 10 min", icon: "🌿", selected: false },
-  { id: "tea", text: "Fer una infusió calenta", icon: "🍵", selected: false }
 ];
 
 const defaultPomoConfig = {
@@ -508,7 +496,7 @@ function updateRoutineDisplay() {
     capsule.className = `habit-capsule ${habit.selected ? "selected" : ""} ${isCurrentActive ? "ring-4 ring-[#3D67C4]" : ""}`;
     capsule.innerHTML = `
       <div class="flex items-center gap-2.5 overflow-hidden">
-        <span class="text-lg shrink-0">${habit.icon || "🌅"}</span>
+        <span class="text-lg shrink-0">${habit.icon || ""}</span>
         <span class="text-xs sm:text-sm truncate">${habit.text}</span>
       </div>
       <span class="text-xs font-extrabold">${habit.selected ? "✓" : "+"}</span>
@@ -544,7 +532,7 @@ function updateHobbyDisplay() {
     capsule.className = `habit-capsule ${hobby.selected ? "selected" : ""}`;
     capsule.innerHTML = `
       <div class="flex items-center gap-2.5 overflow-hidden">
-        <span class="text-lg shrink-0">${hobby.icon || "🎨"}</span>
+        <span class="text-lg shrink-0">${hobby.icon || ""}</span>
         <span class="text-xs sm:text-sm truncate">${hobby.text}</span>
       </div>
       <span class="text-xs font-extrabold">${hobby.selected ? "✓" : ""}</span>
@@ -1145,7 +1133,7 @@ function handlePhaseCompletion() {
 
   if (pomoPhase === "focus") {
     state.completedPomodoros = (state.completedPomodoros || 0) + 1;
-    logActivity("todo", `🍅 Pomodoro #${state.completedPomodoros} completat`);
+    logActivity("todo", ` Pomodoro #${state.completedPomodoros} completat`);
     saveState();
     const isLongBreakDue = state.completedPomodoros % cfg.cyclesBeforeLong === 0;
     setupPomodoroPhase(isLongBreakDue ? "longBreak" : "shortBreak", true);
@@ -1166,9 +1154,9 @@ function updatePomodoroVisuals() {
   if (pomoTimeDisplay) pomoTimeDisplay.textContent = formatSeconds(pomoCurrentSeconds);
 
   if (pomoModeBadge) {
-    if (pomoPhase === "focus") pomoModeBadge.textContent = `🎯 Bloc de Focus`;
-    else if (pomoPhase === "shortBreak") pomoModeBadge.textContent = `☕ Descans Curt`;
-    else pomoModeBadge.textContent = `🌿 Descans Llarg`;
+    if (pomoPhase === "focus") pomoModeBadge.textContent = ` Bloc de Focus`;
+    else if (pomoPhase === "shortBreak") pomoModeBadge.textContent = ` Descans Curt`;
+    else pomoModeBadge.textContent = ` Descans Llarg`;
   }
 
   if (pomoCurrentSeconds <= 0) {
