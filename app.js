@@ -385,7 +385,7 @@ function renderDashboard() {
     }
   }
 
-  // Graella dels últims 7 dies de ratxa (dins de Configuració)
+ // Graella dels últims 7 dies de ratxa (dins de Configuració - llegible en mode clar i fosc)
   const streakDaysEl = document.getElementById("dash-streak-days");
   if (streakDaysEl) {
     streakDaysEl.innerHTML = "";
@@ -396,8 +396,10 @@ function renderDashboard() {
       const iso = d.toISOString().slice(0, 10);
       const active = (state.activeDays || []).includes(iso) || i === 0;
       const cell = document.createElement("div");
-      cell.className = `px-2 py-1.5 rounded-xl flex flex-col items-center gap-0.5 border-2 ${active ? "bg-[#F7E671] text-[#1A1A1A] border-white font-extrabold shadow-sm" : "bg-white/10 text-white/60 border-transparent"}`;
-      cell.innerHTML = `<span class="text-[9px] uppercase">${diesSetmana[d.getDay()]}</span><span class="text-xs">${active ? "🔥" : "·"}</span>`;
+      cell.className = active
+        ? "py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 border-2 bg-[#F7E671] text-[#1A1A1A] border-[#1E3264] font-extrabold shadow-sm"
+        : "py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 border border-theme bg-white/70 dark:bg-slate-800/60 text-[#2A3140] dark:text-slate-300 font-bold opacity-80";
+      cell.innerHTML = `<span class="text-[10px] uppercase tracking-tighter">${diesSetmana[d.getDay()]}</span><span class="text-xs leading-none">${active ? "🔥" : "·"}</span>`;
       streakDaysEl.appendChild(cell);
     }
   }
