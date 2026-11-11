@@ -606,12 +606,12 @@
           <div id="dash-streak-days" class="grid grid-cols-7 gap-2 text-center"></div>
         </div>
 
-        <!-- Cercador i registre d'activitat -->
-        <div class="space-y-3 pt-1">
-          <div class="flex gap-2">
-            <input type="text" id="history-search-input" placeholder="🔍 Cerca tasques completades, pensaments..." class="flex-1 bg-subtle border border-theme rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#3D67C4]" />
-            <select id="history-type-filter" aria-label="Filtrar per tipus" class="bg-subtle border border-theme rounded-xl px-3 py-2 text-xs font-bold">
-              <option value="all">Tots</option>
+       <!-- Cercador i registre d'activitat (Adaptat a pantalles de mòbil / WhatsApp) -->
+        <div class="space-y-3 pt-1 w-full overflow-hidden">
+          <div class="flex flex-col sm:flex-row gap-2 w-full">
+            <input type="text" id="history-search-input" placeholder="🔍 Cerca tasques, pensaments..." class="w-full min-w-0 flex-1 bg-subtle border border-theme rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#3D67C4]" />
+            <select id="history-type-filter" aria-label="Filtrar per tipus" class="w-full sm:w-auto shrink-0 bg-subtle border border-theme rounded-xl px-3 py-2 text-xs font-extrabold text-[#2A3140] dark:text-[#E6E9F0] focus:outline-none focus:border-[#3D67C4]">
+              <option value="all">Tots els registres</option>
               <option value="todo">Tasques</option>
               <option value="thought">Pensaments</option>
               <option value="routine">Rutina</option>
@@ -620,7 +620,6 @@
 
           <div id="dash-history-list" class="space-y-2 max-h-[180px] overflow-y-auto pr-1 text-xs"></div>
         </div>
-      </div>
 
       <!-- BLOC 2: COMPTE, SINCRONITZACIÓ I POMODORO -->
       <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-5 mb-6 items-start">
