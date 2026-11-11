@@ -77,7 +77,7 @@
       <button type="button" onclick="toggleTheme()" id="btn-theme-toggle" aria-label="Canviar entre mode clar i fosc" class="btn-pill text-xs px-2.5 py-1.5 rounded-full" title="Mode clar / nocturn">
         🌙
       </button>
-      <button type="button" onclick="switchView('view-settings')" aria-label="Obrir configuració" class="btn-pill text-xs px-2.5 py-1.5 rounded-full" title="Configuració">
+      <button type="button" onclick="switchView('view-settings')" class="btn-pill text-xs px-2.5 py-1.5 rounded-full" title="Configuració, Percentatges i Historial">
         ⚙️
       </button>
     </div>
@@ -88,7 +88,7 @@
     + Guardat correctament
   </div>
 
-  <!-- MODAL DE GUIA (ONBOARDING COMPLET) -->
+  <!-- MODAL DE GUIA (ONBOARDING COMPLET I ACTUALITZAT) -->
   <div id="onboarding-modal" role="dialog" aria-modal="true" aria-labelledby="onboarding-title" class="fixed inset-0 bg-black/65 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
     <div class="tactile-card rounded-3xl max-w-2xl w-full p-6 md:p-8 space-y-5 text-left max-h-[90vh] overflow-y-auto">
       
@@ -109,12 +109,12 @@
       <!-- Seccions detallades de totes les funcions -->
       <div class="space-y-4 text-xs opacity-95">
 
-        <!-- 1. Inici, To-Do Ràpida i Historial -->
+        <!-- 1. Inici, Bàner de Ratxa i To-Do Ràpida -->
         <div class="p-3.5 rounded-2xl border border-theme space-y-1.5">
-          <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">1. Activitat del Dia, To-Do Ràpida i Historial</h3>
+          <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">1. Activitat del Dia (To-Do Ràpida) i Bàner de Ratxa</h3>
           <ul class="space-y-1.5 leading-relaxed">
-            <li>• <b>Activitat del Dia (Inici / To-Do List Ràpida):</b> És la pantalla principal d'acció directa. Apunta-hi encàrrecs i tasques del dia a dia, marca'ls com a fets amb un sol toc per anar-los tatxant o neteja les tasques completades quan acabis.</li>
-            <li>• <b>Historial, Estadístiques i Ratxa:</b> Prem el botó <b>Historial</b> per consultar el teu percentatge d'èxit i progrés diari, mantenir la teva ratxa de dies actius i utilitzar el cercador integrat per localitzar qualsevol tasca o registre passat.</li>
+            <li>• <b>Activitat del Dia (Inici):</b> Et mostra directament la teva <i>To-Do List Ràpida</i> sense salutacions ni distraccions innecessàries. Apunta encàrrecs, marca'ls com a fets amb un sol toc o filtra només els pendents.</li>
+            <li>• <b>Bàner Gamificat de Ratxa:</b> A la pantalla principal tens un bàner visual amb la teva ratxa de dies actius consecutius. Si hi fas clic, et portarà directament al teu panell d'historial i percentatges dins de <b>Configuració (⚙️)</b>.</li>
           </ul>
         </div>
 
@@ -122,9 +122,8 @@
         <div class="p-3.5 rounded-2xl border border-theme space-y-1.5">
           <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">2. Desglossament en Micro-passos i Plantilles</h3>
           <ul class="space-y-1.5 leading-relaxed">
-            <li>• <b>Tasques i Micro-passos (Motor Local):</b> Quan una tasca et sembli una muntanya, escriu-la a la barra inferior i prem <b>Processar</b>. El motor heurístic local la dividirà automàticament en passos minúsculs i t'ensenanyarà <b>només un pas a la vegada</b> perquè avancis sense aclaparar-te.</li>
-            <li>• <b>Plantilles Anti-bloqueig:</b> Si no saps ni per on començar, dins la vista de Micro-passos tens plantilles predefinides d'un sol clic (<i>Planificar el dia, Començar temari, Respondre correus, Motxilla Universitat, Ordenar escriptori, Netejar cuina, Posar rentadora, Tràmits i papers</i>).</li>
-            <li>• <b>Controls de pas:</b> Fes servir els botons <b>‹ Anterior</b>, <b>OK / Fet ✓</b> (per avançar celebrant el progrés) o <b>Següent ›</b> per saltar un pas si cal.</li>
+            <li>• <b>Tasques i Micro-passos (Motor Local):</b> Escriu qualsevol tasca feixuga a la barra inferior i prem <b>Processar</b>. L'app la dividirà en passos minúsculs i t'ensenyarà <b>només un pas a la vegada</b>.</li>
+            <li>• <b>Plantilles Anti-bloqueig:</b> Si et costa arrencar, tria una de les 8 plantilles ràpides (<i>Planificar el dia, Començar temari, Respondre correus, Motxilla Universitat, Ordenar escriptori, Netejar cuina, Posar rentadora, Tràmits i papers</i>).</li>
           </ul>
         </div>
 
@@ -132,29 +131,25 @@
         <div class="p-3.5 rounded-2xl border border-theme space-y-1.5">
           <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">3. Pomodoro Sensorial i Cicles Automàtics</h3>
           <ul class="space-y-1.5 leading-relaxed">
-            <li>• <b>Focus Visual Sense Estrès:</b> Temporitzador visual amb barra de progrés suau i acompanyament de l'avatar <i>Buddy</i>, que canvia d'il·lustració segons el teu estat (en focus estudiant, en pausa reflexionant, descansant o completat).</li>
-            <li>• <b>Descansos i Cicles Automàtics:</b> Per defecte funciona amb blocs de <b>25 min de focus</b>, seguits automàticament de <b>5 min de descans curt</b>. Quan completes <b>5 pomodoros</b>, s'activa un <b>descans llarg de 15 min</b>.</li>
-            <li>• <b>100% Personalitzable:</b> Pots pausar, reiniciar, saltar de fase o desplegar el panell de configuració ràpida per adaptar els minuts de focus, descans curt, descans llarg i número de cicles al teu nivell d'energia d'avui.</li>
+            <li>• <b>Focus Visual i Descansos:</b> Barra de progrés suau amb l'avatar <i>Buddy</i> que canvia segons l'estat. Funciona amb blocs de <b>25 min de focus</b>, <b>5 min de descans curt</b> i <b>15 min de descans llarg</b> cada 5 cicles (100% personalitzable).</li>
           </ul>
         </div>
 
         <!-- 4. Aparcament de Pensaments, Rutines i Hobbies -->
         <div class="p-3.5 rounded-2xl border border-theme space-y-1.5">
-          <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">4. Ment Clara, Rutines i Recàrrega d'Energia</h3>
+          <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">4. Ment Clara, Rutines i Recàrrega des de Zero</h3>
           <ul class="space-y-1.5 leading-relaxed">
-            <li>• <b>Aparcament de Pensaments (Brain Dump):</b> Si et ve una idea intrusiva, un recordatori o una distracció mentre intentes concentrar-te, escriu-la a la caixa <i>"Aparcar pensament..."</i> i prem <b>Aparcar</b>. Quedarà guardada a la seva llista perquè no perdis el fil actual.</li>
-            <li>• <b>Rutina de Matí Guiada:</b> Crea i personalitza la teva seqüència diària per arrencar el dia sense haver de prendre decisions. Avança pas a pas amb el botó <b>OK</b>, afegeix passos nous o restaura-la quan ho necessitis.</li>
-            <li>• <b>Hobbies i Recàrrega:</b> Una llista personalitzable amb les teves activitats preferides de descans sa. Quan estiguis esgotat/da i no sàpigues com desconnectar, prem <b>Següent opció ›</b> per rebre idees sense caure en l'ús passiu de pantalles.</li>
+            <li>• <b>Aparcament de Pensaments:</b> Apunta qualsevol idea intrusiva o distracció a la caixa inferior per buidar el cap sense perdre el focus.</li>
+            <li>• <b>Rutina Guiada i Hobbies:</b> Comencen 100% en blanc perquè hi afegeixis únicament els teus propis hàbits i activitats de descans real.</li>
           </ul>
         </div>
 
-        <!-- 5. Barra Superior, Privadesa, Núvol i PWA -->
+        <!-- 5. Configuració, Historial Integrat i Privadesa -->
         <div class="p-3.5 rounded-2xl border border-theme space-y-1.5">
-          <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">5. Privadesa, Sincronització al Núvol i Ajustos</h3>
+          <h3 class="font-extrabold text-[#3D67C4] uppercase tracking-wider text-[11px]">5. Configuració (⚙️): Historial, Percentatges i Compte</h3>
           <ul class="space-y-1.5 leading-relaxed">
-            <li>• <b>⚪ Mode Convidat vs. ☁️ Sincronització (⚙️):</b> Per defecte treballes en mode <b>Convidat / Local</b> (100% privat a la memòria del teu navegador). Si entres a <b>Configuració (⚙️)</b>, pots crear un <b>Nom d'Usuari i Contrasenya</b> (xifrada amb SHA-256) per sincronitzar les dades al núvol (Supabase) entre mòbil i ordinador.</li>
-            <li>• <b>☀️ / 🌙 Tema Visual i App Instal·lable (PWA):</b> Canvia entre mode clar i fosc des de la barra superior per protegir la vista. A més, pots instal·lar AI Buddy a la pantalla d'inici del mòbil o a l'escriptori del PC, i t'avisarà amb un bàner quan hi hagi actualitzacions noves.</li>
-            <li>• <b>⚖️ Control de Dades (RGPD):</b> Des de Configuració tens accés directe per descarregar totes les teves dades en un fitxer <code>.JSON</code> (portabilitat) o eliminar el teu compte i les dades del núvol de forma immediata.</li>
+            <li>• <b>Historial i Percentatges dins de Configuració (⚙️):</b> Prem el botó <b>⚙️</b> de dalt a la dreta (o el bàner de ratxa) per veure dins de Configuració el teu resum complet: percentatge de tasques To-Do i de Rutina, calendari de continuïtat dels últims 7 dies i el <b>cercador d'historial d'activitat</b>.</li>
+            <li>• <b>Sincronització i Privadesa (RGPD):</b> Des de la mateixa pantalla de <b>Configuració (⚙️)</b> pots passar de Mode Convidat (100% local) a crear un usuari i contrasenya xifrats (SHA-256) per sincronitzar al núvol, ajustar el Pomodoro, exportar les teves dades en <code>.JSON</code> o eliminar el compte.</li>
           </ul>
         </div>
 
@@ -162,7 +157,7 @@
 
       <!-- Peu del Modal -->
       <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-3 border-t border-theme">
-        <span class="text-[11px] opacity-75">Pots tornar a obrir aquesta guia sempre que vulguis prement el botó <b>❓</b> de la capçalera.</span>
+        <span class="text-[11px] opacity-75">Pots tornar a obrir aquesta guia sempre que vulguis prement el botó <b>❓ Guia</b> de dalt a l'esquerra.</span>
         <button type="button" onclick="closeOnboarding()" class="btn-accent font-extrabold px-6 py-2.5 rounded-xl text-xs w-full sm:w-auto shrink-0">
           Entesos, som-hi! 🚀
         </button>
@@ -170,29 +165,42 @@
 
     </div>
   </div>
+
   <!-- =========================================================
        CONTENIDOR CENTRAL AMB TRANSICIONS DINÀMIQUES SUAUS
        ========================================================= -->
   <main class="w-full max-w-2xl my-auto flex flex-col items-center py-2 flex-1">
 
     <!-- ==========================================
-         PANTALLA 1: INICI (SENSE PERCENTATGES NI RUTINA INCRUSTADA)
+         PANTALLA 1: INICI (SENSE GREETING + BÀNER DE RATXA ESTIL PUBLI)
          ========================================== -->
     <section id="view-menu" class="view-panel w-full flex flex-col gap-4 text-left">
 
-      <!-- 1. Salutació personalitzada + Data/Hora + Accés a Historial (on hi ha els percentatges) -->
-      <div class="tactile-card highlight-banner rounded-3xl p-4 sm:p-5 flex flex-wrap justify-between items-center gap-3">
-        <div>
-          <h2 id="dash-greeting" class="text-base sm:text-xl font-extrabold">Bona tarda, Convidat 👋</h2>
-          <p id="dash-datetime" class="text-xs opacity-75 font-semibold mt-0.5">Carregant data...</p>
+      <!-- 1. NOU BÀNER DE RATXA ESTIL PUBLI / GAMIFICACIÓ (SENSE SALUTACIÓ) -->
+      <div onclick="switchView('view-settings')" class="cursor-pointer rounded-3xl p-4 sm:p-5 bg-gradient-to-r from-[#1E3264] via-[#2B4380] to-[#3D67C4] text-white border-2 border-[#1E3264] shadow-lg hover:scale-[1.01] transition-transform flex flex-wrap justify-between items-center gap-3">
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-[#F7E671] border-2 border-white flex items-center justify-center text-2xl shadow-md shrink-0">
+            🔥
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] uppercase tracking-widest font-extrabold text-[#F7E671]">Impuls Diari Actiu</span>
+              <span class="text-[10px] opacity-75 font-semibold">·</span>
+              <span id="dash-datetime" class="text-[10px] opacity-90 font-bold">Avui</span>
+            </div>
+            <p class="text-sm sm:text-base font-extrabold leading-tight mt-0.5">
+              Suma un pas avui i mantén la teva ratxa imparable!
+            </p>
+          </div>
         </div>
-        <div class="flex items-center gap-2">
-          <span id="dash-streak-badge" class="bg-[#F7E671] text-[#1A1A1A] text-xs font-extrabold px-3.5 py-1.5 rounded-full border-2 border-[#1E3264]">
-            🔥 1 dia
+
+        <div class="flex items-center gap-2 ml-auto">
+          <span id="dash-streak-badge" class="bg-[#F7E671] text-[#1A1A1A] text-xs font-extrabold px-4 py-2 rounded-full border-2 border-white shadow-md">
+            🔥 1 dia EN RATXA
           </span>
-          <button type="button" onclick="switchView('view-history')" class="btn-primary text-xs font-extrabold px-3.5 py-1.5 rounded-full flex items-center gap-1.5" title="Veure percentatges i historial">
-            <span>Historial i %</span>
-          </button>
+          <span class="bg-white/15 hover:bg-white/25 text-white text-[11px] font-extrabold px-3 py-2 rounded-full border border-white/30 transition hidden sm:inline-block">
+            Estadístiques &#8250;
+          </span>
         </div>
       </div>
 
@@ -224,7 +232,7 @@
         </div>
       </div>
 
-      <!-- 3. Botons de navegació a les 6 pantalles (Amb tocs de color vius de la paleta) -->
+      <!-- 3. Botons de navegació a les 6 pantalles -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <button type="button" onclick="switchView('view-tasks')" class="menu-nav-card nav-accent-blue p-4 rounded-2xl text-sm font-extrabold flex justify-between items-center">
           <span class="flex items-center gap-2.5"><span class="nav-dot bg-[#3D67C4]"></span>Tasques i Micro-passos</span>
@@ -256,65 +264,6 @@
           <span class="text-lg font-bold">&#8250;</span>
         </button>
       </div>
-    </section>
-
-    <!-- ==========================================
-         PANTALLA D'HISTORIAL (ARA INCLOU ELS PERCENTATGES A DALT)
-         ========================================== -->
-    <section id="view-history" class="view-panel w-full flex flex-col items-center hidden text-left">
-      <span class="text-xs tracking-widest text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase mb-3 text-center block w-full">
-        Resum de Progrés i Historial
-      </span>
-
-      <!-- PERCENTATGES (KPIs) MOGUTS DINS DE LA PESTANYA D'HISTORIAL -->
-      <div class="w-full grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-4">
-        <div onclick="switchView('view-quick-todo')" class="tactile-card rounded-2xl p-4 cursor-pointer">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-xs font-extrabold">Tasques d'avui (To-Do)</span>
-            <span id="kpi-pct-todo" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-[#3D67C4] text-white">0%</span>
-          </div>
-          <div class="w-full bg-subtle h-2.5 rounded-full overflow-hidden mb-2 border border-theme">
-            <div id="kpi-bar-todo" class="bg-[#3D67C4] h-full transition-all duration-500" style="width: 0%"></div>
-          </div>
-          <span id="kpi-count-todo" class="text-[11px] opacity-75 font-bold">0 pendents</span>
-        </div>
-
-        <div onclick="switchView('view-routine')" class="tactile-card rounded-2xl p-4 cursor-pointer">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-xs font-extrabold">Rutina diària</span>
-            <span id="kpi-pct-routine" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-[#F7E671] text-[#1A1A1A] border border-[#1E3264]">0%</span>
-          </div>
-          <div class="w-full bg-subtle h-2.5 rounded-full overflow-hidden mb-2 border border-theme">
-            <div id="kpi-bar-routine" class="bg-[#F7E671] h-full transition-all duration-500" style="width: 0%"></div>
-          </div>
-          <span id="kpi-count-routine" class="text-[11px] opacity-75 font-bold">0 completats</span>
-        </div>
-      </div>
-
-      <!-- Mètrica de continuïtat (Streaks dels últims 7 dies) -->
-      <div class="w-full tactile-card rounded-3xl p-4 mb-4">
-        <span class="text-xs font-extrabold block mb-2.5">🔥 Continuïtat dels últims 7 dies</span>
-        <div id="dash-streak-days" class="grid grid-cols-7 gap-2 text-center"></div>
-      </div>
-
-      <!-- Cercador i registre d'activitat -->
-      <div class="w-full tactile-card rounded-3xl p-4 mb-5 space-y-3">
-        <div class="flex gap-2">
-          <input type="text" id="history-search-input" placeholder="🔍 Cerca tasques completades, pensaments..." class="flex-1 bg-subtle border border-theme rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#3D67C4]" />
-          <select id="history-type-filter" aria-label="Filtrar per tipus" class="bg-subtle border border-theme rounded-xl px-3 py-2 text-xs font-bold">
-            <option value="all">Tots</option>
-            <option value="todo">Tasques</option>
-            <option value="thought">Pensaments</option>
-            <option value="routine">Rutina</option>
-          </select>
-        </div>
-
-        <div id="dash-history-list" class="space-y-2 max-h-[210px] overflow-y-auto pr-1 text-xs"></div>
-      </div>
-
-      <button type="button" onclick="switchView('view-menu')" class="btn-pill px-4 py-2 rounded-full text-xs font-extrabold">
-        &#8249; Tornar al menú principal
-      </button>
     </section>
 
     <!-- ==========================================
@@ -611,11 +560,69 @@
     </section>
 
     <!-- ==========================================
-         PANTALLA 9: CONFIGURACIÓ
+         PANTALLA 9: CONFIGURACIÓ + HISTORIAL, PERCENTATGES I RATXA INTEGRATS
          ========================================== -->
     <section id="view-settings" class="view-panel w-full flex flex-col items-center hidden text-left">
-      <span class="text-xs tracking-widest text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase mb-4 text-center block w-full">Configuració, Pomodoro i Sincronització</span>
+      <span class="text-xs tracking-widest text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase mb-4 text-center block w-full">
+        Configuració, Progrés i Historial
+      </span>
 
+      <!-- BLOC 1: RESUM DE PROGRÉS, RATXA 7 DIES I HISTORIAL (INTEGRAT DINS DE CONFIGURACIÓ) -->
+      <div class="w-full tactile-card rounded-3xl p-5 space-y-4 mb-5">
+        <div class="flex justify-between items-center border-b border-theme pb-2.5">
+          <span class="text-xs text-[#3D67C4] dark:text-[#F7E671] font-extrabold uppercase tracking-wider">
+            📊 El teu Progrés, Ratxa i Historial
+          </span>
+        </div>
+
+        <!-- Percentatges (KPIs) -->
+        <div class="w-full grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div onclick="switchView('view-quick-todo')" class="bg-subtle border border-theme rounded-2xl p-3.5 cursor-pointer hover:opacity-90 transition">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-extrabold">Tasques d'avui (To-Do)</span>
+              <span id="kpi-pct-todo" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-[#3D67C4] text-white">0%</span>
+            </div>
+            <div class="w-full bg-black/10 h-2.5 rounded-full overflow-hidden mb-1.5 border border-theme">
+              <div id="kpi-bar-todo" class="bg-[#3D67C4] h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="kpi-count-todo" class="text-[11px] opacity-75 font-bold">0 pendents</span>
+          </div>
+
+          <div onclick="switchView('view-routine')" class="bg-subtle border border-theme rounded-2xl p-3.5 cursor-pointer hover:opacity-90 transition">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-extrabold">Rutina diària</span>
+              <span id="kpi-pct-routine" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-[#F7E671] text-[#1A1A1A] border border-[#1E3264]">0%</span>
+            </div>
+            <div class="w-full bg-black/10 h-2.5 rounded-full overflow-hidden mb-1.5 border border-theme">
+              <div id="kpi-bar-routine" class="bg-[#F7E671] h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="kpi-count-routine" class="text-[11px] opacity-75 font-bold">0 completats</span>
+          </div>
+        </div>
+
+        <!-- Mètrica de continuïtat (Streaks dels últims 7 dies) -->
+        <div class="bg-subtle border border-theme rounded-2xl p-3.5">
+          <span class="text-xs font-extrabold block mb-2.5">🔥 Continuïtat dels últims 7 dies</span>
+          <div id="dash-streak-days" class="grid grid-cols-7 gap-2 text-center"></div>
+        </div>
+
+        <!-- Cercador i registre d'activitat -->
+        <div class="space-y-3 pt-1">
+          <div class="flex gap-2">
+            <input type="text" id="history-search-input" placeholder="🔍 Cerca tasques completades, pensaments..." class="flex-1 bg-subtle border border-theme rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#3D67C4]" />
+            <select id="history-type-filter" aria-label="Filtrar per tipus" class="bg-subtle border border-theme rounded-xl px-3 py-2 text-xs font-bold">
+              <option value="all">Tots</option>
+              <option value="todo">Tasques</option>
+              <option value="thought">Pensaments</option>
+              <option value="routine">Rutina</option>
+            </select>
+          </div>
+
+          <div id="dash-history-list" class="space-y-2 max-h-[180px] overflow-y-auto pr-1 text-xs"></div>
+        </div>
+      </div>
+
+      <!-- BLOC 2: COMPTE, SINCRONITZACIÓ I POMODORO -->
       <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-5 mb-6 items-start">
         <div class="w-full tactile-card rounded-3xl p-5 space-y-4">
           <div id="ai-info-box" class="bg-[#3D67C4]/15 border-2 border-[#3D67C4]/40 rounded-2xl p-3">
