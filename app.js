@@ -398,7 +398,7 @@ function renderDashboard() {
       const cell = document.createElement("div");
       cell.className = active
         ? "py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 border-2 bg-[#F7E671] text-[#1A1A1A] border-[#1E3264] font-extrabold shadow-sm"
-        : "py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 border border-theme bg-white/70 dark:bg-slate-800/60 text-[#2A3140] dark:text-slate-300 font-bold opacity-80";
+        : "py-2 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 border border-theme bg-subtle font-bold opacity-75";
       cell.innerHTML = `<span class="text-[10px] uppercase tracking-tighter">${diesSetmana[d.getDay()]}</span><span class="text-xs leading-none">${active ? "🔥" : "·"}</span>`;
       streakDaysEl.appendChild(cell);
     }
